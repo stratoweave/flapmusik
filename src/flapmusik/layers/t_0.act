@@ -1,0 +1,31 @@
+# WARNING WARNING WARNING WARNING WARNING
+# DO NOT MODIFY THIS FILE!! This file is generated!
+# WARNING WARNING WARNING WARNING WARNING
+
+import logging
+
+import stratoweave.device as swdev
+import stratoweave.ttt as ttt
+import yang.gdata as ygdata
+import flapmusik.layers.y_0_oper as y_0_oper
+
+import flapmusik.cfs as cfs
+
+from flapmusik.layers.y_0 import netinfra__netinfra__ebgp_peer_entry
+
+def get_ttt(lower: ?ttt.Layer, dev_registry: swdev.DeviceRegistry, log_handler: ?logging.Handler=None) -> proc(ttt.Path,?ttt.Layer)->ttt.Node:
+    r = ttt.Container({ygdata.Id("http://example.com/netinfra", "netinfra"): ttt.Container({ygdata.Id("http://example.com/netinfra", "router"): ttt.List(ttt.Transform(cfs.Router, None, None, lower, log_handler), [ygdata.Id("http://example.com/netinfra", "name")]), ygdata.Id("http://example.com/netinfra", "peering-interface"): ttt.List(ttt.Transform(cfs.PeeringInterface, None, None, lower, log_handler), [ygdata.Id("http://example.com/netinfra", "router"), ygdata.Id("http://example.com/netinfra", "name")]), ygdata.Id("http://example.com/netinfra", "ebgp-peer"): ttt.List(ttt.Transform(cfs.EbgpPeer, EbgpPeerTransformCtor, _build_target_links_netinfra__netinfra__ebgp_peer_entry, lower, log_handler), [ygdata.Id("http://example.com/netinfra", "router"), ygdata.Id("http://example.com/netinfra", "peer-address")]), ygdata.Id("http://example.com/netinfra", "global-settings"): ttt.Transform(cfs.GlobalSettings, None, None, lower, log_handler)}, ns='http://example.com/netinfra', module='netinfra')})
+    return r
+
+def _build_target_links_netinfra__netinfra__ebgp_peer_entry(conf: ygdata.Node) -> list[ttt.TaggedPath]:
+    res = []
+    # leafref link: router
+    _v0 = conf.get_opt_value(ygdata.Id("http://example.com/netinfra", "router"))
+    if _v0 is not None:
+        res.append(ttt.TaggedPath('router', ygdata.FNode(ygdata.Id("http://example.com/netinfra", "netinfra"), children=[ygdata.FNode(ygdata.Id("http://example.com/netinfra", "router"), children=[ygdata.FNode(ygdata.Id("http://example.com/netinfra", "name"), value_match=_v0)])])))
+    return res
+def EbgpPeerTransformCtor(params: ttt.TransformActorParams) -> ?proc(ygdata.Node, ?ygdata.Node) -> None:
+    def update_oper_type_wrapper(oper: ?y_0_oper.netinfra__netinfra__ebgp_peer_entry):
+        params.update_oper(oper.to_gdata() if oper is not None else None)
+    act = cfs.EbgpPeerTransform(params.path, update_oper_type_wrapper, params.lower_tree_provider)
+    return proc lambda c, m: act.on_conf(netinfra__netinfra__ebgp_peer_entry.from_gdata(c))

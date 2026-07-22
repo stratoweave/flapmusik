@@ -1,0 +1,12 @@
+.build
+build.zig*
+.acton.lock
+.acton.compile.lock
+.actonc.lock
+.zig-cache
+out
+zig-pkg
+zig-out
+.vscode/
+**/snapshots/output
+site/

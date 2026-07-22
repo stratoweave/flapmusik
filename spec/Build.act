@@ -1,0 +1,16 @@
+name = "flapmusik_gen"
+fingerprint = 0xd25a947bcea9731e
+dependencies = {
+    "stratoweave": (
+        repo_url="https://github.com/stratoweave/stratoweave.git",
+        repo_ref="xrd-udp-notif",
+        url="https://github.com/stratoweave/stratoweave/archive/d22fdad1acc96a58ad1ae8229f55c329c98543c2.zip",
+        hash="N-V-__8AAH1XPgANFow8Ta7ugKn7jsUzlQoN4CIacjmsA3tC"
+    ),
+    "yang": (
+        repo_url="https://github.com/stratoweave/acton-yang.git",
+        url="https://github.com/stratoweave/acton-yang/archive/ac4ad2399e768730b84378788544fb01734cde63.zip",
+        hash="N-V-__8AAN5JJgBE_1lsPzqRH3Hal2sYycaXwDuQpIu6wib7"
+    )
+}
+zig_dependencies = {}

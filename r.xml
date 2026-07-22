@@ -1,0 +1,330 @@
+<?xml version="1.0" encoding="utf-8"?>
+<data>
+  <netinfra xmlns="http://example.com/netinfra">
+    <global-settings>
+      <ibgp-authentication-key>test-ibgp-key</ibgp-authentication-key>
+    </global-settings>
+
+    <router>
+      <name>ios</name>
+      <management-endpoint>
+        <address>10.99.0.42</address>
+        <port>830</port>
+        <username>admin</username>
+        <password>adminadmin</password>
+      </management-endpoint>
+      <id>42</id>
+      <type>CiscoIosXr_25_3_1</type>
+      <role>edge</role>
+      <asn>31337</asn>
+      <approval-required>false</approval-required>
+    </router>
+
+    <peering-interface>
+      <router>ios</router>
+      <name>GigabitEthernet0/0/0/21</name>
+      <subinterface>
+        <vlan-id>1</vlan-id>
+        <ipv4-address>10.123.1.1</ipv4-address>
+        <ipv4-prefix-length>30</ipv4-prefix-length>
+      </subinterface>
+      <subinterface>
+        <vlan-id>2</vlan-id>
+        <ipv4-address>10.123.2.1</ipv4-address>
+        <ipv4-prefix-length>30</ipv4-prefix-length>
+      </subinterface>
+      <subinterface>
+        <vlan-id>3</vlan-id>
+        <ipv4-address>10.123.3.1</ipv4-address>
+        <ipv4-prefix-length>30</ipv4-prefix-length>
+      </subinterface>
+      <subinterface>
+        <vlan-id>4</vlan-id>
+        <ipv4-address>10.123.4.1</ipv4-address>
+        <ipv4-prefix-length>30</ipv4-prefix-length>
+      </subinterface>
+      <subinterface>
+        <vlan-id>5</vlan-id>
+        <ipv4-address>10.123.5.1</ipv4-address>
+        <ipv4-prefix-length>30</ipv4-prefix-length>
+      </subinterface>
+      <subinterface>
+        <vlan-id>6</vlan-id>
+        <ipv4-address>10.123.6.1</ipv4-address>
+        <ipv4-prefix-length>30</ipv4-prefix-length>
+      </subinterface>
+      <subinterface>
+        <vlan-id>7</vlan-id>
+        <ipv4-address>10.123.7.1</ipv4-address>
+        <ipv4-prefix-length>30</ipv4-prefix-length>
+      </subinterface>
+      <subinterface>
+        <vlan-id>8</vlan-id>
+        <ipv4-address>10.123.8.1</ipv4-address>
+        <ipv4-prefix-length>30</ipv4-prefix-length>
+      </subinterface>
+      <subinterface>
+        <vlan-id>9</vlan-id>
+        <ipv4-address>10.123.9.1</ipv4-address>
+        <ipv4-prefix-length>30</ipv4-prefix-length>
+      </subinterface>
+      <subinterface>
+        <vlan-id>10</vlan-id>
+        <ipv4-address>10.123.10.1</ipv4-address>
+        <ipv4-prefix-length>30</ipv4-prefix-length>
+      </subinterface>
+      <subinterface>
+        <vlan-id>11</vlan-id>
+        <ipv4-address>10.123.11.1</ipv4-address>
+        <ipv4-prefix-length>30</ipv4-prefix-length>
+      </subinterface>
+      <subinterface>
+        <vlan-id>12</vlan-id>
+        <ipv4-address>10.123.12.1</ipv4-address>
+        <ipv4-prefix-length>30</ipv4-prefix-length>
+      </subinterface>
+      <subinterface>
+        <vlan-id>13</vlan-id>
+        <ipv4-address>10.123.13.1</ipv4-address>
+        <ipv4-prefix-length>30</ipv4-prefix-length>
+      </subinterface>
+      <subinterface>
+        <vlan-id>14</vlan-id>
+        <ipv4-address>10.123.14.1</ipv4-address>
+        <ipv4-prefix-length>30</ipv4-prefix-length>
+      </subinterface>
+      <subinterface>
+        <vlan-id>15</vlan-id>
+        <ipv4-address>10.123.15.1</ipv4-address>
+        <ipv4-prefix-length>30</ipv4-prefix-length>
+      </subinterface>
+      <subinterface>
+        <vlan-id>16</vlan-id>
+        <ipv4-address>10.123.16.1</ipv4-address>
+        <ipv4-prefix-length>30</ipv4-prefix-length>
+      </subinterface>
+      <subinterface>
+        <vlan-id>17</vlan-id>
+        <ipv4-address>10.123.17.1</ipv4-address>
+        <ipv4-prefix-length>30</ipv4-prefix-length>
+      </subinterface>
+      <subinterface>
+        <vlan-id>18</vlan-id>
+        <ipv4-address>10.123.18.1</ipv4-address>
+        <ipv4-prefix-length>30</ipv4-prefix-length>
+      </subinterface>
+      <subinterface>
+        <vlan-id>19</vlan-id>
+        <ipv4-address>10.123.19.1</ipv4-address>
+        <ipv4-prefix-length>30</ipv4-prefix-length>
+      </subinterface>
+      <subinterface>
+        <vlan-id>20</vlan-id>
+        <ipv4-address>10.123.20.1</ipv4-address>
+        <ipv4-prefix-length>30</ipv4-prefix-length>
+      </subinterface>
+      <subinterface>
+        <vlan-id>21</vlan-id>
+        <ipv4-address>10.123.21.1</ipv4-address>
+        <ipv4-prefix-length>30</ipv4-prefix-length>
+      </subinterface>
+      <subinterface>
+        <vlan-id>22</vlan-id>
+        <ipv4-address>10.123.22.1</ipv4-address>
+        <ipv4-prefix-length>30</ipv4-prefix-length>
+      </subinterface>
+      <subinterface>
+        <vlan-id>23</vlan-id>
+        <ipv4-address>10.123.23.1</ipv4-address>
+        <ipv4-prefix-length>30</ipv4-prefix-length>
+      </subinterface>
+      <subinterface>
+        <vlan-id>24</vlan-id>
+        <ipv4-address>10.123.24.1</ipv4-address>
+        <ipv4-prefix-length>30</ipv4-prefix-length>
+      </subinterface>
+      <subinterface>
+        <vlan-id>25</vlan-id>
+        <ipv4-address>10.123.25.1</ipv4-address>
+        <ipv4-prefix-length>30</ipv4-prefix-length>
+      </subinterface>
+      <description>IX VLAN parent</description>
+    </peering-interface>
+
+    <ebgp-peer>
+      <router>ios</router>
+      <peer-address>10.123.1.2</peer-address>
+      <local-address>10.123.1.1</local-address>
+      <peer-asn>65000</peer-asn>
+      <description>IX peer 1 on VLAN 1</description>
+    </ebgp-peer>
+    <ebgp-peer>
+      <router>ios</router>
+      <peer-address>10.123.2.2</peer-address>
+      <local-address>10.123.2.1</local-address>
+      <peer-asn>65000</peer-asn>
+      <description>IX peer 2 on VLAN 2</description>
+    </ebgp-peer>
+    <ebgp-peer>
+      <router>ios</router>
+      <peer-address>10.123.3.2</peer-address>
+      <local-address>10.123.3.1</local-address>
+      <peer-asn>65000</peer-asn>
+      <description>IX peer 3 on VLAN 3</description>
+    </ebgp-peer>
+    <ebgp-peer>
+      <router>ios</router>
+      <peer-address>10.123.4.2</peer-address>
+      <local-address>10.123.4.1</local-address>
+      <peer-asn>65000</peer-asn>
+      <description>IX peer 4 on VLAN 4</description>
+    </ebgp-peer>
+    <ebgp-peer>
+      <router>ios</router>
+      <peer-address>10.123.5.2</peer-address>
+      <local-address>10.123.5.1</local-address>
+      <peer-asn>65000</peer-asn>
+      <description>IX peer 5 on VLAN 5</description>
+    </ebgp-peer>
+    <ebgp-peer>
+      <router>ios</router>
+      <peer-address>10.123.6.2</peer-address>
+      <local-address>10.123.6.1</local-address>
+      <peer-asn>65000</peer-asn>
+      <description>IX peer 6 on VLAN 6</description>
+    </ebgp-peer>
+    <ebgp-peer>
+      <router>ios</router>
+      <peer-address>10.123.7.2</peer-address>
+      <local-address>10.123.7.1</local-address>
+      <peer-asn>65000</peer-asn>
+      <description>IX peer 7 on VLAN 7</description>
+    </ebgp-peer>
+    <ebgp-peer>
+      <router>ios</router>
+      <peer-address>10.123.8.2</peer-address>
+      <local-address>10.123.8.1</local-address>
+      <peer-asn>65000</peer-asn>
+      <description>IX peer 8 on VLAN 8</description>
+    </ebgp-peer>
+    <ebgp-peer>
+      <router>ios</router>
+      <peer-address>10.123.9.2</peer-address>
+      <local-address>10.123.9.1</local-address>
+      <peer-asn>65000</peer-asn>
+      <description>IX peer 9 on VLAN 9</description>
+    </ebgp-peer>
+    <ebgp-peer>
+      <router>ios</router>
+      <peer-address>10.123.10.2</peer-address>
+      <local-address>10.123.10.1</local-address>
+      <peer-asn>65000</peer-asn>
+      <description>IX peer 10 on VLAN 10</description>
+    </ebgp-peer>
+    <ebgp-peer>
+      <router>ios</router>
+      <peer-address>10.123.11.2</peer-address>
+      <local-address>10.123.11.1</local-address>
+      <peer-asn>65000</peer-asn>
+      <description>IX peer 11 on VLAN 11</description>
+    </ebgp-peer>
+    <ebgp-peer>
+      <router>ios</router>
+      <peer-address>10.123.12.2</peer-address>
+      <local-address>10.123.12.1</local-address>
+      <peer-asn>65000</peer-asn>
+      <description>IX peer 12 on VLAN 12</description>
+    </ebgp-peer>
+    <ebgp-peer>
+      <router>ios</router>
+      <peer-address>10.123.13.2</peer-address>
+      <local-address>10.123.13.1</local-address>
+      <peer-asn>65000</peer-asn>
+      <description>IX peer 13 on VLAN 13</description>
+    </ebgp-peer>
+    <ebgp-peer>
+      <router>ios</router>
+      <peer-address>10.123.14.2</peer-address>
+      <local-address>10.123.14.1</local-address>
+      <peer-asn>65000</peer-asn>
+      <description>IX peer 14 on VLAN 14</description>
+    </ebgp-peer>
+    <ebgp-peer>
+      <router>ios</router>
+      <peer-address>10.123.15.2</peer-address>
+      <local-address>10.123.15.1</local-address>
+      <peer-asn>65000</peer-asn>
+      <description>IX peer 15 on VLAN 15</description>
+    </ebgp-peer>
+    <ebgp-peer>
+      <router>ios</router>
+      <peer-address>10.123.16.2</peer-address>
+      <local-address>10.123.16.1</local-address>
+      <peer-asn>65000</peer-asn>
+      <description>IX peer 16 on VLAN 16</description>
+    </ebgp-peer>
+    <ebgp-peer>
+      <router>ios</router>
+      <peer-address>10.123.17.2</peer-address>
+      <local-address>10.123.17.1</local-address>
+      <peer-asn>65000</peer-asn>
+      <description>IX peer 17 on VLAN 17</description>
+    </ebgp-peer>
+    <ebgp-peer>
+      <router>ios</router>
+      <peer-address>10.123.18.2</peer-address>
+      <local-address>10.123.18.1</local-address>
+      <peer-asn>65000</peer-asn>
+      <description>IX peer 18 on VLAN 18</description>
+    </ebgp-peer>
+    <ebgp-peer>
+      <router>ios</router>
+      <peer-address>10.123.19.2</peer-address>
+      <local-address>10.123.19.1</local-address>
+      <peer-asn>65000</peer-asn>
+      <description>IX peer 19 on VLAN 19</description>
+    </ebgp-peer>
+    <ebgp-peer>
+      <router>ios</router>
+      <peer-address>10.123.20.2</peer-address>
+      <local-address>10.123.20.1</local-address>
+      <peer-asn>65000</peer-asn>
+      <description>IX peer 20 on VLAN 20</description>
+    </ebgp-peer>
+    <ebgp-peer>
+      <router>ios</router>
+      <peer-address>10.123.21.2</peer-address>
+      <local-address>10.123.21.1</local-address>
+      <peer-asn>65000</peer-asn>
+      <description>IX peer 21 on VLAN 21</description>
+    </ebgp-peer>
+    <ebgp-peer>
+      <router>ios</router>
+      <peer-address>10.123.22.2</peer-address>
+      <local-address>10.123.22.1</local-address>
+      <peer-asn>65000</peer-asn>
+      <description>IX peer 22 on VLAN 22</description>
+    </ebgp-peer>
+    <ebgp-peer>
+      <router>ios</router>
+      <peer-address>10.123.23.2</peer-address>
+      <local-address>10.123.23.1</local-address>
+      <peer-asn>65000</peer-asn>
+      <description>IX peer 23 on VLAN 23</description>
+    </ebgp-peer>
+    <ebgp-peer>
+      <router>ios</router>
+      <peer-address>10.123.24.2</peer-address>
+      <local-address>10.123.24.1</local-address>
+      <peer-asn>65000</peer-asn>
+      <description>IX peer 24 on VLAN 24</description>
+    </ebgp-peer>
+    <ebgp-peer>
+      <router>ios</router>
+      <peer-address>10.123.25.2</peer-address>
+      <local-address>10.123.25.1</local-address>
+      <peer-asn>65000</peer-asn>
+      <description>IX peer 25 on VLAN 25</description>
+    </ebgp-peer>
+  </netinfra>
+</data>

@@ -1,0 +1,116 @@
+import file
+import process
+
+import stratoweave.build as swbuild
+import stratoweave.swyang as swyang
+from yang.transform_filter_schema import filter_schema
+
+actor main(env):
+    fc = file.FileCap(env.cap)
+    pc = process.ProcessCap(env.cap)
+
+    def transform_filter_xr(dt):
+        # Keep only the XR nodes that flapmusik actively uses. Without this the
+        # full IOS XR unified model is generated, which is enormous.
+        paths = [
+    "/um-hostname-cfg:hostname",
+    "/um-hostname-cfg:hostname/system-network-name",
+    "/um-interface-cfg:interfaces",
+    "/um-interface-cfg:interfaces/interface",
+    "/um-interface-cfg:interfaces/interface/interface-name",
+    "/um-interface-cfg:interfaces/interface/description",
+    "/um-interface-cfg:interfaces/interface/shutdown",
+    "/um-interface-cfg:interfaces/interface/ipv4",
+    "/um-interface-cfg:interfaces/interface/ipv4/um-if-ip-address-cfg:addresses",
+    "/um-interface-cfg:interfaces/interface/ipv4/um-if-ip-address-cfg:addresses/address",
+    "/um-interface-cfg:interfaces/interface/ipv4/um-if-ip-address-cfg:addresses/address/address",
+    "/um-interface-cfg:interfaces/interface/ipv4/um-if-ip-address-cfg:addresses/address/netmask",
+    "/um-interface-cfg:interfaces/interface/ipv4/um-if-ip-address-cfg:addresses/secondaries",
+    "/um-interface-cfg:interfaces/interface/ipv4/um-if-ip-address-cfg:addresses/secondaries/secondary",
+    "/um-interface-cfg:interfaces/interface/ipv4/um-if-ip-address-cfg:addresses/secondaries/secondary/address",
+    "/um-interface-cfg:interfaces/interface/ipv4/um-if-ip-address-cfg:addresses/secondaries/secondary/netmask",
+    "/um-interface-cfg:interfaces/interface/um-if-vrf-cfg:vrf",
+    "/um-interface-cfg:interfaces/interface/um-l2-ethernet-cfg:encapsulation",
+    "/um-interface-cfg:interfaces/interface/um-l2-ethernet-cfg:encapsulation/dot1q",
+    "/um-interface-cfg:interfaces/interface/um-l2-ethernet-cfg:encapsulation/dot1q/vlan-id",
+    "/um-router-bgp-cfg:router",
+    "/um-router-bgp-cfg:router/bgp",
+    "/um-router-bgp-cfg:router/bgp/as",
+    "/um-router-bgp-cfg:router/bgp/as/as-number",
+    "/um-router-bgp-cfg:router/bgp/as/bgp",
+    "/um-router-bgp-cfg:router/bgp/as/bgp/router-id",
+    "/um-router-bgp-cfg:router/bgp/as/address-families",
+    "/um-router-bgp-cfg:router/bgp/as/address-families/address-family",
+    "/um-router-bgp-cfg:router/bgp/as/address-families/address-family/af-name",
+    "/um-router-bgp-cfg:router/bgp/as/neighbor-groups",
+    "/um-router-bgp-cfg:router/bgp/as/neighbor-groups/neighbor-group",
+    "/um-router-bgp-cfg:router/bgp/as/neighbor-groups/neighbor-group/neighbor-group-name",
+    "/um-router-bgp-cfg:router/bgp/as/neighbor-groups/neighbor-group/remote-as",
+    "/um-router-bgp-cfg:router/bgp/as/neighbor-groups/neighbor-group/update-source",
+    "/um-router-bgp-cfg:router/bgp/as/neighbor-groups/neighbor-group/password",
+    "/um-router-bgp-cfg:router/bgp/as/neighbor-groups/neighbor-group/password/encrypted",
+    "/um-router-bgp-cfg:router/bgp/as/neighbor-groups/neighbor-group/address-families",
+    "/um-router-bgp-cfg:router/bgp/as/neighbor-groups/neighbor-group/address-families/address-family",
+    "/um-router-bgp-cfg:router/bgp/as/neighbor-groups/neighbor-group/address-families/address-family/af-name",
+    "/um-router-bgp-cfg:router/bgp/as/neighbors",
+    "/um-router-bgp-cfg:router/bgp/as/neighbors/neighbor",
+    "/um-router-bgp-cfg:router/bgp/as/neighbors/neighbor/address",
+    "/um-router-bgp-cfg:router/bgp/as/neighbors/neighbor/remote-as",
+    "/um-router-bgp-cfg:router/bgp/as/neighbors/neighbor/description",
+    "/um-router-bgp-cfg:router/bgp/as/neighbors/neighbor/local",
+    "/um-router-bgp-cfg:router/bgp/as/neighbors/neighbor/local/address",
+    "/um-router-bgp-cfg:router/bgp/as/neighbors/neighbor/local/address/ip-address",
+    "/um-router-bgp-cfg:router/bgp/as/neighbors/neighbor/timers",
+    "/um-router-bgp-cfg:router/bgp/as/neighbors/neighbor/timers/keepalive-interval",
+    "/um-router-bgp-cfg:router/bgp/as/neighbors/neighbor/timers/holdtime",
+    "/um-router-bgp-cfg:router/bgp/as/neighbors/neighbor/timers/holdtime/holdtime-number",
+    "/um-router-bgp-cfg:router/bgp/as/neighbors/neighbor/use",
+    "/um-router-bgp-cfg:router/bgp/as/neighbors/neighbor/use/neighbor-group",
+    "/um-router-bgp-cfg:router/bgp/as/neighbors/neighbor/address-families",
+    "/um-router-bgp-cfg:router/bgp/as/neighbors/neighbor/address-families/address-family",
+    "/um-router-bgp-cfg:router/bgp/as/neighbors/neighbor/address-families/address-family/af-name",
+    "/um-route-policy-cfg:routing-policy",
+    "/um-route-policy-cfg:routing-policy/route-policies",
+    "/um-route-policy-cfg:routing-policy/route-policies/route-policy",
+    "/um-route-policy-cfg:routing-policy/route-policies/route-policy/route-policy-name",
+    "/um-route-policy-cfg:routing-policy/route-policies/route-policy/rpl-route-policy",
+    # XR 25.3.1 exposes native BGP operational data, but does not generate
+    # event-driven updates for that tree. Its OpenConfig network-instance BGP
+    # state is event-driven and is therefore the source for eBGP peer state.
+    "/oc-netinst:network-instances",
+    "/oc-netinst:network-instances/network-instance",
+    "/oc-netinst:network-instances/network-instance/name",
+    "/oc-netinst:network-instances/network-instance/protocols",
+    "/oc-netinst:network-instances/network-instance/protocols/protocol",
+    "/oc-netinst:network-instances/network-instance/protocols/protocol/identifier",
+    "/oc-netinst:network-instances/network-instance/protocols/protocol/name",
+    "/oc-netinst:network-instances/network-instance/protocols/protocol/bgp",
+    "/oc-netinst:network-instances/network-instance/protocols/protocol/bgp/neighbors",
+    "/oc-netinst:network-instances/network-instance/protocols/protocol/bgp/neighbors/neighbor",
+    "/oc-netinst:network-instances/network-instance/protocols/protocol/bgp/neighbors/neighbor/neighbor-address",
+    "/oc-netinst:network-instances/network-instance/protocols/protocol/bgp/neighbors/neighbor/state",
+    "/oc-netinst:network-instances/network-instance/protocols/protocol/bgp/neighbors/neighbor/state/session-state",
+]
+        filter_schema(dt.root, paths)
+        return dt
+
+    cfs_layer = swbuild.Layer.from_dir(fc, "yang/cfs")
+    cfs_layer.models.extend([swyang.stratoweave, swyang.ietf_inet_types])
+    rfs_layer = swbuild.Layer.from_dir(fc, "yang/rfs")
+    rfs_layer.models.extend([swyang.stratoweave, swyang.rfs, swyang.ietf_inet_types])
+
+    spec = swbuild.SysSpec("flapmusik", [
+        cfs_layer,
+        rfs_layer,
+    ], [
+        swbuild.DeviceType.from_dir(fc, "CiscoIosXr_25_3_1", "yang/CiscoIosXr_25_3_1")
+    ])
+    try:
+        compiled_spec = spec.compile()
+        transform_filter_xr(compiled_spec.dev_types["CiscoIosXr_25_3_1"])
+        compiled_spec.gen_app(fc, "../src/")
+    except Exception as exc:
+        print(exc, err=True)
+        env.exit(1)
+    else:
+        env.exit(0)

@@ -1,0 +1,107 @@
+module flapmusik-rfs {
+    yang-version "1.1";
+    namespace "http://example.com/flapmusik-rfs";
+    prefix "flapmusik-rfs";
+
+    import stratoweave-rfs {
+        prefix sw-rfs;
+    }
+    import ietf-inet-types {
+      prefix inet;
+    }
+    import stratoweave {
+      prefix sw;
+    }
+
+    augment "/sw-rfs:rfs" {
+        container base-config {
+
+            sw:rfs-transform flapmusik.rfs.BaseConfig;
+
+            leaf role {
+                type string;
+            }
+
+            leaf ipv4-address {
+                type string;
+                mandatory true;
+            }
+
+            leaf ipv6-address {
+                type string;
+                mandatory true;
+            }
+
+            leaf asn {
+                type inet:as-number;
+                mandatory true;
+            }
+        }
+
+        list peering-interface {
+          key name;
+          sw:rfs-transform flapmusik.rfs.PeeringInterface;
+
+          leaf name {
+            type string;
+          }
+          list subinterface {
+            key vlan-id;
+            leaf vlan-id {
+              type uint16 {
+                range "1..4094";
+              }
+            }
+            leaf ipv4-address {
+              type inet:ipv4-address;
+              mandatory true;
+            }
+            leaf ipv4-prefix-length {
+              type uint8 {
+                range "1..32";
+              }
+              default "30";
+            }
+          }
+          leaf description {
+            type string;
+          }
+        }
+
+        list ebgp-peer {
+          key address;
+          sw:rfs-transform flapmusik.rfs.EbgpPeer;
+          leaf address {
+            type inet:ipv4-address;
+          }
+          leaf local-address {
+            type inet:ipv4-address;
+          }
+          leaf local-asn {
+            type inet:as-number;
+            mandatory true;
+          }
+          leaf peer-asn {
+            type inet:as-number;
+            mandatory true;
+          }
+          leaf description {
+            type string;
+          }
+          container state {
+            config false;
+            leaf session-state {
+              type enumeration {
+                enum idle;
+                enum connect;
+                enum active;
+                enum open-sent;
+                enum open-confirm;
+                enum established;
+                enum unknown;
+              }
+            }
+          }
+        }
+    }
+}

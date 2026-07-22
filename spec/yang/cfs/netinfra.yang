@@ -1,0 +1,178 @@
+module netinfra {
+  yang-version "1.1";
+  namespace "http://example.com/netinfra";
+  prefix "netinfra";
+  description "Network Infrastructure";
+  revision 2019-01-01 {
+    description "test revision";
+    reference "ref1";
+  }
+  import ietf-inet-types {
+    prefix inet;
+  }
+  import stratoweave {
+    prefix sw;
+  }
+
+  container netinfra {
+    description "Network infrastructure";
+    list router {
+      description "Network Infrastructure Router";
+      key name;
+
+      sw:transform flapmusik.cfs.Router;
+
+      leaf name {
+        type string;
+      }
+      container management-endpoint {
+        description "Parameters used to connect to the managed router.";
+        leaf address {
+          type inet:host;
+          description
+            "Address or hostname used to connect to the router. If omitted,
+             the router name is used for backwards compatibility.";
+        }
+        leaf port {
+          type inet:port-number;
+          default 830;
+        }
+        leaf username {
+          type string;
+        }
+        leaf password {
+          type string;
+        }
+      }
+      leaf id {
+        type uint32;
+        description "router id";
+        mandatory true;
+      }
+      leaf type {
+        type string;
+        mandatory true;
+      }
+      leaf role {
+        type string;
+      }
+      leaf asn {
+        type inet:as-number;
+        mandatory true;
+      }
+      leaf mock {
+        type boolean;
+        default false;
+      }
+      leaf approval-required {
+        type boolean;
+        default false;
+      }
+      container feature-flags {
+        leaf runtime-schema-fetch {
+          type boolean;
+          default false;
+        }
+      }
+    }
+
+    list peering-interface {
+      key "router name";
+
+      sw:transform flapmusik.cfs.PeeringInterface;
+
+      leaf router {
+        type string;
+        description "Managed router on which to configure the interface.";
+      }
+      leaf name {
+        type string;
+        description "Physical interface facing the external network.";
+      }
+      list subinterface {
+        key vlan-id;
+        description
+          "802.1Q VLAN subinterface of the peering interface. Each subinterface
+           carries the eBGP sessions whose local-address is its address, so one
+           physical link can host many independent sessions.";
+        leaf vlan-id {
+          type uint16 {
+            range "1..4094";
+          }
+        }
+        leaf ipv4-address {
+          type inet:ipv4-address;
+          mandatory true;
+        }
+        leaf ipv4-prefix-length {
+          type uint8 {
+            range "1..32";
+          }
+          default "30";
+        }
+      }
+      leaf description {
+        type string;
+      }
+    }
+
+    list ebgp-peer {
+      key "router peer-address";
+
+      sw:transform flapmusik.cfs.EbgpPeer;
+
+      leaf router {
+        sw:link router;
+        type leafref {
+          path /netinfra:netinfra/netinfra:router/netinfra:name;
+        }
+        description "Router on which to configure the session.";
+      }
+      leaf peer-address {
+        type inet:ipv4-address;
+      }
+      leaf local-address {
+        type inet:ipv4-address;
+        description
+          "Optional source address for this session. The address must be
+           configured on a peering interface.";
+      }
+      leaf peer-asn {
+        type inet:as-number;
+        mandatory true;
+      }
+      leaf description {
+        type string;
+      }
+      container state {
+        config false;
+        leaf session-state {
+          type enumeration {
+            enum idle;
+            enum connect;
+            enum active;
+            enum open-sent;
+            enum open-confirm;
+            enum established;
+            enum unknown;
+          }
+        }
+      }
+    }
+
+    container global-settings {
+      sw:transform flapmusik.cfs.GlobalSettings;
+      description
+        "Network-wide settings shared across all routers.";
+      leaf ibgp-authentication-key {
+        type string;
+        description
+          "Shared iBGP authentication key. Parsed for compatibility; in this
+           single-edge-router demo there is no iBGP mesh to apply it to.
+           Optional so that a partial /netinfra tree (e.g. the router entry
+           delivered through the ebgp-peer -> router leafref link) does not
+           require global-settings to be present.";
+      }
+    }
+  }
+}
