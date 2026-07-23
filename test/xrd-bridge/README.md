@@ -2,7 +2,7 @@
 
 A minimal [Containerlab](https://containerlab.dev/) lab that starts a **single
 Cisco IOS XRd** router and **bridges its data-plane port onto the host's
-physical `enx6c6e0741e7a9` interface** connected to NCS5502.
+physical `enx6c6e0741e7a9` interface** connected to NCS55A2.
 
 The XRd router's `GigabitEthernet0/0/0/0` is configured with
 **`10.123.0.100/24`** (see `xrd-startup.conf`) and is placed on the same L2
@@ -68,6 +68,31 @@ Stop the lab (destroys XRd, releases the NIC, deletes the bridge):
 
 ```sh
 make stop
+```
+
+## Running flapmusik against the bridged router
+
+Once the bridge is up, flapmusik runs on the host and reaches the physical
+router across the shared L2 segment. The [`start.sh`](../../start.sh) script can
+be used to start flapkusik with UDP-Notif enabled and RESTCONF on
+`127.0.0.1:18080`.
+
+```sh
+../../start.sh        # or ./start.sh from the repo root
+```
+
+Its values are baked in for one particular physical setup — router `10.99.0.13`,
+source interface `GigabitEthernet0/0/0/0`, intent in `r.xml`. Edit those (and the
+`--udp-notif-*` flags) to match the router and segment you bridged onto; see
+[Enabling it](../../README.md#enabling-it) in the main README for the full flag
+reference.
+
+Then watch the live eBGP session table with the repo-root
+[`monitor`](../../monitor) script, which polls that RESTCONF endpoint every
+100 ms and prints one compact row per peer (needs `curl` and `jq`):
+
+```sh
+../../monitor
 ```
 
 ## Files

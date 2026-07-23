@@ -1,0 +1,7 @@
+watch -n 0.1 "curl -fsS \
+  -H 'Accept: application/yang-data+json' \
+  http://127.0.0.1:18080/restconf/data |
+jq -r '.\"netinfra:netinfra\".\"ebgp-peer\"[] |
+  [.router, .\"peer-address\", (.state.\"session-state\" // \"no-data\")] |
+  @tsv' |
+sort -V -k2,2"

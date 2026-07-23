@@ -11,21 +11,30 @@ demo multiplexes **25 independent eBGP sessions** onto it with 802.1Q VLAN
 subinterfaces — one session per VLAN, sized to the 25 keys of a Novation
 Launchkey Mini MK3.
 
-## Givens
+## The setup
 
-| Given | Value |
-| --- | --- |
-| Managed router | `xrd-a` — IOS XRd 25.3.1, mgmt `172.100.60.11`, configured by flapmusik from `netinfra.xml` |
-| External peer | `xrd-b` — IOS XRd 25.3.1, mgmt `172.100.60.12`, configured by `xrd-b-startup.conf` (absent from `netinfra.xml`) |
-| Controller | `sweave` — Debian container running the `flapmusik` binary, mgmt `172.100.60.10` |
-| Management network | `172.100.60.0/24` (containerlab) |
-| Link | one physical link, `xrd-a:Gi0/0/0/0 <-> xrd-b:Gi0/0/0/0` |
-| Sessions | 25 eBGP sessions, one per 802.1Q VLAN `N` (`1..25`) on `Gi0/0/0/0.N` |
-| Addressing | VLAN `N`: `xrd-a 10.123.N.1/30 <-> xrd-b 10.123.N.2/30` |
-| ASNs | `xrd-a` `31337` <-> `xrd-b` `65000` (eBGP) |
-| NETCONF | port `830`, user `clab`, password `clab@123` (both routers) |
-| Host-exposed ports | flapmusik RESTCONF `127.0.0.1:18080`; `xrd-b` NETCONF `127.0.0.1:1830` |
-| Telemetry | on-change `sync-on-start` per peer over UDP-Notif; receiver `172.100.60.10`, source `MgmtEth0/RP0/CPU0/0` |
+The lab is deliberately small: three containers on one management network,
+joined by a single link. Everything below is fixed before the demo starts.
+
+**Nodes** — all reachable on the containerlab management network `172.100.60.0/24`:
+
+| Node | mgmt | Role |
+| --- | --- | --- |
+| `xrd-a` | `172.100.60.11` | Managed router (IOS XRd 25.3.1). flapmusik configures it from `netinfra.xml`. |
+| `xrd-b` | `172.100.60.12` | External peer (IOS XRd 25.3.1). Configured by `xrd-b-startup.conf`, and never listed in `netinfra.xml`. |
+| `sweave` | `172.100.60.10` | Controller — a Debian container running the `flapmusik` binary. |
+
+**The link** is a single physical link, `xrd-a:Gi0/0/0/0 <-> xrd-b:Gi0/0/0/0`.
+The demo slices it into 25 eBGP sessions with 802.1Q subinterfaces: one VLAN `N`
+(`1..25`) per session on `Gi0/0/0/0.N`, each addressed
+`xrd-a 10.123.N.1/30 <-> xrd-b 10.123.N.2/30`, running eBGP between AS `31337`
+(`xrd-a`) and AS `65000` (`xrd-b`).
+
+**Getting in:** both routers speak NETCONF on port `830` (user `clab`, password
+`clab@123`). On the host, flapmusik's RESTCONF is at `127.0.0.1:18080` and
+`xrd-b`'s NETCONF at `127.0.0.1:1830`. Telemetry is on-change `sync-on-start`,
+one subscription per peer over UDP-Notif, with receiver `172.100.60.10` and
+source `MgmtEth0/RP0/CPU0/0`.
 
 `/netinfra/peering-interface` names the physical parent (`Gi0/0/0/0`) and lists
 25 `subinterface` entries, each with its own `vlan-id` and address
@@ -65,6 +74,17 @@ make state
 make session-clear CLEAR_PEER=10.123.1.1
 make session-clear CLEAR_PEER=10.123.25.1
 make state
+```
+
+`make state` is a one-shot snapshot. For a live view, run the repo-root
+[`monitor`](../../monitor) script in its own terminal: it polls the same RESTCONF
+endpoint (`127.0.0.1:18080`) every 100 ms and prints one compact row per eBGP
+peer — router, peer address, `session-state` — so you can watch a cleared
+session drop away from `established` and climb back as you run
+`make session-clear` or play `yangadeus`.
+
+```sh
+../../monitor        # repo-root script; needs curl + jq
 ```
 
 The flapmusik process logs the XR UDP-Notif subscription and any malformed,
