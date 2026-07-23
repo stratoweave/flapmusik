@@ -8,7 +8,7 @@ mgmt:
 topology:
   kinds:
     xrd:
-      image: ghcr.io/stratoweave/ios-xr/xrd-control-plane:25.3.1
+      image: ${IMAGE_PATH}ios-xr/xrd-control-plane:25.3.1
   nodes:
     xrd-a:
       kind: xrd

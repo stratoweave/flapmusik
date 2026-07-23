@@ -64,6 +64,16 @@ cd test/ietf-hackathon-xrd
 make start wait copy run
 ```
 
+By default the lab pulls the prebuilt XRd image from the private
+`ghcr.io/stratoweave/` registry. You can override to use your local or remote
+images with the `IMAGE_PATH` env var. For example, to use a local XRd
+control-plane image `ios-xr/xrd-control-plane:25.3.1`  override the registry
+prefix with an empty `IMAGE_PATH`:
+
+```sh
+make start wait copy run IMAGE_PATH=
+```
+
 In another terminal, inspect the service states and clear a session from the
 external router. `xrd-b` attempts to re-establish it, so the useful observation
 is the selected peer's on-change transition away from `established` followed by
