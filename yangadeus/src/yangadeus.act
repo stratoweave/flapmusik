@@ -1,0 +1,526 @@
+#!/usr/bin/env acton
+"""yangadeus — play the eBGP control plane like a keyboard.
+
+Turns a 25-key MIDI keyboard into a BGP session-reset instrument. On startup it
+opens a *persistent* NETCONF session to an IOS XRd device (via the stratoweave
+DeviceMgr), fetches the running configuration, discovers the configured BGP
+neighbor addresses and lays them out across the keys. Pressing a key fires a
+`clear bgp <neighbor>` RPC (Cisco-IOS-XR-ipv4-bgp-act:clear-bgp-ip-addr),
+hard-resetting that neighbor's session — the graceful variant with --graceful.
+
+The keyboard does not need to be present at startup: the NETCONF session comes
+up and the neighbor map is built regardless, and yangadeus keeps looking for the
+MIDI source until it appears.
+
+    out/bin/yangadeus --host 10.99.0.13 --port 1830 --username clab --password clab@123
+
+Discovery reads the unified-model BGP config
+(Cisco-IOS-XR-um-router-bgp-cfg: router/bgp/as/.../neighbors/neighbor), and
+also understands the classic Cisco-IOS-XR-ipv4-bgp-cfg neighbor-address leaf, so
+it works whichever model the device renders <get-config> in.
+"""
+
+import argparse
+import logging
+import net
+import std.xml as xml
+
+import yang.schema as yschema
+import stratoweave.device as swdev
+import stratoweave.adapters.netconf as swna
+from stratoweave.device_meta_config import \
+    stratoweave_rfs__device_entry as DeviceMetaConfig, \
+    stratoweave_rfs__device__credentials as Credentials
+
+import midi.midi as midi
+
+# Cisco-IOS-XR-ipv4-bgp-act: the "clear bgp ..." action RPCs. clear-bgp-ip-addr
+# is a hard reset of the session to <ip-addr>; the -graceful variant asks for a
+# graceful restart. Both take a single mandatory ip-addr leaf.
+BGP_ACT_NS = "http://cisco.com/ns/yang/Cisco-IOS-XR-ipv4-bgp-act"
+
+# Cisco-IOS-XR-um-router-bgp-cfg: the unified-model BGP config tree. Neighbors
+# live at router/bgp/as[as-number]/.../neighbors/neighbor[address]. This is the
+# model stratoweave already standardises on for XR, so it is what <get-config>
+# returns here.
+UM_BGP_NS = "http://cisco.com/ns/yang/Cisco-IOS-XR-um-router-bgp-cfg"
+
+NOTE_NAMES = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"]
+
+# Virtual/loopback MIDI sources that are never a real controller. On many Linux
+# hosts the kernel "Midi Through" port (snd-seq-dummy) enumerates *before* real
+# USB devices, so a blind sources[0] pick grabs a port that goes nowhere. These
+# are skipped when auto-selecting; pass --midi-source to force one anyway.
+IGNORE_SOURCES = ["midi through", "rtmidi", "through port"]
+
+# -- Launchkey Mini MK3 pad LEDs (Session mode, driven via the DAW port) ------
+# The 16 Session pads, top row then bottom row, left -> right. The mapped keys
+# are spread proportionally across them (many keys share a pad — the pad shows
+# roughly *where* along the keyboard a clear happened, not which exact peer).
+PAD_NOTES = [96, 97, 98, 99, 100, 101, 102, 103,      # top row
+             112, 113, 114, 115, 116, 117, 118, 119]  # bottom row
+
+# Channels are 0-indexed here (status byte = 0x90 | channel), matching the
+# Launchkey programmer's reference: ch16 note 12 toggles DAW mode, and pad
+# colours are set with a note-on on ch1 whose velocity indexes the palette.
+DAW_MODE_NOTE = 12   # ch16 note 12: velocity 127 = enter DAW mode, 0 = leave
+CH_CTRL = 15         # channel 16 (0-indexed): DAW-mode enable
+CH_STATIC = 0        # channel 1 (0-indexed): static pad colour
+
+# Palette velocities from Novation's 128-colour map.
+COL_OFF = 0
+COL_RED = 5
+COL_AMBER = 9
+COL_GREEN = 21
+
+
+def note_name(n: int) -> str:
+    """Human name for a MIDI note number, e.g. 48 -> C3 (middle C = C4 = 60)."""
+    return "{NOTE_NAMES[n % 12]}{n // 12 - 1}"
+
+
+def _node_text(node: xml.Node) -> str:
+    """Trimmed text content of an XML element, "" if whitespace-only/empty."""
+    t = node.text
+    if t is None:
+        return ""
+    text = str(t)
+    if text.replace(" ", "").replace("\t", "").replace("\n", "").replace("\r", "") == "":
+        return ""
+    return text.strip()
+
+
+def ipv4_key(addr: str) -> ?int:
+    """Sortable integer for a dotted-quad IPv4 address, else None (e.g. IPv6)."""
+    parts = addr.split(".")
+    if len(parts) != 4:
+        return None
+    val = 0
+    for p in parts:
+        try:
+            n = int(p)
+        except ValueError:
+            return None
+        if n < 0 or n > 255:
+            return None
+        val = val * 256 + n
+    return val
+
+
+def _collect_neighbors(node: xml.Node, local_as: ?str,
+                       acc: list[(addr: str, remote_as: ?str, local_as: ?str)]) -> None:
+    """Recursively harvest BGP neighbors from a <get-config> data subtree.
+
+    Tracks the enclosing `as` list's as-number so each neighbor can be labelled
+    eBGP (remote-as != local-as) or iBGP. Matches the unified model's
+    neighbor/address and the classic model's neighbor/neighbor-address.
+    """
+    la = local_as
+    if node.tag == "as":
+        for ch in node.children:
+            if ch.tag == "as-number":
+                t = _node_text(ch)
+                if t != "":
+                    la = t
+
+    if node.tag == "neighbor":
+        addr = ""
+        remote_as: ?str = None
+        for ch in node.children:
+            if ch.tag == "address" or ch.tag == "neighbor-address":
+                addr = _node_text(ch)
+            elif ch.tag == "remote-as":
+                rt = _node_text(ch)
+                if rt != "":
+                    remote_as = rt
+        if addr != "":
+            acc.append((addr=addr, remote_as=remote_as, local_as=la))
+        # neighbors don't nest; stop descending this branch.
+        return
+
+    for ch in node.children:
+        _collect_neighbors(ch, la, acc)
+
+
+def peer_kind(remote_as: ?str, local_as: ?str) -> str:
+    """eBGP / iBGP / BGP label from a neighbor's remote-as vs the local as."""
+    if remote_as is None:
+        return "BGP"
+    if local_as is not None and remote_as == local_as:
+        return "iBGP"
+    return "eBGP"
+
+
+def build_get_config(source: str) -> xml.Node:
+    """<get-config> of `source`, filtered to the unified-model BGP subtree."""
+    bgp_filter = xml.Node("filter", attributes=[("type", "subtree")], children=[
+        xml.Node("router", [(None, UM_BGP_NS)], children=[
+            xml.Node("bgp")
+        ])
+    ])
+    return xml.Node("get-config", children=[
+        xml.Node("source", children=[xml.Node(source)]),
+        bgp_filter
+    ])
+
+
+def build_clear_rpc(addr: str, graceful: bool) -> xml.Node:
+    """Cisco-IOS-XR-ipv4-bgp-act clear-bgp-ip-addr[-graceful] for one neighbor."""
+    op = "clear-bgp-ip-addr-graceful" if graceful else "clear-bgp-ip-addr"
+    return xml.Node(op, [(None, BGP_ACT_NS)], children=[
+        xml.Node("ip-addr", text=addr)
+    ])
+
+
+actor Runner(env, args, logh: logging.Handler):
+    """Owns the persistent NETCONF session and the MIDI input for one XRd."""
+
+    host = args.get_str("host")
+    port = args.get_int("port")
+    username = args.get_str("username")
+    password = args.get_str("password")
+    source = args.get_str("source")
+    midi_source = args.get_str("midi-source")
+    base_note = args.get_int("base-note")
+    num_keys = args.get_int("keys")
+    graceful = args.get_bool("graceful")
+    all_neighbors = args.get_bool("all-neighbors")
+    leds = not args.get_bool("no-leds")
+    peers_csv = args.get_str("peers")
+
+    # note number -> neighbor address; populated once the config is fetched.
+    var note_to_addr: dict[int, str] = {}
+    var neighbor_desc: dict[str, str] = {}  # address -> "eBGP AS 65001" for logging
+    var dev: ?swdev.DeviceMgr = None
+    var midi_input: ?midi.Input = None
+    var midi_out: ?midi.Output = None
+    var discovered = False
+    var midi_open = False
+    var out_open = False
+    var mapped = False
+    # pad position -> generation counter, so a newer pad state cancels an
+    # older pending revert (amber-hold beats a stale green/red expiry).
+    var pad_gen: dict[int, int] = {}
+
+    mcap = midi.MidiCap(env.cap)
+
+    def kind_word() -> str:
+        return "graceful clear" if graceful else "clear"
+
+    # -- pad LED feedback --------------------------------------------------
+    def _gen(pos: int) -> int:
+        g = pad_gen.get(pos)
+        return g if g is not None else 0
+
+    def paint(pos: int, color: int):
+        o = midi_out
+        if o is not None and pos >= 0 and pos < len(PAD_NOTES):
+            o.send3(0x90 | CH_STATIC, PAD_NOTES[pos], color)
+
+    def pad_for(idx: int) -> int:
+        # Spread the mapped keys across the 16 pads (left keys -> left pads).
+        n = len(note_to_addr)
+        if n <= 1:
+            return 0
+        pos = idx * len(PAD_NOTES) // n
+        if pos >= len(PAD_NOTES):
+            pos = len(PAD_NOTES) - 1
+        return pos
+
+    def _revert_pad(pos: int, gen: int):
+        # Only revert if no newer state has been painted on this pad since.
+        if _gen(pos) == gen:
+            paint(pos, COL_OFF)
+
+    def set_pad(idx: int, color: int, revert_after: float):
+        if not leds or midi_out is None:
+            return
+        pos = pad_for(idx)
+        paint(pos, color)
+        gen = _gen(pos) + 1  # bump: cancels any pending revert on this pad
+        pad_gen[pos] = gen
+        if revert_after > 0.0:
+            after revert_after: _revert_pad(pos, gen)
+
+    def clear_pads():
+        for pos in range(len(PAD_NOTES)):
+            paint(pos, COL_OFF)
+
+    # -- clear-session on keypress ----------------------------------------
+    def send_clear(addr: str, note: int):
+        idx = note - base_note
+        d = dev
+        if d is not None:
+            label = ""
+            desc = neighbor_desc.get(addr)
+            if desc is not None:
+                label = " ({desc})"
+
+            set_pad(idx, COL_AMBER, 0.0)  # pending: hold amber until the reply
+
+            def on_reply(r: ?xml.Node, err: ?Exception):
+                if err is not None:
+                    print("  ✗ {kind_word()} {addr}{label} failed: {err}", err=True)
+                    set_pad(idx, COL_RED, 0.9)
+                else:
+                    print("  ✓ {kind_word()} {addr}{label} sent")
+                    set_pad(idx, COL_GREEN, 0.5)
+
+            print("♪ {kind_word()} bgp {addr}{label}")
+            d.rpc_xml(on_reply, build_clear_rpc(addr, graceful))
+        else:
+            print("  (not connected; ignoring {addr})", err=True)
+            set_pad(idx, COL_RED, 0.9)
+
+    def on_midi(input: midi.Input, event: midi.Event):
+        if event.is_error():
+            print("MIDI error:", event.err)
+            return
+        if not event.is_message():
+            return
+        msg = event.unwrap()
+        # A key press is note_on with velocity > 0; midi already folds
+        # note_on/velocity-0 into note_off, so this fires once per press.
+        if msg.kind != "note_on":
+            return
+        note = msg.data1
+        if note is not None:
+            name = note_name(note)
+            addr = note_to_addr.get(note)
+            if addr is not None:
+                print("[{name} / note {note}] -> {addr}")
+                send_clear(addr, note)
+            elif not mapped:
+                print("[{name} / note {note}] pressed — neighbor map not ready yet")
+            else:
+                print("[{name} / note {note}] pressed — no neighbor on this key")
+
+    # -- MIDI attach (keyboard may arrive later) --------------------------
+    def find_kbd() -> ?midi.Endpoint:
+        sources = midi.sources(mcap)
+        if midi_source != "":
+            want = midi_source.lower()
+            for s in sources:
+                if s.name.lower().find(want) >= 0:
+                    return s
+            return None
+        # Auto-select the first *real* source, skipping virtual loopbacks like
+        # the kernel "Midi Through" port. If only loopbacks are present, return
+        # None so open_midi keeps waiting for the actual keyboard to appear.
+        for s in sources:
+            name = s.name.lower()
+            ignore = False
+            for ig in IGNORE_SOURCES:
+                if name.find(ig) >= 0:
+                    ignore = True
+            if not ignore:
+                return s
+        return None
+
+    def open_midi():
+        if midi_open:
+            return
+        ep = find_kbd()
+        if ep is not None:
+            midi_open = True
+            print("🎹 MIDI keyboard: {ep.name}")
+            midi_input = midi.Input(mcap, on_midi, source=ep)
+            open_out()  # try to light the pads on the same controller
+        else:
+            after 2.0: open_midi()
+
+    # -- pad LED output (Launchkey DAW port; best-effort) -----------------
+    def find_daw_out() -> ?midi.Endpoint:
+        for d in midi.destinations(mcap):
+            n = d.name.lower()
+            if n.find("launchkey") >= 0 and n.find("daw") >= 0:
+                return d
+        return None
+
+    def open_out():
+        if not leds or out_open:
+            return
+        dep = find_daw_out()
+        if dep is not None:
+            out_open = True
+            print("🎛  Pad LEDs: {dep.name}")
+            o = midi.Output(mcap, dest=dep)
+            midi_out = o
+            o.send3(0x90 | CH_CTRL, DAW_MODE_NOTE, 127)  # enter DAW mode
+            after 0.2: clear_pads()  # blank the pads once DAW mode settles
+        else:
+            print("(no Launchkey DAW port — running without pad LEDs)", err=True)
+
+    # -- neighbor discovery ------------------------------------------------
+    def show_map():
+        mapped = True
+        if len(note_to_addr) == 0:
+            print("No BGP neighbors found in the {source} config — nothing to map.")
+            print("Press any key to see its note number (helps set --base-note).")
+            return
+        print("")
+        print("Key map ({len(note_to_addr)} neighbors, base note {base_note} = {note_name(base_note)}):")
+        for note in sorted(note_to_addr.keys()):
+            addr = note_to_addr[note]
+            extra = ""
+            desc = neighbor_desc.get(addr)
+            if desc is not None:
+                extra = "  {desc}"
+            print("  {note_name(note).ljust(4)} note {note} -> {addr.ljust(18)}{extra}")
+        print("")
+
+    def on_config(r: ?xml.Node, err: ?Exception):
+        if err is not None:
+            print("Failed to fetch {source} config: {err}", err=True)
+        elif r is not None:
+            # r is <rpc-reply><data>...</data></rpc-reply>
+            acc: list[(addr: str, remote_as: ?str, local_as: ?str)] = []
+            for child in r.children:
+                if child.tag == "data":
+                    _collect_neighbors(child, None, acc)
+
+            # de-dup by address; order IPv4 numerically, anything else lexically.
+            v4: dict[int, (addr: str, remote_as: ?str, local_as: ?str)] = {}
+            other: dict[str, (addr: str, remote_as: ?str, local_as: ?str)] = {}
+            seen = set()
+            for rec in acc:
+                if rec.addr not in seen:
+                    seen.add(rec.addr)
+                    k = ipv4_key(rec.addr)
+                    if k is not None:
+                        v4[k] = rec
+                    else:
+                        other[rec.addr] = rec
+            ordered = [v4[k] for k in sorted(v4.keys())] + [other[k] for k in sorted(other.keys())]
+
+            # Keep eBGP peers only (remote-as present and != the local as),
+            # unless --all-neighbors. Unclassified peers (no discoverable
+            # remote-as) are treated as non-eBGP and skipped.
+            selected: list[(addr: str, remote_as: ?str, local_as: ?str)] = []
+            skipped_ibgp = 0
+            skipped_unknown = 0
+            for rec in ordered:
+                kind = peer_kind(rec.remote_as, rec.local_as)
+                if all_neighbors or kind == "eBGP":
+                    selected.append(rec)
+                elif kind == "iBGP":
+                    skipped_ibgp += 1
+                else:
+                    skipped_unknown += 1
+
+            if skipped_ibgp > 0 or skipped_unknown > 0:
+                print("Skipped {skipped_ibgp} iBGP and {skipped_unknown} unclassified neighbor(s); use --all-neighbors to include them.", err=True)
+            if len(selected) > num_keys:
+                print("Note: {len(selected)} neighbors but only {num_keys} keys — mapping the first {num_keys}.", err=True)
+
+            note_to_addr = {}
+            neighbor_desc = {}
+            i = 0
+            for rec in selected:
+                if i < num_keys:
+                    note = base_note + i
+                    note_to_addr[note] = rec.addr
+                    kind = peer_kind(rec.remote_as, rec.local_as)
+                    ra = rec.remote_as
+                    if ra is not None:
+                        neighbor_desc[rec.addr] = "{kind} AS {ra}"
+                    else:
+                        neighbor_desc[rec.addr] = kind
+                    i += 1
+            show_map()
+        else:
+            print("Empty reply to <get-config>", err=True)
+
+    def apply_static_peers(csv: str):
+        # Build the key map from an explicit --peers list, skipping NETCONF
+        # discovery (handy for demos/testing without a live XRd). Ordered
+        # IPv4-numerically to match discovery so keys line up the same way.
+        v4: dict[int, str] = {}
+        other: dict[str, str] = {}
+        seen = set()
+        for part in csv.split(","):
+            a = part.strip()
+            if a != "" and a not in seen:
+                seen.add(a)
+                k = ipv4_key(a)
+                if k is not None:
+                    v4[k] = a
+                else:
+                    other[a] = a
+        ordered = [v4[k] for k in sorted(v4.keys())] + [other[k] for k in sorted(other.keys())]
+
+        note_to_addr = {}
+        neighbor_desc = {}
+        i = 0
+        for a in ordered:
+            if i < num_keys:
+                note_to_addr[base_note + i] = a
+                neighbor_desc[a] = "static"
+                i += 1
+        discovered = True  # keep on_ready from re-discovering over NETCONF
+        show_map()
+
+    def on_ready(name: str):
+        # on_reconf fires when the device (re)connects. Discover once.
+        if discovered:
+            return
+        discovered = True
+        print("Connected to {host}:{port}. Fetching {source} config…")
+        d = dev
+        if d is not None:
+            d.rpc_xml(on_config, build_get_config(source))
+
+    # -- bring up the persistent NETCONF session --------------------------
+    scope = "all neighbors" if all_neighbors else "eBGP neighbors only"
+    print("yangadeus — connecting to XRd {host}:{port} as {username}")
+    print("Mode: {kind_word()} on keypress, {scope}. Keys {base_note}..{base_note + num_keys - 1} ({note_name(base_note)}..{note_name(base_note + num_keys - 1)}).")
+
+    cap = net.TCPConnectCap(net.TCPCap(net.NetCap(env.auth)))
+    schema_registry = swdev.SchemaRegistry()
+    # Empty bundled schema + default (no) runtime schema fetch: we drive the
+    # device with raw XML RPCs (get-config + clear-bgp), so no YANG compilation
+    # or schema download is needed — the session comes up fast.
+    dev_types = {
+        "netconf": swdev.DeviceType(name="netconf", adapter_type=swna.NetconfAdapter, src_dnode=yschema.DRoot())
+    }
+    dmc = DeviceMetaConfig(name="yangadeus-xrd", credentials=Credentials(username, password), type="netconf")
+    dmc.address.create("primary", host, u64(port))
+    device = swdev.DeviceMgr(dev_types, cap, "yangadeus-xrd", logh, on_ready, schema_registry)
+    device.set_dmc(dmc)
+    dev = device
+
+    # Static map (offline demo/testing) bypasses NETCONF discovery entirely.
+    if peers_csv != "":
+        apply_static_peers(peers_csv)
+
+    # Start looking for the keyboard (retries until it shows up).
+    open_midi()
+
+
+actor main(env):
+    logh = logging.Handler()
+
+    p = argparse.Parser()
+    p.add_option("host", "str", "?", "localhost", "XRd NETCONF host")
+    p.add_option("port", "int", "?", 1830, "XRd NETCONF port")
+    p.add_option("username", "str", "?", "clab", "NETCONF username")
+    p.add_option("password", "str", "?", "clab@123", "NETCONF password")
+    p.add_option("source", "str", "?", "running", "config datastore to read (running/candidate/startup)")
+    p.add_option("midi-source", "str", "?", "", "substring selecting the MIDI input (default: first source)")
+    p.add_option("base-note", "int", "?", 48, "MIDI note number of the leftmost key (C3=48, middle C=60)")
+    p.add_option("keys", "int", "?", 25, "number of keys to map")
+    p.add_option("peers", "str", "?", "", "comma-separated neighbor list to map (skips NETCONF discovery)")
+    p.add_bool("graceful", "clear with a graceful restart instead of a hard reset")
+    p.add_bool("all-neighbors", "map all neighbors including iBGP (default: eBGP only)")
+    p.add_bool("no-leds", "disable Launchkey pad LED feedback (needs the DAW port free)")
+    p.add_bool("verbose", "verbose logging from the NETCONF/SSH stack")
+
+    try:
+        args = p.parse(env.argv)
+        if args.get_bool("verbose"):
+            logh.set_output_level(logging.TRACE)
+            logh.add_sink(logging.ConsoleSink())
+        Runner(env, args, logh)
+    except argparse.ArgumentError as exc:
+        print(str(exc), err=True)
+        env.exit(1)

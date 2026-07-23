@@ -1,0 +1,27 @@
+name = "yangadeus"
+fingerprint = 0xad7e530868bd0079
+
+# stratoweave (DeviceMgr / NETCONF adapter / device_meta_config) and midi
+# (midiact bindings) are local sibling checkouts. yang is pinned to the exact
+# revision the local stratoweave builds against, so the same compiled package is
+# shared (a relative path override for yang mis-resolves against transitive
+# consumers). For local yang hacking, override with:
+#   acton build --dep yang=/abs/path/to/acton-yang
+dependencies = {
+    "midi": (
+        repo_url="https://github.com/plajjan/midiact.git",
+        url="https://github.com/plajjan/midiact/archive/d87a6e15100c539f8ad54bf513689138e11e18ac.zip",
+        hash="N-V-__8AAADaAABkbzCIq7PGi08F9g6bYEF8b8RBEJx9DgTK"
+    ),
+    "stratoweave": (
+        repo_url="https://github.com/stratoweave/stratoweave.git",
+        url="https://github.com/stratoweave/stratoweave/archive/773a24819206ef99fa54d675e4fcd5a26e98d59c.zip",
+        hash="N-V-__8AACAHPQDKLbW2bkjPoRkJSfyGpFWKgnQTegG_h-B9"
+    ),
+    "yang": (
+        repo_url="https://github.com/stratoweave/acton-yang.git",
+        url="https://github.com/stratoweave/acton-yang/archive/649bed68e62e2a909a288d4b6bf7b9010b76c71c.zip",
+        hash="N-V-__8AAO6eJgDPttXXLG1QFHgg04ffnB-gZOiRQ_azIqST"
+    )
+}
+zig_dependencies = {}
