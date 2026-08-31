@@ -1,14 +1,18 @@
 #!/bin/sh
-# Live view of the aggregated service state over NETCONF YANG-push (RFC 8641):
+# Live per-peer session table -- one row per eBGP peer (router, peer address,
+# session-state), natural-sorted -- over NETCONF YANG-push (RFC 8641):
 # subscribes on-change to flapmusik's northbound NETCONF server, which pushes a
-# sync-on-start baseline and then a yang-patch per change -- no polling. ncurl
-# discovers and downloads the schema from the server itself (yang-library +
-# get-schema), so no local YANG files are needed.
+# sync-on-start baseline and then a yang-patch per change, so a row updates the
+# moment the state flips -- no polling. ncurl discovers and downloads the
+# schema from the server itself (yang-library + get-schema), so no local YANG
+# files are needed.
 #
 # Environment overrides: NCURL, FLAPMUSIK_HOST, FLAPMUSIK_NETCONF_PORT.
-NCURL="${NCURL:-$(command -v ncurl || echo ../stratoweave/out/bin/ncurl)}"
+NCURL="${NCURL:-ncurl}"
 exec "$NCURL" \
   --host "${FLAPMUSIK_HOST:-127.0.0.1}" \
   --port "${FLAPMUSIK_NETCONF_PORT:-2830}" \
   --insecure \
-  monitor --on-change
+  monitor --on-change --format table \
+  --table-path netinfra/ebgp-peer \
+  --table-columns router,peer-address,state/session-state

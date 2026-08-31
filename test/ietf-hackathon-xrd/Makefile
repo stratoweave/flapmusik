@@ -39,10 +39,13 @@ state:
 		http://127.0.0.1:18080/restconf/data | \
 		jq '."netinfra:netinfra"."ebgp-peer"'
 
-# Live view over flapmusik's northbound NETCONF: an on-change YANG-push
-# subscription, schema discovered from the server (yang-library + get-schema).
+# Live per-peer session table over flapmusik's northbound NETCONF: an
+# on-change YANG-push subscription, schema discovered from the server
+# (yang-library + get-schema).
 monitor:
-	$(NCURL) --host 127.0.0.1 --port 2830 --insecure monitor --on-change
+	$(NCURL) --host 127.0.0.1 --port 2830 --insecure monitor --on-change \
+		--format table --table-path netinfra/ebgp-peer \
+		--table-columns router,peer-address,state/session-state
 
 session-clear:
 	printf '%s\n' '<clear-bgp-ip-addr xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-ipv4-bgp-act"><ip-addr>$(CLEAR_PEER)</ip-addr></clear-bgp-ip-addr>' | \

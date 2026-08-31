@@ -190,13 +190,15 @@ speaks NETCONF northbound on `--netconf-port`.
 
 ### Watching session state
 
-The [`monitor`](monitor) script tails that aggregated state live — and it is
-push all the way: it wraps `ncurl monitor --on-change`, which establishes a
-dynamic YANG-push subscription (RFC 8641) against flapmusik's own northbound
-NETCONF server. The server sends a sync-on-start baseline and then a yang-patch
-per change, so the view updates the moment a `session-state` flips — the same
-on-change mechanism flapmusik itself uses southbound toward the routers, now
-closing the loop northbound. No polling, no `curl`/`jq`.
+The [`monitor`](monitor) script tails that aggregated state live as a table —
+one row per eBGP peer (router, peer address, `session-state`), natural-sorted —
+and it is push all the way: it wraps `ncurl monitor --on-change --format
+table`, which establishes a dynamic YANG-push subscription (RFC 8641) against
+flapmusik's own northbound NETCONF server. The server sends a sync-on-start
+baseline and then a yang-patch per change, so a row updates the moment its
+`session-state` flips — the same on-change mechanism flapmusik itself uses
+southbound toward the routers, now closing the loop northbound. No polling, no
+`curl`/`jq`.
 
 `ncurl` needs no local YANG files: the northbound advertises
 `ietf-yang-library` and serves `<get-schema>`, so the client discovers,
