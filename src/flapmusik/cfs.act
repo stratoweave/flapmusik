@@ -114,5 +114,7 @@ actor EbgpPeerTransform(path: ttt.Path,
         peer_address = conf.peer_address
         dst = y_1_oper.dst(lambda r, e: on_rfs_state(r, e, router, peer_address))
         entry = y_1_oper.subs.rfs.entry(router).ebgp_peer.entry(peer_address)
+        # No period: an on-change subscription, so an RFS state change is
+        # delivered as it commits instead of on the next poll tick.
         _subs.declare({dst.deliver({
-            entry.state.session_state.subscribe(period=0.1)})})
+            entry.state.session_state.subscribe()})})
