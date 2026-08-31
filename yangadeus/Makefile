@@ -10,15 +10,9 @@ RELEASE ?= --release
 
 ACTON ?= acton
 
-# The midi bindings (Output actor / pad-LED support) live in the sibling
-# ../midiact checkout, overriding the revision pinned in Build.act. Point
-# elsewhere with `make MIDI_DEP=--dep\ midi=/abs/path` or clear it (MIDI_DEP=)
-# to fall back to the pinned upstream.
-MIDI_DEP ?= --dep midi=$(CURDIR)/../midiact
-
 .PHONY: build
 build:
-	$(ACTON) build $(RELEASE) $(MIDI_DEP) $(TARGET)
+	$(ACTON) build $(RELEASE) $(TARGET)
 
 .PHONY: debug
 debug:
@@ -27,7 +21,7 @@ debug:
 # Hack on a local acton-yang checkout instead of the pinned revision.
 .PHONY: build-ldep
 build-ldep:
-	$(ACTON) build $(RELEASE) $(MIDI_DEP) --dep yang=$(CURDIR)/../../orc/acton-yang $(TARGET)
+	$(ACTON) build $(RELEASE) --dep yang=$(CURDIR)/../../orc/acton-yang --dep midi=../midiact $(TARGET)
 
 .PHONY: build-linux-x86_64
 build-linux-x86_64:
