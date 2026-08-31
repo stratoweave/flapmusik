@@ -27,6 +27,7 @@ topology:
       cmd: sleep infinity
       ports:
         - 127.0.0.1:18080:80/tcp
+        - 127.0.0.1:2830:830/tcp
 
   links:
     - endpoints: ["xrd-a:Gi0-0-0-0", "xrd-b:Gi0-0-0-0"]

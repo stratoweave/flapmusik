@@ -7,7 +7,7 @@ CLEAR_PEER ?= 10.123.1.1
 
 include ../common/clab.mk
 
-.PHONY: start stop wait copy run state session-clear cli-a cli-b
+.PHONY: start stop wait copy run state monitor session-clear cli-a cli-b
 
 start:
 	$(CLAB_BIN) deploy --topo $(TOPOLOGY) --reconfigure
@@ -38,6 +38,11 @@ state:
 	curl -fsS -H 'Accept: application/yang-data+json' \
 		http://127.0.0.1:18080/restconf/data | \
 		jq '."netinfra:netinfra"."ebgp-peer"'
+
+# Live view over flapmusik's northbound NETCONF: an on-change YANG-push
+# subscription, schema discovered from the server (yang-library + get-schema).
+monitor:
+	$(NCURL) --host 127.0.0.1 --port 2830 --insecure monitor --on-change
 
 session-clear:
 	printf '%s\n' '<clear-bgp-ip-addr xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-ipv4-bgp-act"><ip-addr>$(CLEAR_PEER)</ip-addr></clear-bgp-ip-addr>' | \

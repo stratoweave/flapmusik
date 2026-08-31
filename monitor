@@ -1,7 +1,14 @@
-watch -n 0.1 "curl -fsS \
-  -H 'Accept: application/yang-data+json' \
-  http://127.0.0.1:18080/restconf/data |
-jq -r '.\"netinfra:netinfra\".\"ebgp-peer\"[] |
-  [.router, .\"peer-address\", (.state.\"session-state\" // \"no-data\")] |
-  @tsv' |
-sort -V -k2,2"
+#!/bin/sh
+# Live view of the aggregated service state over NETCONF YANG-push (RFC 8641):
+# subscribes on-change to flapmusik's northbound NETCONF server, which pushes a
+# sync-on-start baseline and then a yang-patch per change -- no polling. ncurl
+# discovers and downloads the schema from the server itself (yang-library +
+# get-schema), so no local YANG files are needed.
+#
+# Environment overrides: NCURL, FLAPMUSIK_HOST, FLAPMUSIK_NETCONF_PORT.
+NCURL="${NCURL:-$(command -v ncurl || echo ../stratoweave/out/bin/ncurl)}"
+exec "$NCURL" \
+  --host "${FLAPMUSIK_HOST:-127.0.0.1}" \
+  --port "${FLAPMUSIK_NETCONF_PORT:-2830}" \
+  --insecure \
+  monitor --on-change

@@ -190,17 +190,26 @@ speaks NETCONF northbound on `--netconf-port`.
 
 ### Watching session state
 
-The [`monitor`](monitor) script tails that aggregated state live: it polls
-RESTCONF every 100 ms and prints one row per eBGP peer — router, peer address,
-and current `session-state` — so you can watch sessions flap in real time. This
-is the terminal view behind the MIDI demo.
+The [`monitor`](monitor) script tails that aggregated state live — and it is
+push all the way: it wraps `ncurl monitor --on-change`, which establishes a
+dynamic YANG-push subscription (RFC 8641) against flapmusik's own northbound
+NETCONF server. The server sends a sync-on-start baseline and then a yang-patch
+per change, so the view updates the moment a `session-state` flips — the same
+on-change mechanism flapmusik itself uses southbound toward the routers, now
+closing the loop northbound. No polling, no `curl`/`jq`.
+
+`ncurl` needs no local YANG files: the northbound advertises
+`ietf-yang-library` and serves `<get-schema>`, so the client discovers,
+downloads, and compiles the service schema straight from the server.
 
 ```sh
 ./monitor
 ```
 
-It expects flapmusik's RESTCONF on the default `http://127.0.0.1:18080` (the
-`--http-port 18080` above) and needs `curl` and `jq`.
+It expects flapmusik's NETCONF northbound on `127.0.0.1:1830` (the
+`--netconf-port 1830` above) and `ncurl` on `$PATH` or in a sibling
+`../stratoweave` checkout; override with `NCURL`, `FLAPMUSIK_HOST`, and
+`FLAPMUSIK_NETCONF_PORT`.
 
 ## Proven on real and virtual IOS XR
 

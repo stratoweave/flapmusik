@@ -31,10 +31,11 @@ The demo slices it into 25 eBGP sessions with 802.1Q subinterfaces: one VLAN `N`
 (`xrd-a`) and AS `65000` (`xrd-b`).
 
 **Getting in:** both routers speak NETCONF on port `830` (user `clab`, password
-`clab@123`). On the host, flapmusik's RESTCONF is at `127.0.0.1:18080` and
-`xrd-b`'s NETCONF at `127.0.0.1:1830`. Telemetry is on-change `sync-on-start`,
-one subscription per peer over UDP-Notif, with receiver `172.100.60.10` and
-source `MgmtEth0/RP0/CPU0/0`.
+`clab@123`). On the host, flapmusik's RESTCONF is at `127.0.0.1:18080`, its
+northbound NETCONF at `127.0.0.1:2830` (`make monitor` subscribes to it
+on-change), and `xrd-b`'s NETCONF at `127.0.0.1:1830`. Telemetry is on-change
+`sync-on-start`, one subscription per peer over UDP-Notif, with receiver
+`172.100.60.10` and source `MgmtEth0/RP0/CPU0/0`.
 
 `/netinfra/peering-interface` names the physical parent (`Gi0/0/0/0`) and lists
 25 `subinterface` entries, each with its own `vlan-id` and address

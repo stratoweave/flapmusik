@@ -42,6 +42,15 @@ def schema_for_layer(layer):
         return y_0.SRC_DNODE
     raise ValueError('Invalid layer: {layer}')
 
+def yang_src_for_layer(layer):
+    if layer == 2:
+        return y_2.src_yang()
+    if layer == 1:
+        return y_1.src_yang()
+    if layer == 0:
+        return y_0.src_yang()
+    raise ValueError('Invalid layer: {layer}')
+
 
 generated_device_types: dict[str, swdev.DeviceType] = {
     "CiscoIosXr_25_3_1": swdev.DeviceType(name="CiscoIosXr_25_3_1",
@@ -55,4 +64,4 @@ device_types: dict[str, swdev.DeviceType] = dict(
     list(generated_device_types.items()) + list(sw_device_types.device_types.items())
 )
 
-SYSSPEC = swapp.SysSpec(device_types, get_layers, schema_for_layer)
+SYSSPEC = swapp.SysSpec(device_types, get_layers, schema_for_layer, yang_src_for_layer)
