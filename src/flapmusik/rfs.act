@@ -115,7 +115,7 @@ actor EbgpPeerTransform(path: ttt.Path,
         state_present = False
         for instance in snapshot.network_instances.network_instance:
             if instance.name == "DEFAULT":
-                for proto in instance.protocols.protocol_:
+                for proto in instance.protocols.protocol:
                     if (proto.identifier == xr25_oper.openconfig_policy_types_BGP
                             and proto.name == "default"):
                         for neighbor in proto.bgp.neighbors.neighbor:
@@ -146,7 +146,7 @@ actor EbgpPeerTransform(path: ttt.Path,
             # the filter all the way to this peer, so partial updates for another
             # neighbor cannot affect this service instance.
             selector = xr25_oper.subs.network_instances.network_instance.entry(
-                "DEFAULT").protocols.protocol_.entry(
+                "DEFAULT").protocols.protocol.entry(
                     xr25_oper.openconfig_policy_types_BGP,
                     "default").bgp.neighbors.neighbor.entry(
                         address).state.session_state

@@ -20,5 +20,5 @@ def get_ttt(lower: ?ttt.Layer, dev_registry: swdev.DeviceRegistry, log_handler: 
 def EbgpPeerTransformCtor(params: ttt.TransformActorParams) -> ?proc(ygdata.Node, ?ygdata.Node) -> None:
     def update_oper_type_wrapper(oper: ?y_1_oper.stratoweave_rfs__rfs__ebgp_peer_entry):
         params.update_oper(oper.to_gdata() if oper is not None else None)
-    act = rfs.EbgpPeerTransform(params.path, update_oper_type_wrapper, ttt.expect(params.dev, "Missing expected DeviceMgr param to rfs.EbgpPeerTransform."))
+    act = rfs.EbgpPeerTransform(params.path, update_oper_type_wrapper, params.dev!)
     return proc lambda c, m: act.on_conf(stratoweave_rfs__rfs__ebgp_peer_entry.from_gdata(c))

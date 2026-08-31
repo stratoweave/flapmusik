@@ -3,9 +3,9 @@
 # WARNING WARNING WARNING WARNING WARNING
 
 import logging
-import lmdb
 
 import stratoweave.app as swapp
+import stratoweave.db as swdb
 import stratoweave.device as swdev
 import stratoweave.adapters.netconf as swna
 import stratoweave.ttt as ttt
@@ -20,7 +20,7 @@ import flapmusik.layers.y_0 as y_0
 import flapmusik.devices.CiscoIosXr_25_3_1 as dev_CiscoIosXr_25_3_1
 import flapmusik.devices.CiscoIosXr_25_3_1_oper as dev_CiscoIosXr_25_3_1_oper
 
-def get_layers(dev_registry: swdev.DeviceRegistry, log_handler: ?logging.Handler=None, db: ?lmdb.Db=None):
+def get_layers(dev_registry: swdev.DeviceRegistry, log_handler: ?logging.Handler=None, db: ?swdb.Store=None):
     layer2 = ttt.Layer('2', t_2.get_ttt(None, dev_registry, log_handler), None, db)
     layer1 = ttt.Layer('1', t_1.get_ttt(layer2, dev_registry, log_handler), layer2, db)
     layer0 = ttt.Layer('0', t_0.get_ttt(layer1, dev_registry, log_handler), layer1, db)

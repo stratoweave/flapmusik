@@ -31,20 +31,20 @@ openconfig_policy_types_BGP: Identityref = Identityref('BGP', ns='http://opencon
 
 SRC_DNODE_CHILD_0: DContainer = DContainer(module='openconfig-network-instance', namespace='http://openconfig.net/yang/network-instance', prefix='oc-netinst', name='network-instances', config=False, presence=False, children=[
     DList(module='openconfig-network-instance', namespace='http://openconfig.net/yang/network-instance', prefix='oc-netinst', name='network-instance', key=['name'], config=False, min_elements=0, ordered_by='system', children=[
-        DLeaf(module='openconfig-network-instance', namespace='http://openconfig.net/yang/network-instance', prefix='oc-netinst', name='name', config=False, mandatory=False, type_=DTypeString(name='string', description=None, reference=None, exts=[], builtin_type='string', default=None, length=None, patterns=[])),
+        DLeaf(module='openconfig-network-instance', namespace='http://openconfig.net/yang/network-instance', prefix='oc-netinst', name='name', config=False, mandatory=False, type=DTypeString(name='string', description=None, reference=None, exts=[], builtin_type='string', default=None, length=None, patterns=[])),
         DContainer(module='openconfig-network-instance', namespace='http://openconfig.net/yang/network-instance', prefix='oc-netinst', name='protocols', config=False, presence=False, children=[
             DList(module='openconfig-network-instance', namespace='http://openconfig.net/yang/network-instance', prefix='oc-netinst', name='protocol', key=[
 'identifier',
 'name'
                 ], config=False, min_elements=0, ordered_by='system', children=[
-                DLeaf(module='openconfig-network-instance', namespace='http://openconfig.net/yang/network-instance', prefix='oc-netinst', name='identifier', config=False, mandatory=False, type_=DTypeIdentityref(name='identityref', description=None, reference=None, exts=[], builtin_type='identityref', default=None, identity_bases=[_base_openconfig_policy_types_INSTALL_PROTOCOL_TYPE], identities=_identities)),
-                DLeaf(module='openconfig-network-instance', namespace='http://openconfig.net/yang/network-instance', prefix='oc-netinst', name='name', config=False, mandatory=False, type_=DTypeString(name='string', description=None, reference=None, exts=[], builtin_type='string', default=None, length=None, patterns=[])),
+                DLeaf(module='openconfig-network-instance', namespace='http://openconfig.net/yang/network-instance', prefix='oc-netinst', name='identifier', config=False, mandatory=False, type=DTypeIdentityref(name='identityref', description=None, reference=None, exts=[], builtin_type='identityref', default=None, identity_bases=[_base_openconfig_policy_types_INSTALL_PROTOCOL_TYPE], identities=_identities)),
+                DLeaf(module='openconfig-network-instance', namespace='http://openconfig.net/yang/network-instance', prefix='oc-netinst', name='name', config=False, mandatory=False, type=DTypeString(name='string', description=None, reference=None, exts=[], builtin_type='string', default=None, length=None, patterns=[])),
                 DContainer(module='openconfig-network-instance', namespace='http://openconfig.net/yang/network-instance', prefix='oc-netinst', name='bgp', config=False, presence=False, children=[
                     DContainer(module='openconfig-network-instance', namespace='http://openconfig.net/yang/network-instance', prefix='oc-netinst', name='neighbors', config=False, presence=False, children=[
                         DList(module='openconfig-network-instance', namespace='http://openconfig.net/yang/network-instance', prefix='oc-netinst', name='neighbor', key=['neighbor-address'], config=False, min_elements=0, ordered_by='system', children=[
-                            DLeaf(module='openconfig-network-instance', namespace='http://openconfig.net/yang/network-instance', prefix='oc-netinst', name='neighbor-address', config=False, mandatory=False, type_=DTypeString(name='string', description=None, reference=None, exts=[], builtin_type='string', default=None, length=None, patterns=[])),
+                            DLeaf(module='openconfig-network-instance', namespace='http://openconfig.net/yang/network-instance', prefix='oc-netinst', name='neighbor-address', config=False, mandatory=False, type=DTypeString(name='string', description=None, reference=None, exts=[], builtin_type='string', default=None, length=None, patterns=[])),
                             DContainer(module='openconfig-network-instance', namespace='http://openconfig.net/yang/network-instance', prefix='oc-netinst', name='state', config=False, presence=False, children=[
-                                DLeaf(module='openconfig-network-instance', namespace='http://openconfig.net/yang/network-instance', prefix='oc-netinst', name='session-state', config=False, mandatory=False, type_=DTypeEnum(name='enumeration', description=None, reference=None, exts=[], builtin_type='enumeration', default=None, name_to_val={'IDLE':0, 'CONNECT':1, 'ACTIVE':2, 'OPENSENT':3, 'OPENCONFIRM':4, 'ESTABLISHED':5}))
+                                DLeaf(module='openconfig-network-instance', namespace='http://openconfig.net/yang/network-instance', prefix='oc-netinst', name='session-state', config=False, mandatory=False, type=DTypeEnum(name='enumeration', description=None, reference=None, exts=[], builtin_type='enumeration', default=None, name_to_val={'IDLE':0, 'CONNECT':1, 'ACTIVE':2, 'OPENSENT':3, 'OPENCONFIRM':4, 'ESTABLISHED':5}))
                             ])
                         ])
                     ])
@@ -56,58 +56,58 @@ SRC_DNODE_CHILD_0: DContainer = DContainer(module='openconfig-network-instance',
 
 SRC_DNODE_CHILD_1: DContainer = DContainer(module='Cisco-IOS-XR-um-interface-cfg', namespace='http://cisco.com/ns/yang/Cisco-IOS-XR-um-interface-cfg', prefix='um-interface-cfg', name='interfaces', config=True, description='Interface configuration', presence=False, children=[
     DList(module='Cisco-IOS-XR-um-interface-cfg', namespace='http://cisco.com/ns/yang/Cisco-IOS-XR-um-interface-cfg', prefix='um-interface-cfg', name='interface', key=['interface-name'], config=True, description='Interface configuration subcommands', min_elements=0, ordered_by='system', children=[
-        DLeaf(module='Cisco-IOS-XR-um-interface-cfg', namespace='http://cisco.com/ns/yang/Cisco-IOS-XR-um-interface-cfg', prefix='um-interface-cfg', name='interface-name', config=True, description='Interface configuration subcommands', mandatory=False, type_=DTypeString(name='xr:Interface-name', description='An interface name specifying an interface type and\ninstance.\nInterface represents a string defining an interface\ntype and instance, e.g. MgmtEth0/4/CPU1/0 or\nTenGigE0/2/0/0.2 or Bundle-Ether9 or\nBundle-Ether9.98 or Serial0/0/0/0/3/1:1', reference=None, exts=[], builtin_type='string', default=None, length=None, patterns=[YangPattern(yang_regex='[a-zA-Z0-9.:_/-]+', pcre='^([a-zA-Z0-9.:_/-]+)$', invert=False)])),
+        DLeaf(module='Cisco-IOS-XR-um-interface-cfg', namespace='http://cisco.com/ns/yang/Cisco-IOS-XR-um-interface-cfg', prefix='um-interface-cfg', name='interface-name', config=True, description='Interface configuration subcommands', mandatory=False, type=DTypeString(name='xr:Interface-name', description='An interface name specifying an interface type and\ninstance.\nInterface represents a string defining an interface\ntype and instance, e.g. MgmtEth0/4/CPU1/0 or\nTenGigE0/2/0/0.2 or Bundle-Ether9 or\nBundle-Ether9.98 or Serial0/0/0/0/3/1:1', reference=None, exts=[], builtin_type='string', default=None, length=None, patterns=[YangPattern(yang_regex='[a-zA-Z0-9.:_/-]+', pcre='^([a-zA-Z0-9.:_/-]+)$', invert=False)])),
         DContainer(module='Cisco-IOS-XR-um-interface-cfg', namespace='http://cisco.com/ns/yang/Cisco-IOS-XR-um-interface-cfg', prefix='um-interface-cfg', name='ipv4', config=True, description='Interface IPv4 config commands', presence=False, children=[
             DContainer(module='Cisco-IOS-XR-um-if-ip-address-cfg', namespace='http://cisco.com/ns/yang/Cisco-IOS-XR-um-if-ip-address-cfg', prefix='um-if-ip-address-cfg', name='addresses', config=True, description='Set the IPv4 address of an interface', presence=False, children=[
                 DContainer(module='Cisco-IOS-XR-um-if-ip-address-cfg', namespace='http://cisco.com/ns/yang/Cisco-IOS-XR-um-if-ip-address-cfg', prefix='um-if-ip-address-cfg', name='address', config=True, description='IP address and Mask', presence=True, children=[
-                    DLeaf(module='Cisco-IOS-XR-um-if-ip-address-cfg', namespace='http://cisco.com/ns/yang/Cisco-IOS-XR-um-if-ip-address-cfg', prefix='um-if-ip-address-cfg', name='address', config=True, description='IP address', mandatory=True, type_=DTypeString(name='inet:ipv4-address-no-zone', description='An IPv4 address without a zone index.  This type, derived from\nipv4-address, may be used in situations where the zone is\nknown from the context and hence no zone index is needed.', reference=None, exts=[], builtin_type='string', default=None, length=None, patterns=[YangPattern(yang_regex='(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){{3}}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(%[\\p{{N}}\\p{{L}}]+)?', pcre='^((([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){{3}}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(%[\\p{{N}}\\p{{L}}]+)?)$', invert=False), YangPattern(yang_regex='[0-9\\.]*', pcre='^([0-9\\.]*)$', invert=False)])),
-                    DLeaf(module='Cisco-IOS-XR-um-if-ip-address-cfg', namespace='http://cisco.com/ns/yang/Cisco-IOS-XR-um-if-ip-address-cfg', prefix='um-if-ip-address-cfg', name='netmask', config=True, description='IP subnet mask', mandatory=True, type_=DTypeString(name='inet:ipv4-address-no-zone', description='An IPv4 address without a zone index.  This type, derived from\nipv4-address, may be used in situations where the zone is\nknown from the context and hence no zone index is needed.', reference=None, exts=[], builtin_type='string', default=None, length=None, patterns=[YangPattern(yang_regex='(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){{3}}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(%[\\p{{N}}\\p{{L}}]+)?', pcre='^((([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){{3}}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(%[\\p{{N}}\\p{{L}}]+)?)$', invert=False), YangPattern(yang_regex='[0-9\\.]*', pcre='^([0-9\\.]*)$', invert=False)]))
+                    DLeaf(module='Cisco-IOS-XR-um-if-ip-address-cfg', namespace='http://cisco.com/ns/yang/Cisco-IOS-XR-um-if-ip-address-cfg', prefix='um-if-ip-address-cfg', name='address', config=True, description='IP address', mandatory=True, type=DTypeString(name='inet:ipv4-address-no-zone', description='An IPv4 address without a zone index.  This type, derived from\nipv4-address, may be used in situations where the zone is\nknown from the context and hence no zone index is needed.', reference=None, exts=[], builtin_type='string', default=None, length=None, patterns=[YangPattern(yang_regex='(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){{3}}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(%[\\p{{N}}\\p{{L}}]+)?', pcre='^((([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){{3}}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(%[\\p{{N}}\\p{{L}}]+)?)$', invert=False), YangPattern(yang_regex='[0-9\\.]*', pcre='^([0-9\\.]*)$', invert=False)])),
+                    DLeaf(module='Cisco-IOS-XR-um-if-ip-address-cfg', namespace='http://cisco.com/ns/yang/Cisco-IOS-XR-um-if-ip-address-cfg', prefix='um-if-ip-address-cfg', name='netmask', config=True, description='IP subnet mask', mandatory=True, type=DTypeString(name='inet:ipv4-address-no-zone', description='An IPv4 address without a zone index.  This type, derived from\nipv4-address, may be used in situations where the zone is\nknown from the context and hence no zone index is needed.', reference=None, exts=[], builtin_type='string', default=None, length=None, patterns=[YangPattern(yang_regex='(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){{3}}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(%[\\p{{N}}\\p{{L}}]+)?', pcre='^((([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){{3}}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(%[\\p{{N}}\\p{{L}}]+)?)$', invert=False), YangPattern(yang_regex='[0-9\\.]*', pcre='^([0-9\\.]*)$', invert=False)]))
                 ]),
                 DContainer(module='Cisco-IOS-XR-um-if-ip-address-cfg', namespace='http://cisco.com/ns/yang/Cisco-IOS-XR-um-if-ip-address-cfg', prefix='um-if-ip-address-cfg', name='secondaries', config=True, description='Specify a secondary address', presence=False, children=[
                     DList(module='Cisco-IOS-XR-um-if-ip-address-cfg', namespace='http://cisco.com/ns/yang/Cisco-IOS-XR-um-if-ip-address-cfg', prefix='um-if-ip-address-cfg', name='secondary', key=['address'], config=True, description='IP address and Mask', min_elements=0, ordered_by='system', children=[
-                        DLeaf(module='Cisco-IOS-XR-um-if-ip-address-cfg', namespace='http://cisco.com/ns/yang/Cisco-IOS-XR-um-if-ip-address-cfg', prefix='um-if-ip-address-cfg', name='address', config=True, description='Secondary IP address', mandatory=False, type_=DTypeString(name='inet:ipv4-address-no-zone', description='An IPv4 address without a zone index.  This type, derived from\nipv4-address, may be used in situations where the zone is\nknown from the context and hence no zone index is needed.', reference=None, exts=[], builtin_type='string', default=None, length=None, patterns=[YangPattern(yang_regex='(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){{3}}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(%[\\p{{N}}\\p{{L}}]+)?', pcre='^((([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){{3}}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(%[\\p{{N}}\\p{{L}}]+)?)$', invert=False), YangPattern(yang_regex='[0-9\\.]*', pcre='^([0-9\\.]*)$', invert=False)])),
-                        DLeaf(module='Cisco-IOS-XR-um-if-ip-address-cfg', namespace='http://cisco.com/ns/yang/Cisco-IOS-XR-um-if-ip-address-cfg', prefix='um-if-ip-address-cfg', name='netmask', config=True, description='Netmask', mandatory=True, type_=DTypeString(name='inet:ipv4-address-no-zone', description='An IPv4 address without a zone index.  This type, derived from\nipv4-address, may be used in situations where the zone is\nknown from the context and hence no zone index is needed.', reference=None, exts=[], builtin_type='string', default=None, length=None, patterns=[YangPattern(yang_regex='(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){{3}}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(%[\\p{{N}}\\p{{L}}]+)?', pcre='^((([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){{3}}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(%[\\p{{N}}\\p{{L}}]+)?)$', invert=False), YangPattern(yang_regex='[0-9\\.]*', pcre='^([0-9\\.]*)$', invert=False)]))
+                        DLeaf(module='Cisco-IOS-XR-um-if-ip-address-cfg', namespace='http://cisco.com/ns/yang/Cisco-IOS-XR-um-if-ip-address-cfg', prefix='um-if-ip-address-cfg', name='address', config=True, description='Secondary IP address', mandatory=False, type=DTypeString(name='inet:ipv4-address-no-zone', description='An IPv4 address without a zone index.  This type, derived from\nipv4-address, may be used in situations where the zone is\nknown from the context and hence no zone index is needed.', reference=None, exts=[], builtin_type='string', default=None, length=None, patterns=[YangPattern(yang_regex='(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){{3}}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(%[\\p{{N}}\\p{{L}}]+)?', pcre='^((([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){{3}}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(%[\\p{{N}}\\p{{L}}]+)?)$', invert=False), YangPattern(yang_regex='[0-9\\.]*', pcre='^([0-9\\.]*)$', invert=False)])),
+                        DLeaf(module='Cisco-IOS-XR-um-if-ip-address-cfg', namespace='http://cisco.com/ns/yang/Cisco-IOS-XR-um-if-ip-address-cfg', prefix='um-if-ip-address-cfg', name='netmask', config=True, description='Netmask', mandatory=True, type=DTypeString(name='inet:ipv4-address-no-zone', description='An IPv4 address without a zone index.  This type, derived from\nipv4-address, may be used in situations where the zone is\nknown from the context and hence no zone index is needed.', reference=None, exts=[], builtin_type='string', default=None, length=None, patterns=[YangPattern(yang_regex='(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){{3}}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(%[\\p{{N}}\\p{{L}}]+)?', pcre='^((([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){{3}}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(%[\\p{{N}}\\p{{L}}]+)?)$', invert=False), YangPattern(yang_regex='[0-9\\.]*', pcre='^([0-9\\.]*)$', invert=False)]))
                     ])
                 ])
             ])
         ]),
         DContainer(module='Cisco-IOS-XR-um-interface-cfg', namespace='http://cisco.com/ns/yang/Cisco-IOS-XR-um-interface-cfg', prefix='um-interface-cfg', name='shutdown', config=True, description='shutdown the given interface', presence=True),
-        DLeaf(module='Cisco-IOS-XR-um-interface-cfg', namespace='http://cisco.com/ns/yang/Cisco-IOS-XR-um-interface-cfg', prefix='um-interface-cfg', name='description', config=True, description='Set description for this interface', mandatory=False, type_=DTypeString(name='string', description=None, reference=None, exts=[], builtin_type='string', default=None, length=Ranges([(1, 1024)]), patterns=[])),
+        DLeaf(module='Cisco-IOS-XR-um-interface-cfg', namespace='http://cisco.com/ns/yang/Cisco-IOS-XR-um-interface-cfg', prefix='um-interface-cfg', name='description', config=True, description='Set description for this interface', mandatory=False, type=DTypeString(name='string', description=None, reference=None, exts=[], builtin_type='string', default=None, length=Ranges([(1, 1024)]), patterns=[])),
         DContainer(module='Cisco-IOS-XR-um-l2-ethernet-cfg', namespace='http://cisco.com/ns/yang/Cisco-IOS-XR-um-l2-ethernet-cfg', prefix='um-l2-ethernet-cfg', name='encapsulation', config=True, description='Specify which packets will be matched by this sub-interface', presence=False, when="(../um-interface-cfg:interface-name[starts-with(text(),'FastEthernet')] or ../um-interface-cfg:interface-name[starts-with(text(),'GigabitEthernet')] or ../um-interface-cfg:interface-name[starts-with(text(),'TenGigE')] or ../um-interface-cfg:interface-name[starts-with(text(),'FortyGigE')] or ../um-interface-cfg:interface-name[starts-with(text(),'HundredGigE')] or ../um-interface-cfg:interface-name[starts-with(text(),'TwoHundredGigE')] or ../um-interface-cfg:interface-name[starts-with(text(),'FourHundredGigE')] or ../um-interface-cfg:interface-name[starts-with(text(),'EightHundredGigE')] or ../um-interface-cfg:interface-name[starts-with(text(),'TwentyFiveGigE')] or ../um-interface-cfg:interface-name[starts-with(text(),'FiftyGigE')] or ../um-interface-cfg:interface-name[starts-with(text(),'Bundle-Ether')] or ../um-interface-cfg:interface-name[starts-with(text(),'PW-Ether')])and ../um-interface-cfg:interface-name[contains(text(),'.')]and not(../um-interface-cfg:sub-interface-type/um-interface-cfg:l2transport)", children=[
             DContainer(module='Cisco-IOS-XR-um-l2-ethernet-cfg', namespace='http://cisco.com/ns/yang/Cisco-IOS-XR-um-l2-ethernet-cfg', prefix='um-l2-ethernet-cfg', name='dot1q', config=True, description='IEEE 802.1Q VLAN-tagged packets', presence=False, children=[
-                DLeaf(module='Cisco-IOS-XR-um-l2-ethernet-cfg', namespace='http://cisco.com/ns/yang/Cisco-IOS-XR-um-l2-ethernet-cfg', prefix='um-l2-ethernet-cfg', name='vlan-id', config=True, description='Configure first (outer) VLAN ID on the subinterface', mandatory=False, type_=DTypeIntegerUnsigned(name='uint32', description=None, reference=None, exts=[], builtin_type='uint32', default=None, ranges=Ranges([(1, 4094)])))
+                DLeaf(module='Cisco-IOS-XR-um-l2-ethernet-cfg', namespace='http://cisco.com/ns/yang/Cisco-IOS-XR-um-l2-ethernet-cfg', prefix='um-l2-ethernet-cfg', name='vlan-id', config=True, description='Configure first (outer) VLAN ID on the subinterface', mandatory=False, type=DTypeIntegerUnsigned(name='uint32', description=None, reference=None, exts=[], builtin_type='uint32', default=None, ranges=Ranges([(1, 4094)])))
             ])
         ]),
-        DLeaf(module='Cisco-IOS-XR-um-if-vrf-cfg', namespace='http://cisco.com/ns/yang/Cisco-IOS-XR-um-if-vrf-cfg', prefix='um-if-vrf-cfg', name='vrf', config=True, description='Set VRF in which the interface operates', mandatory=False, type_=DTypeString(name='xr:Cisco-ios-xr-string', description='Special characters are not allowed.', reference=None, exts=[], builtin_type='string', default=None, length=Ranges([(1, 32)]), patterns=[YangPattern(yang_regex='[\\w\\-\\.:,_@#%$\\+=\\| ;]+', pcre='^(([\\-\\.:,_@#%$\\+=\\| ;]|(?![\\p{{P}}\\p{{Z}}\\p{{C}}])[\\x{{0000}}-\\x{{10FFFF}}])+)$', invert=False)]), when="../um-interface-cfg:interface-name[not(starts-with(text(),'tunnel-'))] and ../um-interface-cfg:interface-name[not(starts-with(text(),'cem'))] and ../um-interface-cfg:interface-name[not(starts-with(text(),'nve'))]")
+        DLeaf(module='Cisco-IOS-XR-um-if-vrf-cfg', namespace='http://cisco.com/ns/yang/Cisco-IOS-XR-um-if-vrf-cfg', prefix='um-if-vrf-cfg', name='vrf', config=True, description='Set VRF in which the interface operates', mandatory=False, type=DTypeString(name='xr:Cisco-ios-xr-string', description='Special characters are not allowed.', reference=None, exts=[], builtin_type='string', default=None, length=Ranges([(1, 32)]), patterns=[YangPattern(yang_regex='[\\w\\-\\.:,_@#%$\\+=\\| ;]+', pcre='^(([\\-\\.:,_@#%$\\+=\\| ;]|(?![\\p{{P}}\\p{{Z}}\\p{{C}}])[\\x{{0000}}-\\x{{10FFFF}}])+)$', invert=False)]), when="../um-interface-cfg:interface-name[not(starts-with(text(),'tunnel-'))] and ../um-interface-cfg:interface-name[not(starts-with(text(),'cem'))] and ../um-interface-cfg:interface-name[not(starts-with(text(),'nve'))]")
     ])
 ])
 
-SRC_DNODE_CHILD_5: DLeaf = DLeaf(module='Cisco-IOS-XR-um-router-bgp-cfg', namespace='http://cisco.com/ns/yang/Cisco-IOS-XR-um-router-bgp-cfg', prefix='um-router-bgp-cfg', name='as-number', config=True, description='bgp as-number', mandatory=False, type_=DTypeUnion(name='xr:Bgp-as-number', description='BGP AS number type', reference=None, exts=[], builtin_type='union', default=None, types=[DTypeIntegerUnsigned(name='uint32', description=None, reference=None, exts=[], builtin_type='uint32', default=None, ranges=Ranges([(1, 65535)])), DTypeString(name='string', description=None, reference=None, exts=[], builtin_type='string', default=None, length=None, patterns=[YangPattern(yang_regex='([1-9][0-9]{{0,4}}).([0-9]{{1,5}})', pcre='^(([1-9][0-9]{{0,4}}).([0-9]{{1,5}}))$', invert=False)]), DTypeIntegerUnsigned(name='uint32', description=None, reference=None, exts=[], builtin_type='uint32', default=None, ranges=Ranges([(65536, 4294967295)]))]))
+SRC_DNODE_CHILD_5: DLeaf = DLeaf(module='Cisco-IOS-XR-um-router-bgp-cfg', namespace='http://cisco.com/ns/yang/Cisco-IOS-XR-um-router-bgp-cfg', prefix='um-router-bgp-cfg', name='as-number', config=True, description='bgp as-number', mandatory=False, type=DTypeUnion(name='xr:Bgp-as-number', description='BGP AS number type', reference=None, exts=[], builtin_type='union', default=None, types=[DTypeIntegerUnsigned(name='uint32', description=None, reference=None, exts=[], builtin_type='uint32', default=None, ranges=Ranges([(1, 65535)])), DTypeString(name='string', description=None, reference=None, exts=[], builtin_type='string', default=None, length=None, patterns=[YangPattern(yang_regex='([1-9][0-9]{{0,4}}).([0-9]{{1,5}})', pcre='^(([1-9][0-9]{{0,4}}).([0-9]{{1,5}}))$', invert=False)]), DTypeIntegerUnsigned(name='uint32', description=None, reference=None, exts=[], builtin_type='uint32', default=None, ranges=Ranges([(65536, 4294967295)]))]))
 
 SRC_DNODE_CHILD_6: DContainer = DContainer(module='Cisco-IOS-XR-um-router-bgp-cfg', namespace='http://cisco.com/ns/yang/Cisco-IOS-XR-um-router-bgp-cfg', prefix='um-router-bgp-cfg', name='neighbors', config=True, description='Specify a neighbor router', presence=False, children=[
     DList(module='Cisco-IOS-XR-um-router-bgp-cfg', namespace='http://cisco.com/ns/yang/Cisco-IOS-XR-um-router-bgp-cfg', prefix='um-router-bgp-cfg', name='neighbor', key=['address'], config=True, description='Specify a neighbor router', min_elements=0, ordered_by='system', children=[
-        DLeaf(module='Cisco-IOS-XR-um-router-bgp-cfg', namespace='http://cisco.com/ns/yang/Cisco-IOS-XR-um-router-bgp-cfg', prefix='um-router-bgp-cfg', name='address', config=True, description='IPaddress', mandatory=False, type_=DTypeUnion(name='inet:ip-address-no-zone', description='The ip-address-no-zone type represents an IP address and is\nIP version neutral.  The format of the textual representation\nimplies the IP version.  This type does not support scoped\naddresses since it does not allow zone identifiers in the\naddress format.', reference='RFC 4007: IPv6 Scoped Address Architecture', exts=[], builtin_type='union', default=None, types=[DTypeString(name='inet:ipv4-address-no-zone', description='An IPv4 address without a zone index.  This type, derived from\nipv4-address, may be used in situations where the zone is\nknown from the context and hence no zone index is needed.', reference=None, exts=[], builtin_type='string', default=None, length=None, patterns=[YangPattern(yang_regex='(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){{3}}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(%[\\p{{N}}\\p{{L}}]+)?', pcre='^((([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){{3}}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(%[\\p{{N}}\\p{{L}}]+)?)$', invert=False), YangPattern(yang_regex='[0-9\\.]*', pcre='^([0-9\\.]*)$', invert=False)]), DTypeString(name='inet:ipv6-address-no-zone', description='An IPv6 address without a zone index.  This type, derived from\nipv6-address, may be used in situations where the zone is\nknown from the context and hence no zone index is needed.', reference='RFC 4291: IP Version 6 Addressing Architecture\nRFC 4007: IPv6 Scoped Address Architecture\nRFC 5952: A Recommendation for IPv6 Address Text\n          Representation', exts=[], builtin_type='string', default=None, length=None, patterns=[YangPattern(yang_regex='((:|[0-9a-fA-F]{{0,4}}):)([0-9a-fA-F]{{0,4}}:){{0,5}}((([0-9a-fA-F]{{0,4}}:)?(:|[0-9a-fA-F]{{0,4}}))|(((25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])\\.){{3}}(25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])))(%[\\p{{N}}\\p{{L}}]+)?', pcre='^(((:|[0-9a-fA-F]{{0,4}}):)([0-9a-fA-F]{{0,4}}:){{0,5}}((([0-9a-fA-F]{{0,4}}:)?(:|[0-9a-fA-F]{{0,4}}))|(((25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])\\.){{3}}(25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])))(%[\\p{{N}}\\p{{L}}]+)?)$', invert=False), YangPattern(yang_regex='(([^:]+:){{6}}(([^:]+:[^:]+)|(.*\\..*)))|((([^:]+:)*[^:]+)?::(([^:]+:)*[^:]+)?)(%.+)?', pcre='^((([^\\:]+:){{6}}(([^\\:]+:[^\\:]+)|(.*\\..*)))|((([^\\:]+:)*[^\\:]+)?::(([^\\:]+:)*[^\\:]+)?)(%.+)?)$', invert=False), YangPattern(yang_regex='[0-9a-fA-F:\\.]*', pcre='^([0-9a-fA-F:\\.]*)$', invert=False)])])),
-        DLeaf(module='Cisco-IOS-XR-um-router-bgp-cfg', namespace='http://cisco.com/ns/yang/Cisco-IOS-XR-um-router-bgp-cfg', prefix='um-router-bgp-cfg', name='remote-as', config=True, description='Set remote AS', mandatory=False, type_=DTypeUnion(name='xr:Bgp-as-number', description='BGP AS number type', reference=None, exts=[], builtin_type='union', default=None, types=[DTypeIntegerUnsigned(name='uint32', description=None, reference=None, exts=[], builtin_type='uint32', default=None, ranges=Ranges([(1, 65535)])), DTypeString(name='string', description=None, reference=None, exts=[], builtin_type='string', default=None, length=None, patterns=[YangPattern(yang_regex='([1-9][0-9]{{0,4}}).([0-9]{{1,5}})', pcre='^(([1-9][0-9]{{0,4}}).([0-9]{{1,5}}))$', invert=False)]), DTypeIntegerUnsigned(name='uint32', description=None, reference=None, exts=[], builtin_type='uint32', default=None, ranges=Ranges([(65536, 4294967295)]))])),
+        DLeaf(module='Cisco-IOS-XR-um-router-bgp-cfg', namespace='http://cisco.com/ns/yang/Cisco-IOS-XR-um-router-bgp-cfg', prefix='um-router-bgp-cfg', name='address', config=True, description='IPaddress', mandatory=False, type=DTypeUnion(name='inet:ip-address-no-zone', description='The ip-address-no-zone type represents an IP address and is\nIP version neutral.  The format of the textual representation\nimplies the IP version.  This type does not support scoped\naddresses since it does not allow zone identifiers in the\naddress format.', reference='RFC 4007: IPv6 Scoped Address Architecture', exts=[], builtin_type='union', default=None, types=[DTypeString(name='inet:ipv4-address-no-zone', description='An IPv4 address without a zone index.  This type, derived from\nipv4-address, may be used in situations where the zone is\nknown from the context and hence no zone index is needed.', reference=None, exts=[], builtin_type='string', default=None, length=None, patterns=[YangPattern(yang_regex='(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){{3}}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(%[\\p{{N}}\\p{{L}}]+)?', pcre='^((([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){{3}}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(%[\\p{{N}}\\p{{L}}]+)?)$', invert=False), YangPattern(yang_regex='[0-9\\.]*', pcre='^([0-9\\.]*)$', invert=False)]), DTypeString(name='inet:ipv6-address-no-zone', description='An IPv6 address without a zone index.  This type, derived from\nipv6-address, may be used in situations where the zone is\nknown from the context and hence no zone index is needed.', reference='RFC 4291: IP Version 6 Addressing Architecture\nRFC 4007: IPv6 Scoped Address Architecture\nRFC 5952: A Recommendation for IPv6 Address Text\n          Representation', exts=[], builtin_type='string', default=None, length=None, patterns=[YangPattern(yang_regex='((:|[0-9a-fA-F]{{0,4}}):)([0-9a-fA-F]{{0,4}}:){{0,5}}((([0-9a-fA-F]{{0,4}}:)?(:|[0-9a-fA-F]{{0,4}}))|(((25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])\\.){{3}}(25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])))(%[\\p{{N}}\\p{{L}}]+)?', pcre='^(((:|[0-9a-fA-F]{{0,4}}):)([0-9a-fA-F]{{0,4}}:){{0,5}}((([0-9a-fA-F]{{0,4}}:)?(:|[0-9a-fA-F]{{0,4}}))|(((25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])\\.){{3}}(25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])))(%[\\p{{N}}\\p{{L}}]+)?)$', invert=False), YangPattern(yang_regex='(([^:]+:){{6}}(([^:]+:[^:]+)|(.*\\..*)))|((([^:]+:)*[^:]+)?::(([^:]+:)*[^:]+)?)(%.+)?', pcre='^((([^\\:]+:){{6}}(([^\\:]+:[^\\:]+)|(.*\\..*)))|((([^\\:]+:)*[^\\:]+)?::(([^\\:]+:)*[^\\:]+)?)(%.+)?)$', invert=False), YangPattern(yang_regex='[0-9a-fA-F:\\.]*', pcre='^([0-9a-fA-F:\\.]*)$', invert=False)])])),
+        DLeaf(module='Cisco-IOS-XR-um-router-bgp-cfg', namespace='http://cisco.com/ns/yang/Cisco-IOS-XR-um-router-bgp-cfg', prefix='um-router-bgp-cfg', name='remote-as', config=True, description='Set remote AS', mandatory=False, type=DTypeUnion(name='xr:Bgp-as-number', description='BGP AS number type', reference=None, exts=[], builtin_type='union', default=None, types=[DTypeIntegerUnsigned(name='uint32', description=None, reference=None, exts=[], builtin_type='uint32', default=None, ranges=Ranges([(1, 65535)])), DTypeString(name='string', description=None, reference=None, exts=[], builtin_type='string', default=None, length=None, patterns=[YangPattern(yang_regex='([1-9][0-9]{{0,4}}).([0-9]{{1,5}})', pcre='^(([1-9][0-9]{{0,4}}).([0-9]{{1,5}}))$', invert=False)]), DTypeIntegerUnsigned(name='uint32', description=None, reference=None, exts=[], builtin_type='uint32', default=None, ranges=Ranges([(65536, 4294967295)]))])),
         DContainer(module='Cisco-IOS-XR-um-router-bgp-cfg', namespace='http://cisco.com/ns/yang/Cisco-IOS-XR-um-router-bgp-cfg', prefix='um-router-bgp-cfg', name='use', config=True, description='Inherit configuration from a group', presence=False, children=[
-            DLeaf(module='Cisco-IOS-XR-um-router-bgp-cfg', namespace='http://cisco.com/ns/yang/Cisco-IOS-XR-um-router-bgp-cfg', prefix='um-router-bgp-cfg', name='neighbor-group', config=True, description='Inherit configuration from a neighbor-group', mandatory=False, type_=DTypeString(name='string', description=None, reference=None, exts=[], builtin_type='string', default=None, length=Ranges([(1, 1024)]), patterns=[]))
+            DLeaf(module='Cisco-IOS-XR-um-router-bgp-cfg', namespace='http://cisco.com/ns/yang/Cisco-IOS-XR-um-router-bgp-cfg', prefix='um-router-bgp-cfg', name='neighbor-group', config=True, description='Inherit configuration from a neighbor-group', mandatory=False, type=DTypeString(name='string', description=None, reference=None, exts=[], builtin_type='string', default=None, length=Ranges([(1, 1024)]), patterns=[]))
         ]),
-        DLeaf(module='Cisco-IOS-XR-um-router-bgp-cfg', namespace='http://cisco.com/ns/yang/Cisco-IOS-XR-um-router-bgp-cfg', prefix='um-router-bgp-cfg', name='description', config=True, description='Neighbor specific description', mandatory=False, type_=DTypeString(name='string', description=None, reference=None, exts=[], builtin_type='string', default=None, length=Ranges([(1, 1024)]), patterns=[])),
+        DLeaf(module='Cisco-IOS-XR-um-router-bgp-cfg', namespace='http://cisco.com/ns/yang/Cisco-IOS-XR-um-router-bgp-cfg', prefix='um-router-bgp-cfg', name='description', config=True, description='Neighbor specific description', mandatory=False, type=DTypeString(name='string', description=None, reference=None, exts=[], builtin_type='string', default=None, length=Ranges([(1, 1024)]), patterns=[])),
         DContainer(module='Cisco-IOS-XR-um-router-bgp-cfg', namespace='http://cisco.com/ns/yang/Cisco-IOS-XR-um-router-bgp-cfg', prefix='um-router-bgp-cfg', name='timers', config=True, description='BGP per neighbor timers', presence=False, children=[
-            DLeaf(module='Cisco-IOS-XR-um-router-bgp-cfg', namespace='http://cisco.com/ns/yang/Cisco-IOS-XR-um-router-bgp-cfg', prefix='um-router-bgp-cfg', name='keepalive-interval', config=True, description='Keepalive interval', mandatory=False, type_=DTypeIntegerUnsigned(name='uint32', description=None, reference=None, exts=[], builtin_type='uint32', default=None, ranges=Ranges([(0, 65535)]))),
+            DLeaf(module='Cisco-IOS-XR-um-router-bgp-cfg', namespace='http://cisco.com/ns/yang/Cisco-IOS-XR-um-router-bgp-cfg', prefix='um-router-bgp-cfg', name='keepalive-interval', config=True, description='Keepalive interval', mandatory=False, type=DTypeIntegerUnsigned(name='uint32', description=None, reference=None, exts=[], builtin_type='uint32', default=None, ranges=Ranges([(0, 65535)]))),
             DContainer(module='Cisco-IOS-XR-um-router-bgp-cfg', namespace='http://cisco.com/ns/yang/Cisco-IOS-XR-um-router-bgp-cfg', prefix='um-router-bgp-cfg', name='holdtime', config=True, description='Holdtime', must=[
 DMust(condition='../keepalive-interval and holdtime-number', description=None, error_app_tag=None, error_message=None, reference=None)
                 ], presence=True, children=[
-                DLeaf(module='Cisco-IOS-XR-um-router-bgp-cfg', namespace='http://cisco.com/ns/yang/Cisco-IOS-XR-um-router-bgp-cfg', prefix='um-router-bgp-cfg', name='holdtime-number', config=True, description='Holdtime', mandatory=False, type_=DTypeIntegerUnsigned(name='uint32', description=None, reference=None, exts=[], builtin_type='uint32', default=None, ranges=Ranges([(3, 65535)])))
+                DLeaf(module='Cisco-IOS-XR-um-router-bgp-cfg', namespace='http://cisco.com/ns/yang/Cisco-IOS-XR-um-router-bgp-cfg', prefix='um-router-bgp-cfg', name='holdtime-number', config=True, description='Holdtime', mandatory=False, type=DTypeIntegerUnsigned(name='uint32', description=None, reference=None, exts=[], builtin_type='uint32', default=None, ranges=Ranges([(3, 65535)])))
             ])
         ]),
         DContainer(module='Cisco-IOS-XR-um-router-bgp-cfg', namespace='http://cisco.com/ns/yang/Cisco-IOS-XR-um-router-bgp-cfg', prefix='um-router-bgp-cfg', name='local', config=True, description='Configure local parameter', presence=False, children=[
             DContainer(module='Cisco-IOS-XR-um-router-bgp-cfg', namespace='http://cisco.com/ns/yang/Cisco-IOS-XR-um-router-bgp-cfg', prefix='um-router-bgp-cfg', name='address', config=True, description='use configured local address for bgp peering', presence=False, children=[
-                DLeaf(module='Cisco-IOS-XR-um-router-bgp-cfg', namespace='http://cisco.com/ns/yang/Cisco-IOS-XR-um-router-bgp-cfg', prefix='um-router-bgp-cfg', name='ip-address', config=True, description='IP address', mandatory=False, type_=DTypeUnion(name='inet:ip-address-no-zone', description='The ip-address-no-zone type represents an IP address and is\nIP version neutral.  The format of the textual representation\nimplies the IP version.  This type does not support scoped\naddresses since it does not allow zone identifiers in the\naddress format.', reference='RFC 4007: IPv6 Scoped Address Architecture', exts=[], builtin_type='union', default=None, types=[DTypeString(name='inet:ipv4-address-no-zone', description='An IPv4 address without a zone index.  This type, derived from\nipv4-address, may be used in situations where the zone is\nknown from the context and hence no zone index is needed.', reference=None, exts=[], builtin_type='string', default=None, length=None, patterns=[YangPattern(yang_regex='(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){{3}}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(%[\\p{{N}}\\p{{L}}]+)?', pcre='^((([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){{3}}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(%[\\p{{N}}\\p{{L}}]+)?)$', invert=False), YangPattern(yang_regex='[0-9\\.]*', pcre='^([0-9\\.]*)$', invert=False)]), DTypeString(name='inet:ipv6-address-no-zone', description='An IPv6 address without a zone index.  This type, derived from\nipv6-address, may be used in situations where the zone is\nknown from the context and hence no zone index is needed.', reference='RFC 4291: IP Version 6 Addressing Architecture\nRFC 4007: IPv6 Scoped Address Architecture\nRFC 5952: A Recommendation for IPv6 Address Text\n          Representation', exts=[], builtin_type='string', default=None, length=None, patterns=[YangPattern(yang_regex='((:|[0-9a-fA-F]{{0,4}}):)([0-9a-fA-F]{{0,4}}:){{0,5}}((([0-9a-fA-F]{{0,4}}:)?(:|[0-9a-fA-F]{{0,4}}))|(((25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])\\.){{3}}(25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])))(%[\\p{{N}}\\p{{L}}]+)?', pcre='^(((:|[0-9a-fA-F]{{0,4}}):)([0-9a-fA-F]{{0,4}}:){{0,5}}((([0-9a-fA-F]{{0,4}}:)?(:|[0-9a-fA-F]{{0,4}}))|(((25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])\\.){{3}}(25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])))(%[\\p{{N}}\\p{{L}}]+)?)$', invert=False), YangPattern(yang_regex='(([^:]+:){{6}}(([^:]+:[^:]+)|(.*\\..*)))|((([^:]+:)*[^:]+)?::(([^:]+:)*[^:]+)?)(%.+)?', pcre='^((([^\\:]+:){{6}}(([^\\:]+:[^\\:]+)|(.*\\..*)))|((([^\\:]+:)*[^\\:]+)?::(([^\\:]+:)*[^\\:]+)?)(%.+)?)$', invert=False), YangPattern(yang_regex='[0-9a-fA-F:\\.]*', pcre='^([0-9a-fA-F:\\.]*)$', invert=False)])]))
+                DLeaf(module='Cisco-IOS-XR-um-router-bgp-cfg', namespace='http://cisco.com/ns/yang/Cisco-IOS-XR-um-router-bgp-cfg', prefix='um-router-bgp-cfg', name='ip-address', config=True, description='IP address', mandatory=False, type=DTypeUnion(name='inet:ip-address-no-zone', description='The ip-address-no-zone type represents an IP address and is\nIP version neutral.  The format of the textual representation\nimplies the IP version.  This type does not support scoped\naddresses since it does not allow zone identifiers in the\naddress format.', reference='RFC 4007: IPv6 Scoped Address Architecture', exts=[], builtin_type='union', default=None, types=[DTypeString(name='inet:ipv4-address-no-zone', description='An IPv4 address without a zone index.  This type, derived from\nipv4-address, may be used in situations where the zone is\nknown from the context and hence no zone index is needed.', reference=None, exts=[], builtin_type='string', default=None, length=None, patterns=[YangPattern(yang_regex='(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){{3}}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(%[\\p{{N}}\\p{{L}}]+)?', pcre='^((([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){{3}}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(%[\\p{{N}}\\p{{L}}]+)?)$', invert=False), YangPattern(yang_regex='[0-9\\.]*', pcre='^([0-9\\.]*)$', invert=False)]), DTypeString(name='inet:ipv6-address-no-zone', description='An IPv6 address without a zone index.  This type, derived from\nipv6-address, may be used in situations where the zone is\nknown from the context and hence no zone index is needed.', reference='RFC 4291: IP Version 6 Addressing Architecture\nRFC 4007: IPv6 Scoped Address Architecture\nRFC 5952: A Recommendation for IPv6 Address Text\n          Representation', exts=[], builtin_type='string', default=None, length=None, patterns=[YangPattern(yang_regex='((:|[0-9a-fA-F]{{0,4}}):)([0-9a-fA-F]{{0,4}}:){{0,5}}((([0-9a-fA-F]{{0,4}}:)?(:|[0-9a-fA-F]{{0,4}}))|(((25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])\\.){{3}}(25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])))(%[\\p{{N}}\\p{{L}}]+)?', pcre='^(((:|[0-9a-fA-F]{{0,4}}):)([0-9a-fA-F]{{0,4}}:){{0,5}}((([0-9a-fA-F]{{0,4}}:)?(:|[0-9a-fA-F]{{0,4}}))|(((25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])\\.){{3}}(25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])))(%[\\p{{N}}\\p{{L}}]+)?)$', invert=False), YangPattern(yang_regex='(([^:]+:){{6}}(([^:]+:[^:]+)|(.*\\..*)))|((([^:]+:)*[^:]+)?::(([^:]+:)*[^:]+)?)(%.+)?', pcre='^((([^\\:]+:){{6}}(([^\\:]+:[^\\:]+)|(.*\\..*)))|((([^\\:]+:)*[^\\:]+)?::(([^\\:]+:)*[^\\:]+)?)(%.+)?)$', invert=False), YangPattern(yang_regex='[0-9a-fA-F:\\.]*', pcre='^([0-9a-fA-F:\\.]*)$', invert=False)])]))
             ])
         ]),
         DContainer(module='Cisco-IOS-XR-um-router-bgp-cfg', namespace='http://cisco.com/ns/yang/Cisco-IOS-XR-um-router-bgp-cfg', prefix='um-router-bgp-cfg', name='address-families', config=True, description='Enter Address Family command mode', presence=False, children=[
             DList(module='Cisco-IOS-XR-um-router-bgp-cfg', namespace='http://cisco.com/ns/yang/Cisco-IOS-XR-um-router-bgp-cfg', prefix='um-router-bgp-cfg', name='address-family', key=['af-name'], config=True, description='Enter Address Family command mode', min_elements=0, ordered_by='system', children=[
-                DLeaf(module='Cisco-IOS-XR-um-router-bgp-cfg', namespace='http://cisco.com/ns/yang/Cisco-IOS-XR-um-router-bgp-cfg', prefix='um-router-bgp-cfg', name='af-name', config=True, description='Enter Address Family command mode', mandatory=False, type_=DTypeEnum(name='Bgp-address-family', description='Bgp address family', reference=None, exts=[], builtin_type='enumeration', default=None, name_to_val={'ipv4-unicast':0, 'ipv4-multicast':1, 'ipv4-labeled-unicast':2, 'ipv4-tunnel':3, 'vpnv4-unicast':4, 'ipv6-unicast':5, 'ipv6-multicast':6, 'ipv6-labeled-unicast':7, 'vpnv6-unicast':8, 'ipv4-mdt':9, 'l2vpn-vpls-vpws':10, 'ipv4-rt-filter':11, 'ipv4-mvpn':12, 'ipv6-mvpn':13, 'l2vpn-evpn':14, 'link-state-link-state':15, 'vpnv4-multicast':16, 'vpnv6-multicast':17, 'ipv4-flowspec':18, 'ipv6-flowspec':19, 'vpnv4-flowspec':20, 'vpnv6-flowspec':21, 'l2vpn-mspw':22, 'ipv4-sr-policy':23, 'ipv6-sr-policy':24, 'all-address-family':25}))
+                DLeaf(module='Cisco-IOS-XR-um-router-bgp-cfg', namespace='http://cisco.com/ns/yang/Cisco-IOS-XR-um-router-bgp-cfg', prefix='um-router-bgp-cfg', name='af-name', config=True, description='Enter Address Family command mode', mandatory=False, type=DTypeEnum(name='Bgp-address-family', description='Bgp address family', reference=None, exts=[], builtin_type='enumeration', default=None, name_to_val={'ipv4-unicast':0, 'ipv4-multicast':1, 'ipv4-labeled-unicast':2, 'ipv4-tunnel':3, 'vpnv4-unicast':4, 'ipv6-unicast':5, 'ipv6-multicast':6, 'ipv6-labeled-unicast':7, 'vpnv6-unicast':8, 'ipv4-mdt':9, 'l2vpn-vpls-vpws':10, 'ipv4-rt-filter':11, 'ipv4-mvpn':12, 'ipv6-mvpn':13, 'l2vpn-evpn':14, 'link-state-link-state':15, 'vpnv4-multicast':16, 'vpnv6-multicast':17, 'ipv4-flowspec':18, 'ipv6-flowspec':19, 'vpnv4-flowspec':20, 'vpnv6-flowspec':21, 'l2vpn-mspw':22, 'ipv4-sr-policy':23, 'ipv6-sr-policy':24, 'all-address-family':25}))
             ])
         ])
     ])
@@ -117,15 +117,15 @@ SRC_DNODE_CHILD_7: DContainer = DContainer(module='Cisco-IOS-XR-um-router-bgp-cf
     DList(module='Cisco-IOS-XR-um-router-bgp-cfg', namespace='http://cisco.com/ns/yang/Cisco-IOS-XR-um-router-bgp-cfg', prefix='um-router-bgp-cfg', name='neighbor-group', key=[
 'neighbor-group-name'
         ], config=True, description='Specify a Neighbor-group', min_elements=0, ordered_by='system', children=[
-        DLeaf(module='Cisco-IOS-XR-um-router-bgp-cfg', namespace='http://cisco.com/ns/yang/Cisco-IOS-XR-um-router-bgp-cfg', prefix='um-router-bgp-cfg', name='neighbor-group-name', config=True, description='Neighbor-group name', mandatory=False, type_=DTypeString(name='xr:Cisco-ios-xr-string', description='Special characters are not allowed.', reference=None, exts=[], builtin_type='string', default=None, length=Ranges([(1, 900)]), patterns=[YangPattern(yang_regex='[\\w\\-\\.:,_@#%$\\+=\\| ;]+', pcre='^(([\\-\\.:,_@#%$\\+=\\| ;]|(?![\\p{{P}}\\p{{Z}}\\p{{C}}])[\\x{{0000}}-\\x{{10FFFF}}])+)$', invert=False)])),
-        DLeaf(module='Cisco-IOS-XR-um-router-bgp-cfg', namespace='http://cisco.com/ns/yang/Cisco-IOS-XR-um-router-bgp-cfg', prefix='um-router-bgp-cfg', name='remote-as', config=True, description='Set remote AS', mandatory=False, type_=DTypeUnion(name='xr:Bgp-as-number', description='BGP AS number type', reference=None, exts=[], builtin_type='union', default=None, types=[DTypeIntegerUnsigned(name='uint32', description=None, reference=None, exts=[], builtin_type='uint32', default=None, ranges=Ranges([(1, 65535)])), DTypeString(name='string', description=None, reference=None, exts=[], builtin_type='string', default=None, length=None, patterns=[YangPattern(yang_regex='([1-9][0-9]{{0,4}}).([0-9]{{1,5}})', pcre='^(([1-9][0-9]{{0,4}}).([0-9]{{1,5}}))$', invert=False)]), DTypeIntegerUnsigned(name='uint32', description=None, reference=None, exts=[], builtin_type='uint32', default=None, ranges=Ranges([(65536, 4294967295)]))])),
+        DLeaf(module='Cisco-IOS-XR-um-router-bgp-cfg', namespace='http://cisco.com/ns/yang/Cisco-IOS-XR-um-router-bgp-cfg', prefix='um-router-bgp-cfg', name='neighbor-group-name', config=True, description='Neighbor-group name', mandatory=False, type=DTypeString(name='xr:Cisco-ios-xr-string', description='Special characters are not allowed.', reference=None, exts=[], builtin_type='string', default=None, length=Ranges([(1, 900)]), patterns=[YangPattern(yang_regex='[\\w\\-\\.:,_@#%$\\+=\\| ;]+', pcre='^(([\\-\\.:,_@#%$\\+=\\| ;]|(?![\\p{{P}}\\p{{Z}}\\p{{C}}])[\\x{{0000}}-\\x{{10FFFF}}])+)$', invert=False)])),
+        DLeaf(module='Cisco-IOS-XR-um-router-bgp-cfg', namespace='http://cisco.com/ns/yang/Cisco-IOS-XR-um-router-bgp-cfg', prefix='um-router-bgp-cfg', name='remote-as', config=True, description='Set remote AS', mandatory=False, type=DTypeUnion(name='xr:Bgp-as-number', description='BGP AS number type', reference=None, exts=[], builtin_type='union', default=None, types=[DTypeIntegerUnsigned(name='uint32', description=None, reference=None, exts=[], builtin_type='uint32', default=None, ranges=Ranges([(1, 65535)])), DTypeString(name='string', description=None, reference=None, exts=[], builtin_type='string', default=None, length=None, patterns=[YangPattern(yang_regex='([1-9][0-9]{{0,4}}).([0-9]{{1,5}})', pcre='^(([1-9][0-9]{{0,4}}).([0-9]{{1,5}}))$', invert=False)]), DTypeIntegerUnsigned(name='uint32', description=None, reference=None, exts=[], builtin_type='uint32', default=None, ranges=Ranges([(65536, 4294967295)]))])),
         DContainer(module='Cisco-IOS-XR-um-router-bgp-cfg', namespace='http://cisco.com/ns/yang/Cisco-IOS-XR-um-router-bgp-cfg', prefix='um-router-bgp-cfg', name='password', config=True, description='Set a password', presence=False, children=[
-            DLeaf(module='Cisco-IOS-XR-um-router-bgp-cfg', namespace='http://cisco.com/ns/yang/Cisco-IOS-XR-um-router-bgp-cfg', prefix='um-router-bgp-cfg', name='encrypted', config=True, description='Specifies a password will follow', mandatory=False, type_=DTypeString(name='xr:Proprietary-password', description="The Proprietary-password type is used to store password\nusing the Cisco proprietary hash function.\nWhen a clear text value is set to a leaf of this type, the\nserver calculates a password hash and stores the result\nin the datastore. The password is never stored in clear text.\n\nWhen a leaf of this type is read, the stored password hash is\nreturned.\n\nA value of this type matches one of the forms:\n\n  !<clear text password>\n  <password hash>\n\nThe '!' prefix signals that the value is clear text. When\nsuch a value is received by the server, a hash value is\ncalculated. This value is stored in the configuration data\nstore.\n\nIf a value starting without '!' is received, the server knows\nthat the value already represents a hashed value, and stores\nit as is in the data store.", reference=None, exts=[], builtin_type='string', default=None, length=None, patterns=[YangPattern(yang_regex='(!.+)|([^!].+)', pcre='^((!.+)|([^!].+))$', invert=False)]))
+            DLeaf(module='Cisco-IOS-XR-um-router-bgp-cfg', namespace='http://cisco.com/ns/yang/Cisco-IOS-XR-um-router-bgp-cfg', prefix='um-router-bgp-cfg', name='encrypted', config=True, description='Specifies a password will follow', mandatory=False, type=DTypeString(name='xr:Proprietary-password', description="The Proprietary-password type is used to store password\nusing the Cisco proprietary hash function.\nWhen a clear text value is set to a leaf of this type, the\nserver calculates a password hash and stores the result\nin the datastore. The password is never stored in clear text.\n\nWhen a leaf of this type is read, the stored password hash is\nreturned.\n\nA value of this type matches one of the forms:\n\n  !<clear text password>\n  <password hash>\n\nThe '!' prefix signals that the value is clear text. When\nsuch a value is received by the server, a hash value is\ncalculated. This value is stored in the configuration data\nstore.\n\nIf a value starting without '!' is received, the server knows\nthat the value already represents a hashed value, and stores\nit as is in the data store.", reference=None, exts=[], builtin_type='string', default=None, length=None, patterns=[YangPattern(yang_regex='(!.+)|([^!].+)', pcre='^((!.+)|([^!].+))$', invert=False)]))
         ]),
-        DLeaf(module='Cisco-IOS-XR-um-router-bgp-cfg', namespace='http://cisco.com/ns/yang/Cisco-IOS-XR-um-router-bgp-cfg', prefix='um-router-bgp-cfg', name='update-source', config=True, description='Source of routing updates', mandatory=False, type_=DTypeString(name='xr:Interface-name', description='An interface name specifying an interface type and\ninstance.\nInterface represents a string defining an interface\ntype and instance, e.g. MgmtEth0/4/CPU1/0 or\nTenGigE0/2/0/0.2 or Bundle-Ether9 or\nBundle-Ether9.98 or Serial0/0/0/0/3/1:1', reference=None, exts=[], builtin_type='string', default=None, length=None, patterns=[YangPattern(yang_regex='[a-zA-Z0-9.:_/-]+', pcre='^([a-zA-Z0-9.:_/-]+)$', invert=False)])),
+        DLeaf(module='Cisco-IOS-XR-um-router-bgp-cfg', namespace='http://cisco.com/ns/yang/Cisco-IOS-XR-um-router-bgp-cfg', prefix='um-router-bgp-cfg', name='update-source', config=True, description='Source of routing updates', mandatory=False, type=DTypeString(name='xr:Interface-name', description='An interface name specifying an interface type and\ninstance.\nInterface represents a string defining an interface\ntype and instance, e.g. MgmtEth0/4/CPU1/0 or\nTenGigE0/2/0/0.2 or Bundle-Ether9 or\nBundle-Ether9.98 or Serial0/0/0/0/3/1:1', reference=None, exts=[], builtin_type='string', default=None, length=None, patterns=[YangPattern(yang_regex='[a-zA-Z0-9.:_/-]+', pcre='^([a-zA-Z0-9.:_/-]+)$', invert=False)])),
         DContainer(module='Cisco-IOS-XR-um-router-bgp-cfg', namespace='http://cisco.com/ns/yang/Cisco-IOS-XR-um-router-bgp-cfg', prefix='um-router-bgp-cfg', name='address-families', config=True, description='Enter Address Family command mode', presence=False, children=[
             DList(module='Cisco-IOS-XR-um-router-bgp-cfg', namespace='http://cisco.com/ns/yang/Cisco-IOS-XR-um-router-bgp-cfg', prefix='um-router-bgp-cfg', name='address-family', key=['af-name'], config=True, description='Enter Address Family command mode', min_elements=0, ordered_by='system', children=[
-                DLeaf(module='Cisco-IOS-XR-um-router-bgp-cfg', namespace='http://cisco.com/ns/yang/Cisco-IOS-XR-um-router-bgp-cfg', prefix='um-router-bgp-cfg', name='af-name', config=True, description='Enter Address Family command mode', mandatory=False, type_=DTypeEnum(name='Bgp-address-family', description='Bgp address family', reference=None, exts=[], builtin_type='enumeration', default=None, name_to_val={'ipv4-unicast':0, 'ipv4-multicast':1, 'ipv4-labeled-unicast':2, 'ipv4-tunnel':3, 'vpnv4-unicast':4, 'ipv6-unicast':5, 'ipv6-multicast':6, 'ipv6-labeled-unicast':7, 'vpnv6-unicast':8, 'ipv4-mdt':9, 'l2vpn-vpls-vpws':10, 'ipv4-rt-filter':11, 'ipv4-mvpn':12, 'ipv6-mvpn':13, 'l2vpn-evpn':14, 'link-state-link-state':15, 'vpnv4-multicast':16, 'vpnv6-multicast':17, 'ipv4-flowspec':18, 'ipv6-flowspec':19, 'vpnv4-flowspec':20, 'vpnv6-flowspec':21, 'l2vpn-mspw':22, 'ipv4-sr-policy':23, 'ipv6-sr-policy':24, 'all-address-family':25}))
+                DLeaf(module='Cisco-IOS-XR-um-router-bgp-cfg', namespace='http://cisco.com/ns/yang/Cisco-IOS-XR-um-router-bgp-cfg', prefix='um-router-bgp-cfg', name='af-name', config=True, description='Enter Address Family command mode', mandatory=False, type=DTypeEnum(name='Bgp-address-family', description='Bgp address family', reference=None, exts=[], builtin_type='enumeration', default=None, name_to_val={'ipv4-unicast':0, 'ipv4-multicast':1, 'ipv4-labeled-unicast':2, 'ipv4-tunnel':3, 'vpnv4-unicast':4, 'ipv6-unicast':5, 'ipv6-multicast':6, 'ipv6-labeled-unicast':7, 'vpnv6-unicast':8, 'ipv4-mdt':9, 'l2vpn-vpls-vpws':10, 'ipv4-rt-filter':11, 'ipv4-mvpn':12, 'ipv6-mvpn':13, 'l2vpn-evpn':14, 'link-state-link-state':15, 'vpnv4-multicast':16, 'vpnv6-multicast':17, 'ipv4-flowspec':18, 'ipv6-flowspec':19, 'vpnv4-flowspec':20, 'vpnv6-flowspec':21, 'l2vpn-mspw':22, 'ipv4-sr-policy':23, 'ipv6-sr-policy':24, 'all-address-family':25}))
             ])
         ])
     ])
@@ -133,12 +133,12 @@ SRC_DNODE_CHILD_7: DContainer = DContainer(module='Cisco-IOS-XR-um-router-bgp-cf
 
 SRC_DNODE_CHILD_8: DContainer = DContainer(module='Cisco-IOS-XR-um-router-bgp-cfg', namespace='http://cisco.com/ns/yang/Cisco-IOS-XR-um-router-bgp-cfg', prefix='um-router-bgp-cfg', name='address-families', config=True, description='Enter Address Family command mode', presence=False, children=[
     DList(module='Cisco-IOS-XR-um-router-bgp-cfg', namespace='http://cisco.com/ns/yang/Cisco-IOS-XR-um-router-bgp-cfg', prefix='um-router-bgp-cfg', name='address-family', key=['af-name'], config=True, description='Enter Address Family command mode', min_elements=0, ordered_by='system', children=[
-        DLeaf(module='Cisco-IOS-XR-um-router-bgp-cfg', namespace='http://cisco.com/ns/yang/Cisco-IOS-XR-um-router-bgp-cfg', prefix='um-router-bgp-cfg', name='af-name', config=True, description='Enter Address Family command mode', mandatory=False, type_=DTypeEnum(name='Bgp-address-family', description='Bgp address family', reference=None, exts=[], builtin_type='enumeration', default=None, name_to_val={'ipv4-unicast':0, 'ipv4-multicast':1, 'ipv4-labeled-unicast':2, 'ipv4-tunnel':3, 'vpnv4-unicast':4, 'ipv6-unicast':5, 'ipv6-multicast':6, 'ipv6-labeled-unicast':7, 'vpnv6-unicast':8, 'ipv4-mdt':9, 'l2vpn-vpls-vpws':10, 'ipv4-rt-filter':11, 'ipv4-mvpn':12, 'ipv6-mvpn':13, 'l2vpn-evpn':14, 'link-state-link-state':15, 'vpnv4-multicast':16, 'vpnv6-multicast':17, 'ipv4-flowspec':18, 'ipv6-flowspec':19, 'vpnv4-flowspec':20, 'vpnv6-flowspec':21, 'l2vpn-mspw':22, 'ipv4-sr-policy':23, 'ipv6-sr-policy':24, 'all-address-family':25}))
+        DLeaf(module='Cisco-IOS-XR-um-router-bgp-cfg', namespace='http://cisco.com/ns/yang/Cisco-IOS-XR-um-router-bgp-cfg', prefix='um-router-bgp-cfg', name='af-name', config=True, description='Enter Address Family command mode', mandatory=False, type=DTypeEnum(name='Bgp-address-family', description='Bgp address family', reference=None, exts=[], builtin_type='enumeration', default=None, name_to_val={'ipv4-unicast':0, 'ipv4-multicast':1, 'ipv4-labeled-unicast':2, 'ipv4-tunnel':3, 'vpnv4-unicast':4, 'ipv6-unicast':5, 'ipv6-multicast':6, 'ipv6-labeled-unicast':7, 'vpnv6-unicast':8, 'ipv4-mdt':9, 'l2vpn-vpls-vpws':10, 'ipv4-rt-filter':11, 'ipv4-mvpn':12, 'ipv6-mvpn':13, 'l2vpn-evpn':14, 'link-state-link-state':15, 'vpnv4-multicast':16, 'vpnv6-multicast':17, 'ipv4-flowspec':18, 'ipv6-flowspec':19, 'vpnv4-flowspec':20, 'vpnv6-flowspec':21, 'l2vpn-mspw':22, 'ipv4-sr-policy':23, 'ipv6-sr-policy':24, 'all-address-family':25}))
     ])
 ])
 
 SRC_DNODE_CHILD_9: DContainer = DContainer(module='Cisco-IOS-XR-um-router-bgp-cfg', namespace='http://cisco.com/ns/yang/Cisco-IOS-XR-um-router-bgp-cfg', prefix='um-router-bgp-cfg', name='bgp', config=True, description='BGP commands', presence=False, children=[
-    DLeaf(module='Cisco-IOS-XR-um-router-bgp-cfg', namespace='http://cisco.com/ns/yang/Cisco-IOS-XR-um-router-bgp-cfg', prefix='um-router-bgp-cfg', name='router-id', config=True, description='Configure Router-id', mandatory=False, type_=DTypeString(name='inet:ipv4-address-no-zone', description='An IPv4 address without a zone index.  This type, derived from\nipv4-address, may be used in situations where the zone is\nknown from the context and hence no zone index is needed.', reference=None, exts=[], builtin_type='string', default=None, length=None, patterns=[YangPattern(yang_regex='(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){{3}}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(%[\\p{{N}}\\p{{L}}]+)?', pcre='^((([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){{3}}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(%[\\p{{N}}\\p{{L}}]+)?)$', invert=False), YangPattern(yang_regex='[0-9\\.]*', pcre='^([0-9\\.]*)$', invert=False)]))
+    DLeaf(module='Cisco-IOS-XR-um-router-bgp-cfg', namespace='http://cisco.com/ns/yang/Cisco-IOS-XR-um-router-bgp-cfg', prefix='um-router-bgp-cfg', name='router-id', config=True, description='Configure Router-id', mandatory=False, type=DTypeString(name='inet:ipv4-address-no-zone', description='An IPv4 address without a zone index.  This type, derived from\nipv4-address, may be used in situations where the zone is\nknown from the context and hence no zone index is needed.', reference=None, exts=[], builtin_type='string', default=None, length=None, patterns=[YangPattern(yang_regex='(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){{3}}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(%[\\p{{N}}\\p{{L}}]+)?', pcre='^((([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){{3}}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(%[\\p{{N}}\\p{{L}}]+)?)$', invert=False), YangPattern(yang_regex='[0-9\\.]*', pcre='^([0-9\\.]*)$', invert=False)]))
 ])
 
 SRC_DNODE_CHILD_4: DList = DList(module='Cisco-IOS-XR-um-router-bgp-cfg', namespace='http://cisco.com/ns/yang/Cisco-IOS-XR-um-router-bgp-cfg', prefix='um-router-bgp-cfg', name='as', key=['as-number'], config=True, description='bgp as-number', min_elements=0, ordered_by='system', children=[SRC_DNODE_CHILD_5, SRC_DNODE_CHILD_6, SRC_DNODE_CHILD_7, SRC_DNODE_CHILD_8, SRC_DNODE_CHILD_9])
@@ -156,10 +156,10 @@ SRC_DNODE_CHILD_10: DContainer = DContainer(module='Cisco-IOS-XR-um-route-policy
         DList(module='Cisco-IOS-XR-um-route-policy-cfg', namespace='http://cisco.com/ns/yang/Cisco-IOS-XR-um-route-policy-cfg', prefix='um-route-policy-cfg', name='route-policy', key=['route-policy-name'], config=True, description='Information about an individual policy', min_elements=0, ordered_by='system', exts=[
                 DExt(module='Cisco-IOS-XR-types', namespace='http://cisco.com/ns/yang/cisco-xr-types', prefix='xr', name='xr-xml-map', arg='rpl_cfg:RoutePolicy', exts=[])
             ], children=[
-            DLeaf(module='Cisco-IOS-XR-um-route-policy-cfg', namespace='http://cisco.com/ns/yang/Cisco-IOS-XR-um-route-policy-cfg', prefix='um-route-policy-cfg', name='route-policy-name', config=True, description='Route policy name', mandatory=False, type_=DTypeString(name='xr:Cisco-ios-xr-string', description='Special characters are not allowed.', reference=None, exts=[], builtin_type='string', default=None, length=None, patterns=[YangPattern(yang_regex='[\\w\\-\\.:,_@#%$\\+=\\| ;]+', pcre='^(([\\-\\.:,_@#%$\\+=\\| ;]|(?![\\p{{P}}\\p{{Z}}\\p{{C}}])[\\x{{0000}}-\\x{{10FFFF}}])+)$', invert=False)]), exts=[
+            DLeaf(module='Cisco-IOS-XR-um-route-policy-cfg', namespace='http://cisco.com/ns/yang/Cisco-IOS-XR-um-route-policy-cfg', prefix='um-route-policy-cfg', name='route-policy-name', config=True, description='Route policy name', mandatory=False, type=DTypeString(name='xr:Cisco-ios-xr-string', description='Special characters are not allowed.', reference=None, exts=[], builtin_type='string', default=None, length=None, patterns=[YangPattern(yang_regex='[\\w\\-\\.:,_@#%$\\+=\\| ;]+', pcre='^(([\\-\\.:,_@#%$\\+=\\| ;]|(?![\\p{{P}}\\p{{Z}}\\p{{C}}])[\\x{{0000}}-\\x{{10FFFF}}])+)$', invert=False)]), exts=[
                     DExt(module='Cisco-IOS-XR-types', namespace='http://cisco.com/ns/yang/cisco-xr-types', prefix='xr', name='xr-xml-map', arg='rpl_cfg:RoutePolicyName', exts=[])
                 ]),
-            DLeaf(module='Cisco-IOS-XR-um-route-policy-cfg', namespace='http://cisco.com/ns/yang/Cisco-IOS-XR-um-route-policy-cfg', prefix='um-route-policy-cfg', name='rpl-route-policy', config=True, description="Configures a route policy, This leaf accepts a complete Cisco IOS XR CLI configuration string that defines a route-policy by its name and a route-policy contains a sequence of policy statements.\n\nroute-policy sample\n[ . . . policy statements . . . ]\nend-policy\n\nNote: The entire route-policy configuration should be provided as a single string. The 'end-policy' keyword indicates the end of the route-policy definition.", mandatory=True, type_=DTypeString(name='xr:Rpl-policy', description='RPL Policy info', reference=None, exts=[], builtin_type='string', default=None, length=None, patterns=[]), exts=[
+            DLeaf(module='Cisco-IOS-XR-um-route-policy-cfg', namespace='http://cisco.com/ns/yang/Cisco-IOS-XR-um-route-policy-cfg', prefix='um-route-policy-cfg', name='rpl-route-policy', config=True, description="Configures a route policy, This leaf accepts a complete Cisco IOS XR CLI configuration string that defines a route-policy by its name and a route-policy contains a sequence of policy statements.\n\nroute-policy sample\n[ . . . policy statements . . . ]\nend-policy\n\nNote: The entire route-policy configuration should be provided as a single string. The 'end-policy' keyword indicates the end of the route-policy definition.", mandatory=True, type=DTypeString(name='xr:Rpl-policy', description='RPL Policy info', reference=None, exts=[], builtin_type='string', default=None, length=None, patterns=[]), exts=[
                     DExt(module='Cisco-IOS-XR-types', namespace='http://cisco.com/ns/yang/cisco-xr-types', prefix='xr', name='xr-xml-map', arg='rpl_cfg:PolicyAsText', exts=[])
                 ])
         ])
@@ -167,7 +167,7 @@ SRC_DNODE_CHILD_10: DContainer = DContainer(module='Cisco-IOS-XR-um-route-policy
 ])
 
 SRC_DNODE_CHILD_11: DContainer = DContainer(module='Cisco-IOS-XR-um-hostname-cfg', namespace='http://cisco.com/ns/yang/Cisco-IOS-XR-um-hostname-cfg', prefix='um-hostname-cfg', name='hostname', config=True, description="Set system's network name", presence=False, children=[
-    DLeaf(module='Cisco-IOS-XR-um-hostname-cfg', namespace='http://cisco.com/ns/yang/Cisco-IOS-XR-um-hostname-cfg', prefix='um-hostname-cfg', name='system-network-name', config=True, description="Set system's network name", mandatory=False, type_=DTypeString(name='xr:Cisco-ios-xr-string', description='Special characters are not allowed.', reference=None, exts=[], builtin_type='string', default=None, length=Ranges([(1, 253)]), patterns=[YangPattern(yang_regex='[\\w\\-\\.:,_@#%$\\+=\\| ;]+', pcre='^(([\\-\\.:,_@#%$\\+=\\| ;]|(?![\\p{{P}}\\p{{Z}}\\p{{C}}])[\\x{{0000}}-\\x{{10FFFF}}])+)$', invert=False), YangPattern(yang_regex='[a-zA-Z0-9_\\.-]+', pcre='^([a-zA-Z0-9_\\.-]+)$', invert=False)]))
+    DLeaf(module='Cisco-IOS-XR-um-hostname-cfg', namespace='http://cisco.com/ns/yang/Cisco-IOS-XR-um-hostname-cfg', prefix='um-hostname-cfg', name='system-network-name', config=True, description="Set system's network name", mandatory=False, type=DTypeString(name='xr:Cisco-ios-xr-string', description='Special characters are not allowed.', reference=None, exts=[], builtin_type='string', default=None, length=Ranges([(1, 253)]), patterns=[YangPattern(yang_regex='[\\w\\-\\.:,_@#%$\\+=\\| ;]+', pcre='^(([\\-\\.:,_@#%$\\+=\\| ;]|(?![\\p{{P}}\\p{{Z}}\\p{{C}}])[\\x{{0000}}-\\x{{10FFFF}}])+)$', invert=False), YangPattern(yang_regex='[a-zA-Z0-9_\\.-]+', pcre='^([a-zA-Z0-9_\\.-]+)$', invert=False)]))
 ])
 
 SRC_DNODE_IDENTITY_0: DIdentity = DIdentity(module='openconfig-policy-types', namespace='http://openconfig.net/yang/policy-types', prefix='oc-pol-types', name='INSTALL_PROTOCOL_TYPE')
@@ -352475,20 +352475,15 @@ class openconfig_network_instance__network_instances__network_instance__protocol
         return openconfig_network_instance__network_instances__network_instance__protocols__protocol__bgp__neighbors__neighbor_entry.from_gdata(self.to_gdata())
 
 _breaker3: None = None
-class openconfig_network_instance__network_instances__network_instance__protocols__protocol__bgp__neighbors__neighbor(yadata.MList[openconfig_network_instance__network_instances__network_instance__protocols__protocol__bgp__neighbors__neighbor_entry]):
+class openconfig_network_instance__network_instances__network_instance__protocols__protocol__bgp__neighbors__neighbor(yadata.MKeyedList[str, openconfig_network_instance__network_instances__network_instance__protocols__protocol__bgp__neighbors__neighbor_entry]):
     mut def __init__(self, elements: list[openconfig_network_instance__network_instances__network_instance__protocols__protocol__bgp__neighbors__neighbor_entry]=[]) -> None:
-        self.elements = elements
+        yadata.MKeyedList.__init__(self, lambda e, k: e.neighbor_address == k, elements)
 
-    pure def get(self, neighbor_address: str) -> ?openconfig_network_instance__network_instances__network_instance__protocols__protocol__bgp__neighbors__neighbor_entry:
-        for e in self:
-            if e.neighbor_address != neighbor_address:
-                continue
-            return e
-
-    mut def create(self, neighbor_address: str) -> openconfig_network_instance__network_instances__network_instance__protocols__protocol__bgp__neighbors__neighbor_entry:
-        e = self.get(neighbor_address)
+    mut def create(self, key: str) -> openconfig_network_instance__network_instances__network_instance__protocols__protocol__bgp__neighbors__neighbor_entry:
+        e = self.get(key)
         if e is not None:
             return e
+        neighbor_address = key
         res = openconfig_network_instance__network_instances__network_instance__protocols__protocol__bgp__neighbors__neighbor_entry(neighbor_address=neighbor_address)
         self.elements.append(res)
         return res
@@ -352509,27 +352504,6 @@ class openconfig_network_instance__network_instances__network_instance__protocol
                 copied_elements.append(ce)
         return openconfig_network_instance__network_instances__network_instance__protocols__protocol__bgp__neighbors__neighbor(elements=copied_elements)
 
-
-extension openconfig_network_instance__network_instances__network_instance__protocols__protocol__bgp__neighbors__neighbor(Indexed[str, openconfig_network_instance__network_instances__network_instance__protocols__protocol__bgp__neighbors__neighbor_entry]):
-    def __getitem__(self, k: str) -> openconfig_network_instance__network_instances__network_instance__protocols__protocol__bgp__neighbors__neighbor_entry:
-        e = self.get(k)
-        if e is not None:
-            return e
-        raise KeyError(k)
-
-    mut def __setitem__(self, k: str, n: openconfig_network_instance__network_instances__network_instance__protocols__protocol__bgp__neighbors__neighbor_entry) -> None:
-        for i, e in enumerate(self.elements):
-            if e.neighbor_address == k:
-                self.elements[i] = n
-                return
-        self.elements.append(n)
-
-    mut def __delitem__(self, k: str) -> None:
-        for i, e in enumerate(self.elements):
-            if e.neighbor_address == k:
-                del self.elements[i]
-                return
-        raise KeyError(k)
 
 _breaker4: None = None
 class openconfig_network_instance__network_instances__network_instance__protocols__protocol__bgp__neighbors(yadata.MNode):
@@ -352596,22 +352570,15 @@ class openconfig_network_instance__network_instances__network_instance__protocol
         return openconfig_network_instance__network_instances__network_instance__protocols__protocol_entry.from_gdata(self.to_gdata())
 
 _breaker7: None = None
-class openconfig_network_instance__network_instances__network_instance__protocols__protocol(yadata.MList[openconfig_network_instance__network_instances__network_instance__protocols__protocol_entry]):
+class openconfig_network_instance__network_instances__network_instance__protocols__protocol(yadata.MKeyedList[(identifier: Identityref, name: str), openconfig_network_instance__network_instances__network_instance__protocols__protocol_entry]):
     mut def __init__(self, elements: list[openconfig_network_instance__network_instances__network_instance__protocols__protocol_entry]=[]) -> None:
-        self.elements = elements
+        yadata.MKeyedList.__init__(self, lambda e, k: e.identifier == k.identifier and e.name == k.name, elements)
 
-    pure def get(self, identifier: Identityref, name: str) -> ?openconfig_network_instance__network_instances__network_instance__protocols__protocol_entry:
-        for e in self:
-            if e.identifier != identifier:
-                continue
-            if e.name != name:
-                continue
-            return e
-
-    mut def create(self, identifier: Identityref, name: str) -> openconfig_network_instance__network_instances__network_instance__protocols__protocol_entry:
-        e = self.get(identifier, name)
+    mut def create(self, key: (identifier: Identityref, name: str)) -> openconfig_network_instance__network_instances__network_instance__protocols__protocol_entry:
+        e = self.get(key)
         if e is not None:
             return e
+        (identifier=identifier, name=name) = key
         res = openconfig_network_instance__network_instances__network_instance__protocols__protocol_entry(identifier=identifier, name=name)
         self.elements.append(res)
         return res
@@ -352635,10 +352602,10 @@ class openconfig_network_instance__network_instances__network_instance__protocol
 
 _breaker8: None = None
 class openconfig_network_instance__network_instances__network_instance__protocols(yadata.MNode):
-    protocol_: openconfig_network_instance__network_instances__network_instance__protocols__protocol
+    protocol: openconfig_network_instance__network_instances__network_instance__protocols__protocol
 
-    mut def __init__(self, protocol_: list[openconfig_network_instance__network_instances__network_instance__protocols__protocol_entry]=[]) -> None:
-        self.protocol_ = openconfig_network_instance__network_instances__network_instance__protocols__protocol(elements=protocol_)
+    mut def __init__(self, protocol: list[openconfig_network_instance__network_instances__network_instance__protocols__protocol_entry]=[]) -> None:
+        self.protocol = openconfig_network_instance__network_instances__network_instance__protocols__protocol(elements=protocol)
 
     mut def to_gdata(self) -> ygdata.Node:
         return yadata.from_adata(SRC_DNODE, self, loose=True, root_path=['openconfig-network-instance:network-instances', 'network-instance', 'protocols'])
@@ -352646,7 +352613,7 @@ class openconfig_network_instance__network_instances__network_instance__protocol
     @staticmethod
     mut def from_gdata(n: ?ygdata.Node) -> openconfig_network_instance__network_instances__network_instance__protocols:
         if n is not None:
-            return openconfig_network_instance__network_instances__network_instance__protocols(protocol_=openconfig_network_instance__network_instances__network_instance__protocols__protocol.from_gdata(n.get_opt_list(ygdata.Id(NS_openconfig_network_instance, 'protocol'))))
+            return openconfig_network_instance__network_instances__network_instance__protocols(protocol=openconfig_network_instance__network_instances__network_instance__protocols__protocol.from_gdata(n.get_opt_list(ygdata.Id(NS_openconfig_network_instance, 'protocol'))))
         return openconfig_network_instance__network_instances__network_instance__protocols()
 
     mut def copy(self) -> openconfig_network_instance__network_instances__network_instance__protocols:
@@ -352675,20 +352642,15 @@ class openconfig_network_instance__network_instances__network_instance_entry(yad
         return openconfig_network_instance__network_instances__network_instance_entry.from_gdata(self.to_gdata())
 
 _breaker10: None = None
-class openconfig_network_instance__network_instances__network_instance(yadata.MList[openconfig_network_instance__network_instances__network_instance_entry]):
+class openconfig_network_instance__network_instances__network_instance(yadata.MKeyedList[str, openconfig_network_instance__network_instances__network_instance_entry]):
     mut def __init__(self, elements: list[openconfig_network_instance__network_instances__network_instance_entry]=[]) -> None:
-        self.elements = elements
+        yadata.MKeyedList.__init__(self, lambda e, k: e.name == k, elements)
 
-    pure def get(self, name: str) -> ?openconfig_network_instance__network_instances__network_instance_entry:
-        for e in self:
-            if e.name != name:
-                continue
-            return e
-
-    mut def create(self, name: str) -> openconfig_network_instance__network_instances__network_instance_entry:
-        e = self.get(name)
+    mut def create(self, key: str) -> openconfig_network_instance__network_instances__network_instance_entry:
+        e = self.get(key)
         if e is not None:
             return e
+        name = key
         res = openconfig_network_instance__network_instances__network_instance_entry(name=name)
         self.elements.append(res)
         return res
@@ -352709,27 +352671,6 @@ class openconfig_network_instance__network_instances__network_instance(yadata.ML
                 copied_elements.append(ce)
         return openconfig_network_instance__network_instances__network_instance(elements=copied_elements)
 
-
-extension openconfig_network_instance__network_instances__network_instance(Indexed[str, openconfig_network_instance__network_instances__network_instance_entry]):
-    def __getitem__(self, k: str) -> openconfig_network_instance__network_instances__network_instance_entry:
-        e = self.get(k)
-        if e is not None:
-            return e
-        raise KeyError(k)
-
-    mut def __setitem__(self, k: str, n: openconfig_network_instance__network_instances__network_instance_entry) -> None:
-        for i, e in enumerate(self.elements):
-            if e.name == k:
-                self.elements[i] = n
-                return
-        self.elements.append(n)
-
-    mut def __delitem__(self, k: str) -> None:
-        for i, e in enumerate(self.elements):
-            if e.name == k:
-                del self.elements[i]
-                return
-        raise KeyError(k)
 
 _breaker11: None = None
 class openconfig_network_instance__network_instances(yadata.MNode):
@@ -352799,22 +352740,17 @@ class Cisco_IOS_XR_um_interface_cfg__interfaces__interface__ipv4__addresses__sec
         return Cisco_IOS_XR_um_interface_cfg__interfaces__interface__ipv4__addresses__secondaries__secondary_entry.from_gdata(self.to_gdata())
 
 _breaker14: None = None
-class Cisco_IOS_XR_um_interface_cfg__interfaces__interface__ipv4__addresses__secondaries__secondary(yadata.MList[Cisco_IOS_XR_um_interface_cfg__interfaces__interface__ipv4__addresses__secondaries__secondary_entry]):
+class Cisco_IOS_XR_um_interface_cfg__interfaces__interface__ipv4__addresses__secondaries__secondary(yadata.MKeyedList[str, Cisco_IOS_XR_um_interface_cfg__interfaces__interface__ipv4__addresses__secondaries__secondary_entry]):
     mut def __init__(self, elements: list[Cisco_IOS_XR_um_interface_cfg__interfaces__interface__ipv4__addresses__secondaries__secondary_entry]=[]) -> None:
-        self.elements = elements
+        yadata.MKeyedList.__init__(self, lambda e, k: e.address == k, elements)
 
-    pure def get(self, address: str) -> ?Cisco_IOS_XR_um_interface_cfg__interfaces__interface__ipv4__addresses__secondaries__secondary_entry:
-        for e in self:
-            if e.address != address:
-                continue
-            return e
-
-    mut def create(self, address: str, netmask: ?str=None) -> Cisco_IOS_XR_um_interface_cfg__interfaces__interface__ipv4__addresses__secondaries__secondary_entry:
-        e = self.get(address)
+    mut def create(self, key: str, netmask: ?str=None) -> Cisco_IOS_XR_um_interface_cfg__interfaces__interface__ipv4__addresses__secondaries__secondary_entry:
+        e = self.get(key)
         if e is not None:
             if netmask is not None:
                 e.netmask = netmask
             return e
+        address = key
         res = Cisco_IOS_XR_um_interface_cfg__interfaces__interface__ipv4__addresses__secondaries__secondary_entry(address=address, netmask=netmask)
         self.elements.append(res)
         return res
@@ -352835,27 +352771,6 @@ class Cisco_IOS_XR_um_interface_cfg__interfaces__interface__ipv4__addresses__sec
                 copied_elements.append(ce)
         return Cisco_IOS_XR_um_interface_cfg__interfaces__interface__ipv4__addresses__secondaries__secondary(elements=copied_elements)
 
-
-extension Cisco_IOS_XR_um_interface_cfg__interfaces__interface__ipv4__addresses__secondaries__secondary(Indexed[str, Cisco_IOS_XR_um_interface_cfg__interfaces__interface__ipv4__addresses__secondaries__secondary_entry]):
-    def __getitem__(self, k: str) -> Cisco_IOS_XR_um_interface_cfg__interfaces__interface__ipv4__addresses__secondaries__secondary_entry:
-        e = self.get(k)
-        if e is not None:
-            return e
-        raise KeyError(k)
-
-    mut def __setitem__(self, k: str, n: Cisco_IOS_XR_um_interface_cfg__interfaces__interface__ipv4__addresses__secondaries__secondary_entry) -> None:
-        for i, e in enumerate(self.elements):
-            if e.address == k:
-                self.elements[i] = n
-                return
-        self.elements.append(n)
-
-    mut def __delitem__(self, k: str) -> None:
-        for i, e in enumerate(self.elements):
-            if e.address == k:
-                del self.elements[i]
-                return
-        raise KeyError(k)
 
 _breaker15: None = None
 class Cisco_IOS_XR_um_interface_cfg__interfaces__interface__ipv4__addresses__secondaries(yadata.MNode):
@@ -353036,24 +352951,19 @@ class Cisco_IOS_XR_um_interface_cfg__interfaces__interface_entry(yadata.MNode):
         return Cisco_IOS_XR_um_interface_cfg__interfaces__interface_entry.from_gdata(self.to_gdata())
 
 _breaker22: None = None
-class Cisco_IOS_XR_um_interface_cfg__interfaces__interface(yadata.MList[Cisco_IOS_XR_um_interface_cfg__interfaces__interface_entry]):
+class Cisco_IOS_XR_um_interface_cfg__interfaces__interface(yadata.MKeyedList[str, Cisco_IOS_XR_um_interface_cfg__interfaces__interface_entry]):
     mut def __init__(self, elements: list[Cisco_IOS_XR_um_interface_cfg__interfaces__interface_entry]=[]) -> None:
-        self.elements = elements
+        yadata.MKeyedList.__init__(self, lambda e, k: e.interface_name == k, elements)
 
-    pure def get(self, interface_name: str) -> ?Cisco_IOS_XR_um_interface_cfg__interfaces__interface_entry:
-        for e in self:
-            if e.interface_name != interface_name:
-                continue
-            return e
-
-    mut def create(self, interface_name: str, description: ?str=None, vrf: ?str=None) -> Cisco_IOS_XR_um_interface_cfg__interfaces__interface_entry:
-        e = self.get(interface_name)
+    mut def create(self, key: str, description: ?str=None, vrf: ?str=None) -> Cisco_IOS_XR_um_interface_cfg__interfaces__interface_entry:
+        e = self.get(key)
         if e is not None:
             if description is not None:
                 e.description = description
             if vrf is not None:
                 e.vrf = vrf
             return e
+        interface_name = key
         res = Cisco_IOS_XR_um_interface_cfg__interfaces__interface_entry(interface_name=interface_name, description=description, vrf=vrf)
         self.elements.append(res)
         return res
@@ -353074,27 +352984,6 @@ class Cisco_IOS_XR_um_interface_cfg__interfaces__interface(yadata.MList[Cisco_IO
                 copied_elements.append(ce)
         return Cisco_IOS_XR_um_interface_cfg__interfaces__interface(elements=copied_elements)
 
-
-extension Cisco_IOS_XR_um_interface_cfg__interfaces__interface(Indexed[str, Cisco_IOS_XR_um_interface_cfg__interfaces__interface_entry]):
-    def __getitem__(self, k: str) -> Cisco_IOS_XR_um_interface_cfg__interfaces__interface_entry:
-        e = self.get(k)
-        if e is not None:
-            return e
-        raise KeyError(k)
-
-    mut def __setitem__(self, k: str, n: Cisco_IOS_XR_um_interface_cfg__interfaces__interface_entry) -> None:
-        for i, e in enumerate(self.elements):
-            if e.interface_name == k:
-                self.elements[i] = n
-                return
-        self.elements.append(n)
-
-    mut def __delitem__(self, k: str) -> None:
-        for i, e in enumerate(self.elements):
-            if e.interface_name == k:
-                del self.elements[i]
-                return
-        raise KeyError(k)
 
 _breaker23: None = None
 class Cisco_IOS_XR_um_interface_cfg__interfaces(yadata.MNode):
@@ -353256,20 +353145,15 @@ class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbors__neighbor__addr
         return Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbors__neighbor__address_families__address_family_entry.from_gdata(self.to_gdata())
 
 _breaker30: None = None
-class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbors__neighbor__address_families__address_family(yadata.MList[Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbors__neighbor__address_families__address_family_entry]):
+class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbors__neighbor__address_families__address_family(yadata.MKeyedList[str, Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbors__neighbor__address_families__address_family_entry]):
     mut def __init__(self, elements: list[Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbors__neighbor__address_families__address_family_entry]=[]) -> None:
-        self.elements = elements
+        yadata.MKeyedList.__init__(self, lambda e, k: e.af_name == k, elements)
 
-    pure def get(self, af_name: str) -> ?Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbors__neighbor__address_families__address_family_entry:
-        for e in self:
-            if e.af_name != af_name:
-                continue
-            return e
-
-    mut def create(self, af_name: str) -> Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbors__neighbor__address_families__address_family_entry:
-        e = self.get(af_name)
+    mut def create(self, key: str) -> Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbors__neighbor__address_families__address_family_entry:
+        e = self.get(key)
         if e is not None:
             return e
+        af_name = key
         res = Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbors__neighbor__address_families__address_family_entry(af_name=af_name)
         self.elements.append(res)
         return res
@@ -353290,27 +353174,6 @@ class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbors__neighbor__addr
                 copied_elements.append(ce)
         return Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbors__neighbor__address_families__address_family(elements=copied_elements)
 
-
-extension Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbors__neighbor__address_families__address_family(Indexed[str, Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbors__neighbor__address_families__address_family_entry]):
-    def __getitem__(self, k: str) -> Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbors__neighbor__address_families__address_family_entry:
-        e = self.get(k)
-        if e is not None:
-            return e
-        raise KeyError(k)
-
-    mut def __setitem__(self, k: str, n: Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbors__neighbor__address_families__address_family_entry) -> None:
-        for i, e in enumerate(self.elements):
-            if e.af_name == k:
-                self.elements[i] = n
-                return
-        self.elements.append(n)
-
-    mut def __delitem__(self, k: str) -> None:
-        for i, e in enumerate(self.elements):
-            if e.af_name == k:
-                del self.elements[i]
-                return
-        raise KeyError(k)
 
 _breaker31: None = None
 class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbors__neighbor__address_families(yadata.MNode):
@@ -353364,29 +353227,19 @@ class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbors__neighbor_entry
         return Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbors__neighbor_entry.from_gdata(self.to_gdata())
 
 _breaker33: None = None
-class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbors__neighbor(yadata.MList[Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbors__neighbor_entry]):
+class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbors__neighbor(yadata.MKeyedList[str, Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbors__neighbor_entry]):
     mut def __init__(self, elements: list[Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbors__neighbor_entry]=[]) -> None:
-        self.elements = elements
+        yadata.MKeyedList.__init__(self, lambda e, k: e.address == k, elements)
 
-    pure def get(self, address: str) -> ?Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbors__neighbor_entry:
-        for e in self:
-            e_address = e.address
-            address_match = False
-            if isinstance(e_address, str) and isinstance(address, str):
-                if e_address == address:
-                    address_match = True
-            if not address_match:
-                continue
-            return e
-
-    mut def create(self, address: str, remote_as: ?value=None, description: ?str=None) -> Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbors__neighbor_entry:
-        e = self.get(address)
+    mut def create(self, key: str, remote_as: ?value=None, description: ?str=None) -> Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbors__neighbor_entry:
+        e = self.get(key)
         if e is not None:
             if remote_as is not None:
                 e.remote_as = remote_as
             if description is not None:
                 e.description = description
             return e
+        address = key
         res = Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbors__neighbor_entry(address=address, remote_as=remote_as, description=description)
         self.elements.append(res)
         return res
@@ -353469,20 +353322,15 @@ class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbor_groups__neighbor
         return Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbor_groups__neighbor_group__address_families__address_family_entry.from_gdata(self.to_gdata())
 
 _breaker37: None = None
-class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbor_groups__neighbor_group__address_families__address_family(yadata.MList[Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbor_groups__neighbor_group__address_families__address_family_entry]):
+class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbor_groups__neighbor_group__address_families__address_family(yadata.MKeyedList[str, Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbor_groups__neighbor_group__address_families__address_family_entry]):
     mut def __init__(self, elements: list[Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbor_groups__neighbor_group__address_families__address_family_entry]=[]) -> None:
-        self.elements = elements
+        yadata.MKeyedList.__init__(self, lambda e, k: e.af_name == k, elements)
 
-    pure def get(self, af_name: str) -> ?Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbor_groups__neighbor_group__address_families__address_family_entry:
-        for e in self:
-            if e.af_name != af_name:
-                continue
-            return e
-
-    mut def create(self, af_name: str) -> Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbor_groups__neighbor_group__address_families__address_family_entry:
-        e = self.get(af_name)
+    mut def create(self, key: str) -> Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbor_groups__neighbor_group__address_families__address_family_entry:
+        e = self.get(key)
         if e is not None:
             return e
+        af_name = key
         res = Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbor_groups__neighbor_group__address_families__address_family_entry(af_name=af_name)
         self.elements.append(res)
         return res
@@ -353503,27 +353351,6 @@ class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbor_groups__neighbor
                 copied_elements.append(ce)
         return Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbor_groups__neighbor_group__address_families__address_family(elements=copied_elements)
 
-
-extension Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbor_groups__neighbor_group__address_families__address_family(Indexed[str, Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbor_groups__neighbor_group__address_families__address_family_entry]):
-    def __getitem__(self, k: str) -> Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbor_groups__neighbor_group__address_families__address_family_entry:
-        e = self.get(k)
-        if e is not None:
-            return e
-        raise KeyError(k)
-
-    mut def __setitem__(self, k: str, n: Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbor_groups__neighbor_group__address_families__address_family_entry) -> None:
-        for i, e in enumerate(self.elements):
-            if e.af_name == k:
-                self.elements[i] = n
-                return
-        self.elements.append(n)
-
-    mut def __delitem__(self, k: str) -> None:
-        for i, e in enumerate(self.elements):
-            if e.af_name == k:
-                del self.elements[i]
-                return
-        raise KeyError(k)
 
 _breaker38: None = None
 class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbor_groups__neighbor_group__address_families(yadata.MNode):
@@ -353573,24 +353400,19 @@ class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbor_groups__neighbor
         return Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbor_groups__neighbor_group_entry.from_gdata(self.to_gdata())
 
 _breaker40: None = None
-class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbor_groups__neighbor_group(yadata.MList[Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbor_groups__neighbor_group_entry]):
+class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbor_groups__neighbor_group(yadata.MKeyedList[str, Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbor_groups__neighbor_group_entry]):
     mut def __init__(self, elements: list[Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbor_groups__neighbor_group_entry]=[]) -> None:
-        self.elements = elements
+        yadata.MKeyedList.__init__(self, lambda e, k: e.neighbor_group_name == k, elements)
 
-    pure def get(self, neighbor_group_name: str) -> ?Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbor_groups__neighbor_group_entry:
-        for e in self:
-            if e.neighbor_group_name != neighbor_group_name:
-                continue
-            return e
-
-    mut def create(self, neighbor_group_name: str, remote_as: ?value=None, update_source: ?str=None) -> Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbor_groups__neighbor_group_entry:
-        e = self.get(neighbor_group_name)
+    mut def create(self, key: str, remote_as: ?value=None, update_source: ?str=None) -> Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbor_groups__neighbor_group_entry:
+        e = self.get(key)
         if e is not None:
             if remote_as is not None:
                 e.remote_as = remote_as
             if update_source is not None:
                 e.update_source = update_source
             return e
+        neighbor_group_name = key
         res = Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbor_groups__neighbor_group_entry(neighbor_group_name=neighbor_group_name, remote_as=remote_as, update_source=update_source)
         self.elements.append(res)
         return res
@@ -353611,27 +353433,6 @@ class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbor_groups__neighbor
                 copied_elements.append(ce)
         return Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbor_groups__neighbor_group(elements=copied_elements)
 
-
-extension Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbor_groups__neighbor_group(Indexed[str, Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbor_groups__neighbor_group_entry]):
-    def __getitem__(self, k: str) -> Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbor_groups__neighbor_group_entry:
-        e = self.get(k)
-        if e is not None:
-            return e
-        raise KeyError(k)
-
-    mut def __setitem__(self, k: str, n: Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbor_groups__neighbor_group_entry) -> None:
-        for i, e in enumerate(self.elements):
-            if e.neighbor_group_name == k:
-                self.elements[i] = n
-                return
-        self.elements.append(n)
-
-    mut def __delitem__(self, k: str) -> None:
-        for i, e in enumerate(self.elements):
-            if e.neighbor_group_name == k:
-                del self.elements[i]
-                return
-        raise KeyError(k)
 
 _breaker41: None = None
 class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbor_groups(yadata.MNode):
@@ -353673,20 +353474,15 @@ class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__address_families__address
         return Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__address_families__address_family_entry.from_gdata(self.to_gdata())
 
 _breaker43: None = None
-class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__address_families__address_family(yadata.MList[Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__address_families__address_family_entry]):
+class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__address_families__address_family(yadata.MKeyedList[str, Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__address_families__address_family_entry]):
     mut def __init__(self, elements: list[Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__address_families__address_family_entry]=[]) -> None:
-        self.elements = elements
+        yadata.MKeyedList.__init__(self, lambda e, k: e.af_name == k, elements)
 
-    pure def get(self, af_name: str) -> ?Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__address_families__address_family_entry:
-        for e in self:
-            if e.af_name != af_name:
-                continue
-            return e
-
-    mut def create(self, af_name: str) -> Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__address_families__address_family_entry:
-        e = self.get(af_name)
+    mut def create(self, key: str) -> Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__address_families__address_family_entry:
+        e = self.get(key)
         if e is not None:
             return e
+        af_name = key
         res = Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__address_families__address_family_entry(af_name=af_name)
         self.elements.append(res)
         return res
@@ -353707,27 +353503,6 @@ class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__address_families__address
                 copied_elements.append(ce)
         return Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__address_families__address_family(elements=copied_elements)
 
-
-extension Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__address_families__address_family(Indexed[str, Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__address_families__address_family_entry]):
-    def __getitem__(self, k: str) -> Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__address_families__address_family_entry:
-        e = self.get(k)
-        if e is not None:
-            return e
-        raise KeyError(k)
-
-    mut def __setitem__(self, k: str, n: Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__address_families__address_family_entry) -> None:
-        for i, e in enumerate(self.elements):
-            if e.af_name == k:
-                self.elements[i] = n
-                return
-        self.elements.append(n)
-
-    mut def __delitem__(self, k: str) -> None:
-        for i, e in enumerate(self.elements):
-            if e.af_name == k:
-                del self.elements[i]
-                return
-        raise KeyError(k)
 
 _breaker44: None = None
 class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__address_families(yadata.MNode):
@@ -353802,7 +353577,8 @@ class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as(yadata.MList[Cisco_IOS_XR_
     mut def __init__(self, elements: list[Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as_entry]=[]) -> None:
         self.elements = elements
 
-    pure def get(self, as_number: value) -> ?Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as_entry:
+    pure def get(self, key: value) -> ?Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as_entry:
+        as_number = key
         for e in self:
             e_as_number = e.as_number
             as_number_match = False
@@ -353816,10 +353592,11 @@ class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as(yadata.MList[Cisco_IOS_XR_
                 continue
             return e
 
-    mut def create(self, as_number: value) -> Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as_entry:
-        e = self.get(as_number)
+    mut def create(self, key: value) -> Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as_entry:
+        e = self.get(key)
         if e is not None:
             return e
+        as_number = key
         res = Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as_entry(as_number=as_number)
         self.elements.append(res)
         return res
@@ -353904,22 +353681,17 @@ class Cisco_IOS_XR_um_route_policy_cfg__routing_policy__route_policies__route_po
         return Cisco_IOS_XR_um_route_policy_cfg__routing_policy__route_policies__route_policy_entry.from_gdata(self.to_gdata())
 
 _breaker51: None = None
-class Cisco_IOS_XR_um_route_policy_cfg__routing_policy__route_policies__route_policy(yadata.MList[Cisco_IOS_XR_um_route_policy_cfg__routing_policy__route_policies__route_policy_entry]):
+class Cisco_IOS_XR_um_route_policy_cfg__routing_policy__route_policies__route_policy(yadata.MKeyedList[str, Cisco_IOS_XR_um_route_policy_cfg__routing_policy__route_policies__route_policy_entry]):
     mut def __init__(self, elements: list[Cisco_IOS_XR_um_route_policy_cfg__routing_policy__route_policies__route_policy_entry]=[]) -> None:
-        self.elements = elements
+        yadata.MKeyedList.__init__(self, lambda e, k: e.route_policy_name == k, elements)
 
-    pure def get(self, route_policy_name: str) -> ?Cisco_IOS_XR_um_route_policy_cfg__routing_policy__route_policies__route_policy_entry:
-        for e in self:
-            if e.route_policy_name != route_policy_name:
-                continue
-            return e
-
-    mut def create(self, route_policy_name: str, rpl_route_policy: ?str=None) -> Cisco_IOS_XR_um_route_policy_cfg__routing_policy__route_policies__route_policy_entry:
-        e = self.get(route_policy_name)
+    mut def create(self, key: str, rpl_route_policy: ?str=None) -> Cisco_IOS_XR_um_route_policy_cfg__routing_policy__route_policies__route_policy_entry:
+        e = self.get(key)
         if e is not None:
             if rpl_route_policy is not None:
                 e.rpl_route_policy = rpl_route_policy
             return e
+        route_policy_name = key
         res = Cisco_IOS_XR_um_route_policy_cfg__routing_policy__route_policies__route_policy_entry(route_policy_name=route_policy_name, rpl_route_policy=rpl_route_policy)
         self.elements.append(res)
         return res
@@ -353940,27 +353712,6 @@ class Cisco_IOS_XR_um_route_policy_cfg__routing_policy__route_policies__route_po
                 copied_elements.append(ce)
         return Cisco_IOS_XR_um_route_policy_cfg__routing_policy__route_policies__route_policy(elements=copied_elements)
 
-
-extension Cisco_IOS_XR_um_route_policy_cfg__routing_policy__route_policies__route_policy(Indexed[str, Cisco_IOS_XR_um_route_policy_cfg__routing_policy__route_policies__route_policy_entry]):
-    def __getitem__(self, k: str) -> Cisco_IOS_XR_um_route_policy_cfg__routing_policy__route_policies__route_policy_entry:
-        e = self.get(k)
-        if e is not None:
-            return e
-        raise KeyError(k)
-
-    mut def __setitem__(self, k: str, n: Cisco_IOS_XR_um_route_policy_cfg__routing_policy__route_policies__route_policy_entry) -> None:
-        for i, e in enumerate(self.elements):
-            if e.route_policy_name == k:
-                self.elements[i] = n
-                return
-        self.elements.append(n)
-
-    mut def __delitem__(self, k: str) -> None:
-        for i, e in enumerate(self.elements):
-            if e.route_policy_name == k:
-                del self.elements[i]
-                return
-        raise KeyError(k)
 
 _breaker52: None = None
 class Cisco_IOS_XR_um_route_policy_cfg__routing_policy__route_policies(yadata.MNode):
@@ -354170,14 +353921,14 @@ class openconfig_network_instance__network_instances__network_instance__protocol
 
 _breaker63: None = None
 class openconfig_network_instance__network_instances__network_instance__protocols_subs(SubscriptionNode):
-    protocol_: openconfig_network_instance__network_instances__network_instance__protocols__protocol_subs
+    protocol: openconfig_network_instance__network_instances__network_instance__protocols__protocol_subs
 
     pure def __init__(self, path: ?SubscriptionPath=None) -> None:
         SubscriptionNode.__init__(self, path)
-        self.protocol_ = openconfig_network_instance__network_instances__network_instance__protocols__protocol_subs(SubscriptionPath(ygdata.Id(NS_openconfig_network_instance, 'protocol'), parent=path))
+        self.protocol = openconfig_network_instance__network_instances__network_instance__protocols__protocol_subs(SubscriptionPath(ygdata.Id(NS_openconfig_network_instance, 'protocol'), parent=path))
 
     pure def _direct_children(self) -> list[SubscriptionNode]:
-        direct: list[SubscriptionNode] = [self.protocol_]
+        direct: list[SubscriptionNode] = [self.protocol]
         return direct
 
 _breaker64: None = None

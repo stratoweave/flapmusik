@@ -89,7 +89,7 @@ actor EbgpPeerTransform(path: ttt.Path,
     # /netinfra/ebgp-peer/state. With no intermediate layer this is a single
     # RFS -> CFS hop.
     _oper = base.EbgpPeer.new_state(path)
-    _subs = gdata.SubscriptionManager(ttt.expect(lower_tree_provider, "Missing lower tree provider for CFS eBGP telemetry"), str(path))
+    _subs = gdata.SubscriptionManager(lower_tree_provider!, str(path))
 
     def push_state(session_state: ?str):
         _oper.state.session_state = session_state
