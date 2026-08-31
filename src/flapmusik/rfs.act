@@ -94,9 +94,16 @@ actor EbgpPeerTransform(path: ttt.Path,
     _subs = gdata.SubscriptionManager(dev.tree_provider(), str(path))
     _oper = base.EbgpPeer.new_state(path)
     var current_peer: ?str = None
+    # Transition-evidence counters from the last processed update, for the
+    # fast path in on_xr_state: total NOTIFICATIONs sent+received, and
+    # established-transitions.
+    var last_notifications: ?u64 = None
+    var last_transitions: ?u64 = None
 
     def reset_state():
         _oper.state.session_state = None
+        last_notifications = None
+        last_transitions = None
         update_oper(_oper)
 
     def on_xr_state(root: ?xr25_oper_root, err: ?Exception,
@@ -113,6 +120,8 @@ actor EbgpPeerTransform(path: ttt.Path,
         snapshot: xr25_oper_root = root!
         session_state: ?str = None
         state_present = False
+        notifications: ?u64 = None
+        transitions: ?u64 = None
         for instance in snapshot.network_instances.network_instance:
             if instance.name == "DEFAULT":
                 for proto in instance.protocols.protocol:
@@ -120,18 +129,55 @@ actor EbgpPeerTransform(path: ttt.Path,
                             and proto.name == "default"):
                         for neighbor in proto.bgp.neighbors.neighbor:
                             if neighbor.neighbor_address == peer_address:
-                                raw_state = neighbor.state.session_state
+                                st = neighbor.state
+                                raw_state = st.session_state
                                 if raw_state is not None:
                                     state_present = True
                                     session_state = bgp_session_state(raw_state)
-        # XR on-change updates are partial and can briefly omit session-state
-        # for the selected neighbor. Preserve the previous state until XR
-        # publishes an explicit value.
-        if not state_present:
+                                transitions = st.established_transitions
+                                sent_n = st.messages.sent.NOTIFICATION
+                                recv_n = st.messages.received.NOTIFICATION
+                                if sent_n is not None or recv_n is not None:
+                                    total: u64 = 0
+                                    if sent_n is not None:
+                                        total += sent_n
+                                    if recv_n is not None:
+                                        total += recv_n
+                                    notifications = total
+        if state_present:
+            if notifications is not None:
+                last_notifications = notifications
+            if transitions is not None:
+                last_transitions = transitions
+            _oper.state.session_state = (
+                "unknown" if session_state is None else session_state)
+            update_oper(_oper)
             return
-        _oper.state.session_state = (
-            "unknown" if session_state is None else session_state)
-        update_oper(_oper)
+        # XR on-change updates are partial: the push emitted at the moment of
+        # a transition replaces the state container *without* session-state
+        # (XR publishes the recomputed value ~2s later). The counters in that
+        # first push already tell the story, so infer the transition instead
+        # of sitting on the stale state: established-transitions moved (the
+        # session came up), or a BGP NOTIFICATION was sent or received (it
+        # went down). XR's follow-up push carries the explicit session-state
+        # and confirms or corrects the inference; a partial without fresh
+        # evidence (counter churn) keeps the previous state.
+        inferred: ?str = None
+        lt = last_transitions
+        ln = last_notifications
+        t = transitions
+        n = notifications
+        if t is not None and lt is not None and t != lt:
+            inferred = "established"
+        elif n is not None and ln is not None and n != ln:
+            inferred = "idle"
+        if t is not None:
+            last_transitions = t
+        if n is not None:
+            last_notifications = n
+        if inferred is not None:
+            _oper.state.session_state = inferred
+            update_oper(_oper)
 
     def on_conf(conf: y_1.stratoweave_rfs__rfs__ebgp_peer_entry):
         want: set[gdata.Delivery] = set()

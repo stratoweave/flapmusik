@@ -58,6 +58,21 @@ module openconfig-network-instance {
                       enum ESTABLISHED;
                     }
                   }
+                  leaf established-transitions {
+                    type uint64;
+                  }
+                  container messages {
+                    container sent {
+                      leaf NOTIFICATION {
+                        type uint64;
+                      }
+                    }
+                    container received {
+                      leaf NOTIFICATION {
+                        type uint64;
+                      }
+                    }
+                  }
                 }
               }
             }

@@ -90,6 +90,17 @@ actor main(env):
     "/oc-netinst:network-instances/network-instance/protocols/protocol/bgp/neighbors/neighbor/neighbor-address",
     "/oc-netinst:network-instances/network-instance/protocols/protocol/bgp/neighbors/neighbor/state",
     "/oc-netinst:network-instances/network-instance/protocols/protocol/bgp/neighbors/neighbor/state/session-state",
+    # Transition evidence for the fast path in rfs.EbgpPeerTransform: XR's
+    # first on-change push after a session drop omits session-state (the
+    # refreshed value follows ~2s later), but its counters already tell the
+    # story -- a NOTIFICATION was sent/received (down), or the session
+    # (re-)established (established-transitions).
+    "/oc-netinst:network-instances/network-instance/protocols/protocol/bgp/neighbors/neighbor/state/established-transitions",
+    "/oc-netinst:network-instances/network-instance/protocols/protocol/bgp/neighbors/neighbor/state/messages",
+    "/oc-netinst:network-instances/network-instance/protocols/protocol/bgp/neighbors/neighbor/state/messages/sent",
+    "/oc-netinst:network-instances/network-instance/protocols/protocol/bgp/neighbors/neighbor/state/messages/sent/NOTIFICATION",
+    "/oc-netinst:network-instances/network-instance/protocols/protocol/bgp/neighbors/neighbor/state/messages/received",
+    "/oc-netinst:network-instances/network-instance/protocols/protocol/bgp/neighbors/neighbor/state/messages/received/NOTIFICATION",
 ]
         filter_schema(dt.root, paths)
         return dt

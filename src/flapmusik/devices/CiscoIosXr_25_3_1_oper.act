@@ -44,7 +44,16 @@ SRC_DNODE_CHILD_0: DContainer = DContainer(module='openconfig-network-instance',
                         DList(module='openconfig-network-instance', namespace='http://openconfig.net/yang/network-instance', prefix='oc-netinst', name='neighbor', key=['neighbor-address'], config=False, min_elements=0, ordered_by='system', children=[
                             DLeaf(module='openconfig-network-instance', namespace='http://openconfig.net/yang/network-instance', prefix='oc-netinst', name='neighbor-address', config=False, mandatory=False, type=DTypeString(name='string', description=None, reference=None, exts=[], builtin_type='string', default=None, length=None, patterns=[])),
                             DContainer(module='openconfig-network-instance', namespace='http://openconfig.net/yang/network-instance', prefix='oc-netinst', name='state', config=False, presence=False, children=[
-                                DLeaf(module='openconfig-network-instance', namespace='http://openconfig.net/yang/network-instance', prefix='oc-netinst', name='session-state', config=False, mandatory=False, type=DTypeEnum(name='enumeration', description=None, reference=None, exts=[], builtin_type='enumeration', default=None, name_to_val={'IDLE':0, 'CONNECT':1, 'ACTIVE':2, 'OPENSENT':3, 'OPENCONFIRM':4, 'ESTABLISHED':5}))
+                                DLeaf(module='openconfig-network-instance', namespace='http://openconfig.net/yang/network-instance', prefix='oc-netinst', name='session-state', config=False, mandatory=False, type=DTypeEnum(name='enumeration', description=None, reference=None, exts=[], builtin_type='enumeration', default=None, name_to_val={'IDLE':0, 'CONNECT':1, 'ACTIVE':2, 'OPENSENT':3, 'OPENCONFIRM':4, 'ESTABLISHED':5})),
+                                DLeaf(module='openconfig-network-instance', namespace='http://openconfig.net/yang/network-instance', prefix='oc-netinst', name='established-transitions', config=False, mandatory=False, type=DTypeIntegerUnsigned(name='uint64', description=None, reference=None, exts=[], builtin_type='uint64', default=None, ranges=Ranges([(0, 18446744073709551615)]))),
+                                DContainer(module='openconfig-network-instance', namespace='http://openconfig.net/yang/network-instance', prefix='oc-netinst', name='messages', config=False, presence=False, children=[
+                                    DContainer(module='openconfig-network-instance', namespace='http://openconfig.net/yang/network-instance', prefix='oc-netinst', name='sent', config=False, presence=False, children=[
+                                        DLeaf(module='openconfig-network-instance', namespace='http://openconfig.net/yang/network-instance', prefix='oc-netinst', name='NOTIFICATION', config=False, mandatory=False, type=DTypeIntegerUnsigned(name='uint64', description=None, reference=None, exts=[], builtin_type='uint64', default=None, ranges=Ranges([(0, 18446744073709551615)])))
+                                    ]),
+                                    DContainer(module='openconfig-network-instance', namespace='http://openconfig.net/yang/network-instance', prefix='oc-netinst', name='received', config=False, presence=False, children=[
+                                        DLeaf(module='openconfig-network-instance', namespace='http://openconfig.net/yang/network-instance', prefix='oc-netinst', name='NOTIFICATION', config=False, mandatory=False, type=DTypeIntegerUnsigned(name='uint64', description=None, reference=None, exts=[], builtin_type='uint64', default=None, ranges=Ranges([(0, 18446744073709551615)])))
+                                    ])
+                                ])
                             ])
                         ])
                     ])
@@ -344792,6 +344801,21 @@ SRC_YANG_226: str = r"""module openconfig-network-instance {
                       enum ESTABLISHED;
                     }
                   }
+                  leaf established-transitions {
+                    type uint64;
+                  }
+                  container messages {
+                    container sent {
+                      leaf NOTIFICATION {
+                        type uint64;
+                      }
+                    }
+                    container received {
+                      leaf NOTIFICATION {
+                        type uint64;
+                      }
+                    }
+                  }
                 }
               }
             }
@@ -352434,11 +352458,80 @@ NS_ietf_yang_types: str = 'urn:ietf:params:xml:ns:yang:ietf-yang-types'
 
 
 _breaker1: None = None
+class openconfig_network_instance__network_instances__network_instance__protocols__protocol__bgp__neighbors__neighbor__state__messages__sent(yadata.MNode):
+    NOTIFICATION: ?u64
+
+    mut def __init__(self, NOTIFICATION: ?u64) -> None:
+        self.NOTIFICATION = NOTIFICATION
+
+    mut def to_gdata(self) -> ygdata.Node:
+        return yadata.from_adata(SRC_DNODE, self, loose=True, root_path=['openconfig-network-instance:network-instances', 'network-instance', 'protocols', 'protocol', 'bgp', 'neighbors', 'neighbor', 'state', 'messages', 'sent'])
+
+    @staticmethod
+    mut def from_gdata(n: ?ygdata.Node) -> openconfig_network_instance__network_instances__network_instance__protocols__protocol__bgp__neighbors__neighbor__state__messages__sent:
+        if n is not None:
+            return openconfig_network_instance__network_instances__network_instance__protocols__protocol__bgp__neighbors__neighbor__state__messages__sent(NOTIFICATION=n.get_opt_u64(ygdata.Id(NS_openconfig_network_instance, 'NOTIFICATION')))
+        return openconfig_network_instance__network_instances__network_instance__protocols__protocol__bgp__neighbors__neighbor__state__messages__sent()
+
+    mut def copy(self) -> openconfig_network_instance__network_instances__network_instance__protocols__protocol__bgp__neighbors__neighbor__state__messages__sent:
+        """Create a deep copy of this adata object"""
+        return openconfig_network_instance__network_instances__network_instance__protocols__protocol__bgp__neighbors__neighbor__state__messages__sent.from_gdata(self.to_gdata())
+
+
+_breaker2: None = None
+class openconfig_network_instance__network_instances__network_instance__protocols__protocol__bgp__neighbors__neighbor__state__messages__received(yadata.MNode):
+    NOTIFICATION: ?u64
+
+    mut def __init__(self, NOTIFICATION: ?u64) -> None:
+        self.NOTIFICATION = NOTIFICATION
+
+    mut def to_gdata(self) -> ygdata.Node:
+        return yadata.from_adata(SRC_DNODE, self, loose=True, root_path=['openconfig-network-instance:network-instances', 'network-instance', 'protocols', 'protocol', 'bgp', 'neighbors', 'neighbor', 'state', 'messages', 'received'])
+
+    @staticmethod
+    mut def from_gdata(n: ?ygdata.Node) -> openconfig_network_instance__network_instances__network_instance__protocols__protocol__bgp__neighbors__neighbor__state__messages__received:
+        if n is not None:
+            return openconfig_network_instance__network_instances__network_instance__protocols__protocol__bgp__neighbors__neighbor__state__messages__received(NOTIFICATION=n.get_opt_u64(ygdata.Id(NS_openconfig_network_instance, 'NOTIFICATION')))
+        return openconfig_network_instance__network_instances__network_instance__protocols__protocol__bgp__neighbors__neighbor__state__messages__received()
+
+    mut def copy(self) -> openconfig_network_instance__network_instances__network_instance__protocols__protocol__bgp__neighbors__neighbor__state__messages__received:
+        """Create a deep copy of this adata object"""
+        return openconfig_network_instance__network_instances__network_instance__protocols__protocol__bgp__neighbors__neighbor__state__messages__received.from_gdata(self.to_gdata())
+
+
+_breaker3: None = None
+class openconfig_network_instance__network_instances__network_instance__protocols__protocol__bgp__neighbors__neighbor__state__messages(yadata.MNode):
+    sent: openconfig_network_instance__network_instances__network_instance__protocols__protocol__bgp__neighbors__neighbor__state__messages__sent
+    received: openconfig_network_instance__network_instances__network_instance__protocols__protocol__bgp__neighbors__neighbor__state__messages__received
+
+    mut def __init__(self, sent: ?openconfig_network_instance__network_instances__network_instance__protocols__protocol__bgp__neighbors__neighbor__state__messages__sent=None, received: ?openconfig_network_instance__network_instances__network_instance__protocols__protocol__bgp__neighbors__neighbor__state__messages__received=None) -> None:
+        self.sent = sent if sent is not None else openconfig_network_instance__network_instances__network_instance__protocols__protocol__bgp__neighbors__neighbor__state__messages__sent()
+        self.received = received if received is not None else openconfig_network_instance__network_instances__network_instance__protocols__protocol__bgp__neighbors__neighbor__state__messages__received()
+
+    mut def to_gdata(self) -> ygdata.Node:
+        return yadata.from_adata(SRC_DNODE, self, loose=True, root_path=['openconfig-network-instance:network-instances', 'network-instance', 'protocols', 'protocol', 'bgp', 'neighbors', 'neighbor', 'state', 'messages'])
+
+    @staticmethod
+    mut def from_gdata(n: ?ygdata.Node) -> openconfig_network_instance__network_instances__network_instance__protocols__protocol__bgp__neighbors__neighbor__state__messages:
+        if n is not None:
+            return openconfig_network_instance__network_instances__network_instance__protocols__protocol__bgp__neighbors__neighbor__state__messages(sent=openconfig_network_instance__network_instances__network_instance__protocols__protocol__bgp__neighbors__neighbor__state__messages__sent.from_gdata(n.get_opt_cnt(ygdata.Id(NS_openconfig_network_instance, 'sent'))), received=openconfig_network_instance__network_instances__network_instance__protocols__protocol__bgp__neighbors__neighbor__state__messages__received.from_gdata(n.get_opt_cnt(ygdata.Id(NS_openconfig_network_instance, 'received'))))
+        return openconfig_network_instance__network_instances__network_instance__protocols__protocol__bgp__neighbors__neighbor__state__messages()
+
+    mut def copy(self) -> openconfig_network_instance__network_instances__network_instance__protocols__protocol__bgp__neighbors__neighbor__state__messages:
+        """Create a deep copy of this adata object"""
+        return openconfig_network_instance__network_instances__network_instance__protocols__protocol__bgp__neighbors__neighbor__state__messages.from_gdata(self.to_gdata())
+
+
+_breaker4: None = None
 class openconfig_network_instance__network_instances__network_instance__protocols__protocol__bgp__neighbors__neighbor__state(yadata.MNode):
     session_state: ?str
+    established_transitions: ?u64
+    messages: openconfig_network_instance__network_instances__network_instance__protocols__protocol__bgp__neighbors__neighbor__state__messages
 
-    mut def __init__(self, session_state: ?str) -> None:
+    mut def __init__(self, session_state: ?str, established_transitions: ?u64, messages: ?openconfig_network_instance__network_instances__network_instance__protocols__protocol__bgp__neighbors__neighbor__state__messages=None) -> None:
         self.session_state = session_state
+        self.established_transitions = established_transitions
+        self.messages = messages if messages is not None else openconfig_network_instance__network_instances__network_instance__protocols__protocol__bgp__neighbors__neighbor__state__messages()
 
     mut def to_gdata(self) -> ygdata.Node:
         return yadata.from_adata(SRC_DNODE, self, loose=True, root_path=['openconfig-network-instance:network-instances', 'network-instance', 'protocols', 'protocol', 'bgp', 'neighbors', 'neighbor', 'state'])
@@ -352446,7 +352539,7 @@ class openconfig_network_instance__network_instances__network_instance__protocol
     @staticmethod
     mut def from_gdata(n: ?ygdata.Node) -> openconfig_network_instance__network_instances__network_instance__protocols__protocol__bgp__neighbors__neighbor__state:
         if n is not None:
-            return openconfig_network_instance__network_instances__network_instance__protocols__protocol__bgp__neighbors__neighbor__state(session_state=n.get_opt_str(ygdata.Id(NS_openconfig_network_instance, 'session-state')))
+            return openconfig_network_instance__network_instances__network_instance__protocols__protocol__bgp__neighbors__neighbor__state(session_state=n.get_opt_str(ygdata.Id(NS_openconfig_network_instance, 'session-state')), established_transitions=n.get_opt_u64(ygdata.Id(NS_openconfig_network_instance, 'established-transitions')), messages=openconfig_network_instance__network_instances__network_instance__protocols__protocol__bgp__neighbors__neighbor__state__messages.from_gdata(n.get_opt_cnt(ygdata.Id(NS_openconfig_network_instance, 'messages'))))
         return openconfig_network_instance__network_instances__network_instance__protocols__protocol__bgp__neighbors__neighbor__state()
 
     mut def copy(self) -> openconfig_network_instance__network_instances__network_instance__protocols__protocol__bgp__neighbors__neighbor__state:
@@ -352454,7 +352547,7 @@ class openconfig_network_instance__network_instances__network_instance__protocol
         return openconfig_network_instance__network_instances__network_instance__protocols__protocol__bgp__neighbors__neighbor__state.from_gdata(self.to_gdata())
 
 
-_breaker2: None = None
+_breaker5: None = None
 class openconfig_network_instance__network_instances__network_instance__protocols__protocol__bgp__neighbors__neighbor_entry(yadata.MNode):
     neighbor_address: str
     state: openconfig_network_instance__network_instances__network_instance__protocols__protocol__bgp__neighbors__neighbor__state
@@ -352474,7 +352567,7 @@ class openconfig_network_instance__network_instances__network_instance__protocol
         """Create a deep copy of this adata object"""
         return openconfig_network_instance__network_instances__network_instance__protocols__protocol__bgp__neighbors__neighbor_entry.from_gdata(self.to_gdata())
 
-_breaker3: None = None
+_breaker6: None = None
 class openconfig_network_instance__network_instances__network_instance__protocols__protocol__bgp__neighbors__neighbor(yadata.MKeyedList[str, openconfig_network_instance__network_instances__network_instance__protocols__protocol__bgp__neighbors__neighbor_entry]):
     mut def __init__(self, elements: list[openconfig_network_instance__network_instances__network_instance__protocols__protocol__bgp__neighbors__neighbor_entry]=[]) -> None:
         yadata.MKeyedList.__init__(self, lambda e, k: e.neighbor_address == k, elements)
@@ -352505,7 +352598,7 @@ class openconfig_network_instance__network_instances__network_instance__protocol
         return openconfig_network_instance__network_instances__network_instance__protocols__protocol__bgp__neighbors__neighbor(elements=copied_elements)
 
 
-_breaker4: None = None
+_breaker7: None = None
 class openconfig_network_instance__network_instances__network_instance__protocols__protocol__bgp__neighbors(yadata.MNode):
     neighbor: openconfig_network_instance__network_instances__network_instance__protocols__protocol__bgp__neighbors__neighbor
 
@@ -352526,7 +352619,7 @@ class openconfig_network_instance__network_instances__network_instance__protocol
         return openconfig_network_instance__network_instances__network_instance__protocols__protocol__bgp__neighbors.from_gdata(self.to_gdata())
 
 
-_breaker5: None = None
+_breaker8: None = None
 class openconfig_network_instance__network_instances__network_instance__protocols__protocol__bgp(yadata.MNode):
     neighbors: openconfig_network_instance__network_instances__network_instance__protocols__protocol__bgp__neighbors
 
@@ -352547,7 +352640,7 @@ class openconfig_network_instance__network_instances__network_instance__protocol
         return openconfig_network_instance__network_instances__network_instance__protocols__protocol__bgp.from_gdata(self.to_gdata())
 
 
-_breaker6: None = None
+_breaker9: None = None
 class openconfig_network_instance__network_instances__network_instance__protocols__protocol_entry(yadata.MNode):
     identifier: Identityref
     name: str
@@ -352569,7 +352662,7 @@ class openconfig_network_instance__network_instances__network_instance__protocol
         """Create a deep copy of this adata object"""
         return openconfig_network_instance__network_instances__network_instance__protocols__protocol_entry.from_gdata(self.to_gdata())
 
-_breaker7: None = None
+_breaker10: None = None
 class openconfig_network_instance__network_instances__network_instance__protocols__protocol(yadata.MKeyedList[(identifier: Identityref, name: str), openconfig_network_instance__network_instances__network_instance__protocols__protocol_entry]):
     mut def __init__(self, elements: list[openconfig_network_instance__network_instances__network_instance__protocols__protocol_entry]=[]) -> None:
         yadata.MKeyedList.__init__(self, lambda e, k: e.identifier == k.identifier and e.name == k.name, elements)
@@ -352600,7 +352693,7 @@ class openconfig_network_instance__network_instances__network_instance__protocol
         return openconfig_network_instance__network_instances__network_instance__protocols__protocol(elements=copied_elements)
 
 
-_breaker8: None = None
+_breaker11: None = None
 class openconfig_network_instance__network_instances__network_instance__protocols(yadata.MNode):
     protocol: openconfig_network_instance__network_instances__network_instance__protocols__protocol
 
@@ -352621,7 +352714,7 @@ class openconfig_network_instance__network_instances__network_instance__protocol
         return openconfig_network_instance__network_instances__network_instance__protocols.from_gdata(self.to_gdata())
 
 
-_breaker9: None = None
+_breaker12: None = None
 class openconfig_network_instance__network_instances__network_instance_entry(yadata.MNode):
     name: str
     protocols: openconfig_network_instance__network_instances__network_instance__protocols
@@ -352641,7 +352734,7 @@ class openconfig_network_instance__network_instances__network_instance_entry(yad
         """Create a deep copy of this adata object"""
         return openconfig_network_instance__network_instances__network_instance_entry.from_gdata(self.to_gdata())
 
-_breaker10: None = None
+_breaker13: None = None
 class openconfig_network_instance__network_instances__network_instance(yadata.MKeyedList[str, openconfig_network_instance__network_instances__network_instance_entry]):
     mut def __init__(self, elements: list[openconfig_network_instance__network_instances__network_instance_entry]=[]) -> None:
         yadata.MKeyedList.__init__(self, lambda e, k: e.name == k, elements)
@@ -352672,7 +352765,7 @@ class openconfig_network_instance__network_instances__network_instance(yadata.MK
         return openconfig_network_instance__network_instances__network_instance(elements=copied_elements)
 
 
-_breaker11: None = None
+_breaker14: None = None
 class openconfig_network_instance__network_instances(yadata.MNode):
     network_instance: openconfig_network_instance__network_instances__network_instance
 
@@ -352693,7 +352786,7 @@ class openconfig_network_instance__network_instances(yadata.MNode):
         return openconfig_network_instance__network_instances.from_gdata(self.to_gdata())
 
 
-_breaker12: None = None
+_breaker15: None = None
 class Cisco_IOS_XR_um_interface_cfg__interfaces__interface__ipv4__addresses__address(yadata.MNode):
     address: ?str
     netmask: ?str
@@ -352719,7 +352812,7 @@ class Cisco_IOS_XR_um_interface_cfg__interfaces__interface__ipv4__addresses__add
         raise Exception('Unreachable in Cisco_IOS_XR_um_interface_cfg__interfaces__interface__ipv4__addresses__address.copy()')
 
 
-_breaker13: None = None
+_breaker16: None = None
 class Cisco_IOS_XR_um_interface_cfg__interfaces__interface__ipv4__addresses__secondaries__secondary_entry(yadata.MNode):
     address: str
     netmask: ?str
@@ -352739,7 +352832,7 @@ class Cisco_IOS_XR_um_interface_cfg__interfaces__interface__ipv4__addresses__sec
         """Create a deep copy of this adata object"""
         return Cisco_IOS_XR_um_interface_cfg__interfaces__interface__ipv4__addresses__secondaries__secondary_entry.from_gdata(self.to_gdata())
 
-_breaker14: None = None
+_breaker17: None = None
 class Cisco_IOS_XR_um_interface_cfg__interfaces__interface__ipv4__addresses__secondaries__secondary(yadata.MKeyedList[str, Cisco_IOS_XR_um_interface_cfg__interfaces__interface__ipv4__addresses__secondaries__secondary_entry]):
     mut def __init__(self, elements: list[Cisco_IOS_XR_um_interface_cfg__interfaces__interface__ipv4__addresses__secondaries__secondary_entry]=[]) -> None:
         yadata.MKeyedList.__init__(self, lambda e, k: e.address == k, elements)
@@ -352772,7 +352865,7 @@ class Cisco_IOS_XR_um_interface_cfg__interfaces__interface__ipv4__addresses__sec
         return Cisco_IOS_XR_um_interface_cfg__interfaces__interface__ipv4__addresses__secondaries__secondary(elements=copied_elements)
 
 
-_breaker15: None = None
+_breaker18: None = None
 class Cisco_IOS_XR_um_interface_cfg__interfaces__interface__ipv4__addresses__secondaries(yadata.MNode):
     secondary: Cisco_IOS_XR_um_interface_cfg__interfaces__interface__ipv4__addresses__secondaries__secondary
 
@@ -352793,7 +352886,7 @@ class Cisco_IOS_XR_um_interface_cfg__interfaces__interface__ipv4__addresses__sec
         return Cisco_IOS_XR_um_interface_cfg__interfaces__interface__ipv4__addresses__secondaries.from_gdata(self.to_gdata())
 
 
-_breaker16: None = None
+_breaker19: None = None
 class Cisco_IOS_XR_um_interface_cfg__interfaces__interface__ipv4__addresses(yadata.MNode):
     address: ?Cisco_IOS_XR_um_interface_cfg__interfaces__interface__ipv4__addresses__address
     secondaries: Cisco_IOS_XR_um_interface_cfg__interfaces__interface__ipv4__addresses__secondaries
@@ -352828,7 +352921,7 @@ class Cisco_IOS_XR_um_interface_cfg__interfaces__interface__ipv4__addresses(yada
         return Cisco_IOS_XR_um_interface_cfg__interfaces__interface__ipv4__addresses.from_gdata(self.to_gdata())
 
 
-_breaker17: None = None
+_breaker20: None = None
 class Cisco_IOS_XR_um_interface_cfg__interfaces__interface__ipv4(yadata.MNode):
     addresses: Cisco_IOS_XR_um_interface_cfg__interfaces__interface__ipv4__addresses
 
@@ -352849,7 +352942,7 @@ class Cisco_IOS_XR_um_interface_cfg__interfaces__interface__ipv4(yadata.MNode):
         return Cisco_IOS_XR_um_interface_cfg__interfaces__interface__ipv4.from_gdata(self.to_gdata())
 
 
-_breaker18: None = None
+_breaker21: None = None
 class Cisco_IOS_XR_um_interface_cfg__interfaces__interface__shutdown(yadata.MNode):
 
     mut def __init__(self) -> None:
@@ -352872,7 +352965,7 @@ class Cisco_IOS_XR_um_interface_cfg__interfaces__interface__shutdown(yadata.MNod
         raise Exception('Unreachable in Cisco_IOS_XR_um_interface_cfg__interfaces__interface__shutdown.copy()')
 
 
-_breaker19: None = None
+_breaker22: None = None
 class Cisco_IOS_XR_um_interface_cfg__interfaces__interface__encapsulation__dot1q(yadata.MNode):
     vlan_id: ?u64
 
@@ -352893,7 +352986,7 @@ class Cisco_IOS_XR_um_interface_cfg__interfaces__interface__encapsulation__dot1q
         return Cisco_IOS_XR_um_interface_cfg__interfaces__interface__encapsulation__dot1q.from_gdata(self.to_gdata())
 
 
-_breaker20: None = None
+_breaker23: None = None
 class Cisco_IOS_XR_um_interface_cfg__interfaces__interface__encapsulation(yadata.MNode):
     dot1q: Cisco_IOS_XR_um_interface_cfg__interfaces__interface__encapsulation__dot1q
 
@@ -352914,7 +353007,7 @@ class Cisco_IOS_XR_um_interface_cfg__interfaces__interface__encapsulation(yadata
         return Cisco_IOS_XR_um_interface_cfg__interfaces__interface__encapsulation.from_gdata(self.to_gdata())
 
 
-_breaker21: None = None
+_breaker24: None = None
 class Cisco_IOS_XR_um_interface_cfg__interfaces__interface_entry(yadata.MNode):
     interface_name: str
     ipv4: Cisco_IOS_XR_um_interface_cfg__interfaces__interface__ipv4
@@ -352950,7 +353043,7 @@ class Cisco_IOS_XR_um_interface_cfg__interfaces__interface_entry(yadata.MNode):
         """Create a deep copy of this adata object"""
         return Cisco_IOS_XR_um_interface_cfg__interfaces__interface_entry.from_gdata(self.to_gdata())
 
-_breaker22: None = None
+_breaker25: None = None
 class Cisco_IOS_XR_um_interface_cfg__interfaces__interface(yadata.MKeyedList[str, Cisco_IOS_XR_um_interface_cfg__interfaces__interface_entry]):
     mut def __init__(self, elements: list[Cisco_IOS_XR_um_interface_cfg__interfaces__interface_entry]=[]) -> None:
         yadata.MKeyedList.__init__(self, lambda e, k: e.interface_name == k, elements)
@@ -352985,7 +353078,7 @@ class Cisco_IOS_XR_um_interface_cfg__interfaces__interface(yadata.MKeyedList[str
         return Cisco_IOS_XR_um_interface_cfg__interfaces__interface(elements=copied_elements)
 
 
-_breaker23: None = None
+_breaker26: None = None
 class Cisco_IOS_XR_um_interface_cfg__interfaces(yadata.MNode):
     interface: Cisco_IOS_XR_um_interface_cfg__interfaces__interface
 
@@ -353006,7 +353099,7 @@ class Cisco_IOS_XR_um_interface_cfg__interfaces(yadata.MNode):
         return Cisco_IOS_XR_um_interface_cfg__interfaces.from_gdata(self.to_gdata())
 
 
-_breaker24: None = None
+_breaker27: None = None
 class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbors__neighbor__use(yadata.MNode):
     neighbor_group: ?str
 
@@ -353027,7 +353120,7 @@ class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbors__neighbor__use(
         return Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbors__neighbor__use.from_gdata(self.to_gdata())
 
 
-_breaker25: None = None
+_breaker28: None = None
 class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbors__neighbor__timers__holdtime(yadata.MNode):
     holdtime_number: ?u64
 
@@ -353051,7 +353144,7 @@ class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbors__neighbor__time
         raise Exception('Unreachable in Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbors__neighbor__timers__holdtime.copy()')
 
 
-_breaker26: None = None
+_breaker29: None = None
 class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbors__neighbor__timers(yadata.MNode):
     keepalive_interval: ?u64
     holdtime: ?Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbors__neighbor__timers__holdtime
@@ -353084,7 +353177,7 @@ class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbors__neighbor__time
         return Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbors__neighbor__timers.from_gdata(self.to_gdata())
 
 
-_breaker27: None = None
+_breaker30: None = None
 class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbors__neighbor__local__address(yadata.MNode):
     ip_address: ?str
 
@@ -353105,7 +353198,7 @@ class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbors__neighbor__loca
         return Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbors__neighbor__local__address.from_gdata(self.to_gdata())
 
 
-_breaker28: None = None
+_breaker31: None = None
 class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbors__neighbor__local(yadata.MNode):
     address: Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbors__neighbor__local__address
 
@@ -353126,7 +353219,7 @@ class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbors__neighbor__loca
         return Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbors__neighbor__local.from_gdata(self.to_gdata())
 
 
-_breaker29: None = None
+_breaker32: None = None
 class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbors__neighbor__address_families__address_family_entry(yadata.MNode):
     af_name: str
 
@@ -353144,7 +353237,7 @@ class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbors__neighbor__addr
         """Create a deep copy of this adata object"""
         return Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbors__neighbor__address_families__address_family_entry.from_gdata(self.to_gdata())
 
-_breaker30: None = None
+_breaker33: None = None
 class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbors__neighbor__address_families__address_family(yadata.MKeyedList[str, Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbors__neighbor__address_families__address_family_entry]):
     mut def __init__(self, elements: list[Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbors__neighbor__address_families__address_family_entry]=[]) -> None:
         yadata.MKeyedList.__init__(self, lambda e, k: e.af_name == k, elements)
@@ -353175,7 +353268,7 @@ class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbors__neighbor__addr
         return Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbors__neighbor__address_families__address_family(elements=copied_elements)
 
 
-_breaker31: None = None
+_breaker34: None = None
 class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbors__neighbor__address_families(yadata.MNode):
     address_family: Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbors__neighbor__address_families__address_family
 
@@ -353196,7 +353289,7 @@ class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbors__neighbor__addr
         return Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbors__neighbor__address_families.from_gdata(self.to_gdata())
 
 
-_breaker32: None = None
+_breaker35: None = None
 class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbors__neighbor_entry(yadata.MNode):
     address: str
     remote_as: ?value
@@ -353226,7 +353319,7 @@ class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbors__neighbor_entry
         """Create a deep copy of this adata object"""
         return Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbors__neighbor_entry.from_gdata(self.to_gdata())
 
-_breaker33: None = None
+_breaker36: None = None
 class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbors__neighbor(yadata.MKeyedList[str, Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbors__neighbor_entry]):
     mut def __init__(self, elements: list[Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbors__neighbor_entry]=[]) -> None:
         yadata.MKeyedList.__init__(self, lambda e, k: e.address == k, elements)
@@ -353261,7 +353354,7 @@ class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbors__neighbor(yadat
         return Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbors__neighbor(elements=copied_elements)
 
 
-_breaker34: None = None
+_breaker37: None = None
 class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbors(yadata.MNode):
     neighbor: Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbors__neighbor
 
@@ -353282,7 +353375,7 @@ class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbors(yadata.MNode):
         return Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbors.from_gdata(self.to_gdata())
 
 
-_breaker35: None = None
+_breaker38: None = None
 class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbor_groups__neighbor_group__password(yadata.MNode):
     encrypted: ?str
 
@@ -353303,7 +353396,7 @@ class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbor_groups__neighbor
         return Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbor_groups__neighbor_group__password.from_gdata(self.to_gdata())
 
 
-_breaker36: None = None
+_breaker39: None = None
 class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbor_groups__neighbor_group__address_families__address_family_entry(yadata.MNode):
     af_name: str
 
@@ -353321,7 +353414,7 @@ class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbor_groups__neighbor
         """Create a deep copy of this adata object"""
         return Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbor_groups__neighbor_group__address_families__address_family_entry.from_gdata(self.to_gdata())
 
-_breaker37: None = None
+_breaker40: None = None
 class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbor_groups__neighbor_group__address_families__address_family(yadata.MKeyedList[str, Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbor_groups__neighbor_group__address_families__address_family_entry]):
     mut def __init__(self, elements: list[Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbor_groups__neighbor_group__address_families__address_family_entry]=[]) -> None:
         yadata.MKeyedList.__init__(self, lambda e, k: e.af_name == k, elements)
@@ -353352,7 +353445,7 @@ class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbor_groups__neighbor
         return Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbor_groups__neighbor_group__address_families__address_family(elements=copied_elements)
 
 
-_breaker38: None = None
+_breaker41: None = None
 class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbor_groups__neighbor_group__address_families(yadata.MNode):
     address_family: Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbor_groups__neighbor_group__address_families__address_family
 
@@ -353373,7 +353466,7 @@ class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbor_groups__neighbor
         return Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbor_groups__neighbor_group__address_families.from_gdata(self.to_gdata())
 
 
-_breaker39: None = None
+_breaker42: None = None
 class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbor_groups__neighbor_group_entry(yadata.MNode):
     neighbor_group_name: str
     remote_as: ?value
@@ -353399,7 +353492,7 @@ class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbor_groups__neighbor
         """Create a deep copy of this adata object"""
         return Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbor_groups__neighbor_group_entry.from_gdata(self.to_gdata())
 
-_breaker40: None = None
+_breaker43: None = None
 class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbor_groups__neighbor_group(yadata.MKeyedList[str, Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbor_groups__neighbor_group_entry]):
     mut def __init__(self, elements: list[Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbor_groups__neighbor_group_entry]=[]) -> None:
         yadata.MKeyedList.__init__(self, lambda e, k: e.neighbor_group_name == k, elements)
@@ -353434,7 +353527,7 @@ class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbor_groups__neighbor
         return Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbor_groups__neighbor_group(elements=copied_elements)
 
 
-_breaker41: None = None
+_breaker44: None = None
 class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbor_groups(yadata.MNode):
     neighbor_group: Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbor_groups__neighbor_group
 
@@ -353455,7 +353548,7 @@ class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbor_groups(yadata.MN
         return Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbor_groups.from_gdata(self.to_gdata())
 
 
-_breaker42: None = None
+_breaker45: None = None
 class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__address_families__address_family_entry(yadata.MNode):
     af_name: str
 
@@ -353473,7 +353566,7 @@ class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__address_families__address
         """Create a deep copy of this adata object"""
         return Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__address_families__address_family_entry.from_gdata(self.to_gdata())
 
-_breaker43: None = None
+_breaker46: None = None
 class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__address_families__address_family(yadata.MKeyedList[str, Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__address_families__address_family_entry]):
     mut def __init__(self, elements: list[Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__address_families__address_family_entry]=[]) -> None:
         yadata.MKeyedList.__init__(self, lambda e, k: e.af_name == k, elements)
@@ -353504,7 +353597,7 @@ class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__address_families__address
         return Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__address_families__address_family(elements=copied_elements)
 
 
-_breaker44: None = None
+_breaker47: None = None
 class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__address_families(yadata.MNode):
     address_family: Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__address_families__address_family
 
@@ -353525,7 +353618,7 @@ class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__address_families(yadata.M
         return Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__address_families.from_gdata(self.to_gdata())
 
 
-_breaker45: None = None
+_breaker48: None = None
 class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__bgp(yadata.MNode):
     router_id: ?str
 
@@ -353546,7 +353639,7 @@ class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__bgp(yadata.MNode):
         return Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__bgp.from_gdata(self.to_gdata())
 
 
-_breaker46: None = None
+_breaker49: None = None
 class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as_entry(yadata.MNode):
     as_number: value
     neighbors: Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbors
@@ -353572,7 +353665,7 @@ class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as_entry(yadata.MNode):
         """Create a deep copy of this adata object"""
         return Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as_entry.from_gdata(self.to_gdata())
 
-_breaker47: None = None
+_breaker50: None = None
 class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as(yadata.MList[Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as_entry]):
     mut def __init__(self, elements: list[Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as_entry]=[]) -> None:
         self.elements = elements
@@ -353618,7 +353711,7 @@ class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as(yadata.MList[Cisco_IOS_XR_
         return Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as(elements=copied_elements)
 
 
-_breaker48: None = None
+_breaker51: None = None
 class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp(yadata.MNode):
     as_: Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as
 
@@ -353639,7 +353732,7 @@ class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp(yadata.MNode):
         return Cisco_IOS_XR_um_router_bgp_cfg__router__bgp.from_gdata(self.to_gdata())
 
 
-_breaker49: None = None
+_breaker52: None = None
 class Cisco_IOS_XR_um_router_bgp_cfg__router(yadata.MNode):
     bgp: Cisco_IOS_XR_um_router_bgp_cfg__router__bgp
 
@@ -353660,7 +353753,7 @@ class Cisco_IOS_XR_um_router_bgp_cfg__router(yadata.MNode):
         return Cisco_IOS_XR_um_router_bgp_cfg__router.from_gdata(self.to_gdata())
 
 
-_breaker50: None = None
+_breaker53: None = None
 class Cisco_IOS_XR_um_route_policy_cfg__routing_policy__route_policies__route_policy_entry(yadata.MNode):
     route_policy_name: str
     rpl_route_policy: ?str
@@ -353680,7 +353773,7 @@ class Cisco_IOS_XR_um_route_policy_cfg__routing_policy__route_policies__route_po
         """Create a deep copy of this adata object"""
         return Cisco_IOS_XR_um_route_policy_cfg__routing_policy__route_policies__route_policy_entry.from_gdata(self.to_gdata())
 
-_breaker51: None = None
+_breaker54: None = None
 class Cisco_IOS_XR_um_route_policy_cfg__routing_policy__route_policies__route_policy(yadata.MKeyedList[str, Cisco_IOS_XR_um_route_policy_cfg__routing_policy__route_policies__route_policy_entry]):
     mut def __init__(self, elements: list[Cisco_IOS_XR_um_route_policy_cfg__routing_policy__route_policies__route_policy_entry]=[]) -> None:
         yadata.MKeyedList.__init__(self, lambda e, k: e.route_policy_name == k, elements)
@@ -353713,7 +353806,7 @@ class Cisco_IOS_XR_um_route_policy_cfg__routing_policy__route_policies__route_po
         return Cisco_IOS_XR_um_route_policy_cfg__routing_policy__route_policies__route_policy(elements=copied_elements)
 
 
-_breaker52: None = None
+_breaker55: None = None
 class Cisco_IOS_XR_um_route_policy_cfg__routing_policy__route_policies(yadata.MNode):
     route_policy: Cisco_IOS_XR_um_route_policy_cfg__routing_policy__route_policies__route_policy
 
@@ -353734,7 +353827,7 @@ class Cisco_IOS_XR_um_route_policy_cfg__routing_policy__route_policies(yadata.MN
         return Cisco_IOS_XR_um_route_policy_cfg__routing_policy__route_policies.from_gdata(self.to_gdata())
 
 
-_breaker53: None = None
+_breaker56: None = None
 class Cisco_IOS_XR_um_route_policy_cfg__routing_policy(yadata.MNode):
     route_policies: Cisco_IOS_XR_um_route_policy_cfg__routing_policy__route_policies
 
@@ -353755,7 +353848,7 @@ class Cisco_IOS_XR_um_route_policy_cfg__routing_policy(yadata.MNode):
         return Cisco_IOS_XR_um_route_policy_cfg__routing_policy.from_gdata(self.to_gdata())
 
 
-_breaker54: None = None
+_breaker57: None = None
 class Cisco_IOS_XR_um_hostname_cfg__hostname(yadata.MNode):
     system_network_name: ?str
 
@@ -353776,7 +353869,7 @@ class Cisco_IOS_XR_um_hostname_cfg__hostname(yadata.MNode):
         return Cisco_IOS_XR_um_hostname_cfg__hostname.from_gdata(self.to_gdata())
 
 
-_breaker55: None = None
+_breaker58: None = None
 class root(yadata.MNode):
     network_instances: openconfig_network_instance__network_instances
     interfaces: Cisco_IOS_XR_um_interface_cfg__interfaces
@@ -353810,19 +353903,61 @@ actor rpc_root(tp: ygdata.TreeProvider):
 
 
 
-_breaker56: None = None
+_breaker59: None = None
+class openconfig_network_instance__network_instances__network_instance__protocols__protocol__bgp__neighbors__neighbor__state__messages__sent_subs(SubscriptionNode):
+    NOTIFICATION: SubscriptionNode
+
+    pure def __init__(self, path: ?SubscriptionPath=None) -> None:
+        SubscriptionNode.__init__(self, path)
+        self.NOTIFICATION = SubscriptionNode(SubscriptionPath(ygdata.Id(NS_openconfig_network_instance, 'NOTIFICATION'), parent=path))
+
+    pure def _direct_children(self) -> list[SubscriptionNode]:
+        direct: list[SubscriptionNode] = [self.NOTIFICATION]
+        return direct
+
+_breaker60: None = None
+class openconfig_network_instance__network_instances__network_instance__protocols__protocol__bgp__neighbors__neighbor__state__messages__received_subs(SubscriptionNode):
+    NOTIFICATION: SubscriptionNode
+
+    pure def __init__(self, path: ?SubscriptionPath=None) -> None:
+        SubscriptionNode.__init__(self, path)
+        self.NOTIFICATION = SubscriptionNode(SubscriptionPath(ygdata.Id(NS_openconfig_network_instance, 'NOTIFICATION'), parent=path))
+
+    pure def _direct_children(self) -> list[SubscriptionNode]:
+        direct: list[SubscriptionNode] = [self.NOTIFICATION]
+        return direct
+
+_breaker61: None = None
+class openconfig_network_instance__network_instances__network_instance__protocols__protocol__bgp__neighbors__neighbor__state__messages_subs(SubscriptionNode):
+    sent: openconfig_network_instance__network_instances__network_instance__protocols__protocol__bgp__neighbors__neighbor__state__messages__sent_subs
+    received: openconfig_network_instance__network_instances__network_instance__protocols__protocol__bgp__neighbors__neighbor__state__messages__received_subs
+
+    pure def __init__(self, path: ?SubscriptionPath=None) -> None:
+        SubscriptionNode.__init__(self, path)
+        self.sent = openconfig_network_instance__network_instances__network_instance__protocols__protocol__bgp__neighbors__neighbor__state__messages__sent_subs(SubscriptionPath(ygdata.Id(NS_openconfig_network_instance, 'sent'), parent=path))
+        self.received = openconfig_network_instance__network_instances__network_instance__protocols__protocol__bgp__neighbors__neighbor__state__messages__received_subs(SubscriptionPath(ygdata.Id(NS_openconfig_network_instance, 'received'), parent=path))
+
+    pure def _direct_children(self) -> list[SubscriptionNode]:
+        direct: list[SubscriptionNode] = [self.sent, self.received]
+        return direct
+
+_breaker62: None = None
 class openconfig_network_instance__network_instances__network_instance__protocols__protocol__bgp__neighbors__neighbor__state_subs(SubscriptionNode):
     session_state: SubscriptionNode
+    established_transitions: SubscriptionNode
+    messages: openconfig_network_instance__network_instances__network_instance__protocols__protocol__bgp__neighbors__neighbor__state__messages_subs
 
     pure def __init__(self, path: ?SubscriptionPath=None) -> None:
         SubscriptionNode.__init__(self, path)
         self.session_state = SubscriptionNode(SubscriptionPath(ygdata.Id(NS_openconfig_network_instance, 'session-state'), parent=path))
+        self.established_transitions = SubscriptionNode(SubscriptionPath(ygdata.Id(NS_openconfig_network_instance, 'established-transitions'), parent=path))
+        self.messages = openconfig_network_instance__network_instances__network_instance__protocols__protocol__bgp__neighbors__neighbor__state__messages_subs(SubscriptionPath(ygdata.Id(NS_openconfig_network_instance, 'messages'), parent=path))
 
     pure def _direct_children(self) -> list[SubscriptionNode]:
-        direct: list[SubscriptionNode] = [self.session_state]
+        direct: list[SubscriptionNode] = [self.session_state, self.established_transitions, self.messages]
         return direct
 
-_breaker57: None = None
+_breaker63: None = None
 class openconfig_network_instance__network_instances__network_instance__protocols__protocol__bgp__neighbors__neighbor_entry_subs(SubscriptionNode):
     neighbor_address: SubscriptionNode
     state: openconfig_network_instance__network_instances__network_instance__protocols__protocol__bgp__neighbors__neighbor__state_subs
@@ -353836,7 +353971,7 @@ class openconfig_network_instance__network_instances__network_instance__protocol
         direct: list[SubscriptionNode] = [self.neighbor_address, self.state]
         return direct
 
-_breaker58: None = None
+_breaker64: None = None
 class openconfig_network_instance__network_instances__network_instance__protocols__protocol__bgp__neighbors__neighbor_subs(SubscriptionNode):
     neighbor_address: SubscriptionNode
     state: openconfig_network_instance__network_instances__network_instance__protocols__protocol__bgp__neighbors__neighbor__state_subs
@@ -353856,7 +353991,7 @@ class openconfig_network_instance__network_instances__network_instance__protocol
         direct: list[SubscriptionNode] = [self.neighbor_address, self.state]
         return direct
 
-_breaker59: None = None
+_breaker65: None = None
 class openconfig_network_instance__network_instances__network_instance__protocols__protocol__bgp__neighbors_subs(SubscriptionNode):
     neighbor: openconfig_network_instance__network_instances__network_instance__protocols__protocol__bgp__neighbors__neighbor_subs
 
@@ -353868,7 +354003,7 @@ class openconfig_network_instance__network_instances__network_instance__protocol
         direct: list[SubscriptionNode] = [self.neighbor]
         return direct
 
-_breaker60: None = None
+_breaker66: None = None
 class openconfig_network_instance__network_instances__network_instance__protocols__protocol__bgp_subs(SubscriptionNode):
     neighbors: openconfig_network_instance__network_instances__network_instance__protocols__protocol__bgp__neighbors_subs
 
@@ -353880,7 +354015,7 @@ class openconfig_network_instance__network_instances__network_instance__protocol
         direct: list[SubscriptionNode] = [self.neighbors]
         return direct
 
-_breaker61: None = None
+_breaker67: None = None
 class openconfig_network_instance__network_instances__network_instance__protocols__protocol_entry_subs(SubscriptionNode):
     identifier: SubscriptionNode
     name: SubscriptionNode
@@ -353896,7 +354031,7 @@ class openconfig_network_instance__network_instances__network_instance__protocol
         direct: list[SubscriptionNode] = [self.identifier, self.name, self.bgp]
         return direct
 
-_breaker62: None = None
+_breaker68: None = None
 class openconfig_network_instance__network_instances__network_instance__protocols__protocol_subs(SubscriptionNode):
     identifier: SubscriptionNode
     name: SubscriptionNode
@@ -353919,7 +354054,7 @@ class openconfig_network_instance__network_instances__network_instance__protocol
         direct: list[SubscriptionNode] = [self.identifier, self.name, self.bgp]
         return direct
 
-_breaker63: None = None
+_breaker69: None = None
 class openconfig_network_instance__network_instances__network_instance__protocols_subs(SubscriptionNode):
     protocol: openconfig_network_instance__network_instances__network_instance__protocols__protocol_subs
 
@@ -353931,7 +354066,7 @@ class openconfig_network_instance__network_instances__network_instance__protocol
         direct: list[SubscriptionNode] = [self.protocol]
         return direct
 
-_breaker64: None = None
+_breaker70: None = None
 class openconfig_network_instance__network_instances__network_instance_entry_subs(SubscriptionNode):
     name: SubscriptionNode
     protocols: openconfig_network_instance__network_instances__network_instance__protocols_subs
@@ -353945,7 +354080,7 @@ class openconfig_network_instance__network_instances__network_instance_entry_sub
         direct: list[SubscriptionNode] = [self.name, self.protocols]
         return direct
 
-_breaker65: None = None
+_breaker71: None = None
 class openconfig_network_instance__network_instances__network_instance_subs(SubscriptionNode):
     name: SubscriptionNode
     protocols: openconfig_network_instance__network_instances__network_instance__protocols_subs
@@ -353965,7 +354100,7 @@ class openconfig_network_instance__network_instances__network_instance_subs(Subs
         direct: list[SubscriptionNode] = [self.name, self.protocols]
         return direct
 
-_breaker66: None = None
+_breaker72: None = None
 class openconfig_network_instance__network_instances_subs(SubscriptionNode):
     network_instance: openconfig_network_instance__network_instances__network_instance_subs
 
@@ -353977,7 +354112,7 @@ class openconfig_network_instance__network_instances_subs(SubscriptionNode):
         direct: list[SubscriptionNode] = [self.network_instance]
         return direct
 
-_breaker67: None = None
+_breaker73: None = None
 class Cisco_IOS_XR_um_interface_cfg__interfaces__interface__ipv4__addresses__address_subs(SubscriptionNode):
     address: SubscriptionNode
     netmask: SubscriptionNode
@@ -353991,7 +354126,7 @@ class Cisco_IOS_XR_um_interface_cfg__interfaces__interface__ipv4__addresses__add
         direct: list[SubscriptionNode] = [self.address, self.netmask]
         return direct
 
-_breaker68: None = None
+_breaker74: None = None
 class Cisco_IOS_XR_um_interface_cfg__interfaces__interface__ipv4__addresses__secondaries__secondary_entry_subs(SubscriptionNode):
     address: SubscriptionNode
     netmask: SubscriptionNode
@@ -354005,7 +354140,7 @@ class Cisco_IOS_XR_um_interface_cfg__interfaces__interface__ipv4__addresses__sec
         direct: list[SubscriptionNode] = [self.address, self.netmask]
         return direct
 
-_breaker69: None = None
+_breaker75: None = None
 class Cisco_IOS_XR_um_interface_cfg__interfaces__interface__ipv4__addresses__secondaries__secondary_subs(SubscriptionNode):
     address: SubscriptionNode
     netmask: SubscriptionNode
@@ -354025,7 +354160,7 @@ class Cisco_IOS_XR_um_interface_cfg__interfaces__interface__ipv4__addresses__sec
         direct: list[SubscriptionNode] = [self.address, self.netmask]
         return direct
 
-_breaker70: None = None
+_breaker76: None = None
 class Cisco_IOS_XR_um_interface_cfg__interfaces__interface__ipv4__addresses__secondaries_subs(SubscriptionNode):
     secondary: Cisco_IOS_XR_um_interface_cfg__interfaces__interface__ipv4__addresses__secondaries__secondary_subs
 
@@ -354037,7 +354172,7 @@ class Cisco_IOS_XR_um_interface_cfg__interfaces__interface__ipv4__addresses__sec
         direct: list[SubscriptionNode] = [self.secondary]
         return direct
 
-_breaker71: None = None
+_breaker77: None = None
 class Cisco_IOS_XR_um_interface_cfg__interfaces__interface__ipv4__addresses_subs(SubscriptionNode):
     address: Cisco_IOS_XR_um_interface_cfg__interfaces__interface__ipv4__addresses__address_subs
     secondaries: Cisco_IOS_XR_um_interface_cfg__interfaces__interface__ipv4__addresses__secondaries_subs
@@ -354051,7 +354186,7 @@ class Cisco_IOS_XR_um_interface_cfg__interfaces__interface__ipv4__addresses_subs
         direct: list[SubscriptionNode] = [self.address, self.secondaries]
         return direct
 
-_breaker72: None = None
+_breaker78: None = None
 class Cisco_IOS_XR_um_interface_cfg__interfaces__interface__ipv4_subs(SubscriptionNode):
     addresses: Cisco_IOS_XR_um_interface_cfg__interfaces__interface__ipv4__addresses_subs
 
@@ -354063,7 +354198,7 @@ class Cisco_IOS_XR_um_interface_cfg__interfaces__interface__ipv4_subs(Subscripti
         direct: list[SubscriptionNode] = [self.addresses]
         return direct
 
-_breaker73: None = None
+_breaker79: None = None
 class Cisco_IOS_XR_um_interface_cfg__interfaces__interface__shutdown_subs(SubscriptionNode):
 
     pure def __init__(self, path: ?SubscriptionPath=None) -> None:
@@ -354073,7 +354208,7 @@ class Cisco_IOS_XR_um_interface_cfg__interfaces__interface__shutdown_subs(Subscr
         direct: list[SubscriptionNode] = []
         return direct
 
-_breaker74: None = None
+_breaker80: None = None
 class Cisco_IOS_XR_um_interface_cfg__interfaces__interface__encapsulation__dot1q_subs(SubscriptionNode):
     vlan_id: SubscriptionNode
 
@@ -354085,7 +354220,7 @@ class Cisco_IOS_XR_um_interface_cfg__interfaces__interface__encapsulation__dot1q
         direct: list[SubscriptionNode] = [self.vlan_id]
         return direct
 
-_breaker75: None = None
+_breaker81: None = None
 class Cisco_IOS_XR_um_interface_cfg__interfaces__interface__encapsulation_subs(SubscriptionNode):
     dot1q: Cisco_IOS_XR_um_interface_cfg__interfaces__interface__encapsulation__dot1q_subs
 
@@ -354097,7 +354232,7 @@ class Cisco_IOS_XR_um_interface_cfg__interfaces__interface__encapsulation_subs(S
         direct: list[SubscriptionNode] = [self.dot1q]
         return direct
 
-_breaker76: None = None
+_breaker82: None = None
 class Cisco_IOS_XR_um_interface_cfg__interfaces__interface_entry_subs(SubscriptionNode):
     interface_name: SubscriptionNode
     ipv4: Cisco_IOS_XR_um_interface_cfg__interfaces__interface__ipv4_subs
@@ -354119,7 +354254,7 @@ class Cisco_IOS_XR_um_interface_cfg__interfaces__interface_entry_subs(Subscripti
         direct: list[SubscriptionNode] = [self.interface_name, self.ipv4, self.shutdown, self.description, self.encapsulation, self.vrf]
         return direct
 
-_breaker77: None = None
+_breaker83: None = None
 class Cisco_IOS_XR_um_interface_cfg__interfaces__interface_subs(SubscriptionNode):
     interface_name: SubscriptionNode
     ipv4: Cisco_IOS_XR_um_interface_cfg__interfaces__interface__ipv4_subs
@@ -354147,7 +354282,7 @@ class Cisco_IOS_XR_um_interface_cfg__interfaces__interface_subs(SubscriptionNode
         direct: list[SubscriptionNode] = [self.interface_name, self.ipv4, self.shutdown, self.description, self.encapsulation, self.vrf]
         return direct
 
-_breaker78: None = None
+_breaker84: None = None
 class Cisco_IOS_XR_um_interface_cfg__interfaces_subs(SubscriptionNode):
     interface: Cisco_IOS_XR_um_interface_cfg__interfaces__interface_subs
 
@@ -354159,7 +354294,7 @@ class Cisco_IOS_XR_um_interface_cfg__interfaces_subs(SubscriptionNode):
         direct: list[SubscriptionNode] = [self.interface]
         return direct
 
-_breaker79: None = None
+_breaker85: None = None
 class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbors__neighbor__use_subs(SubscriptionNode):
     neighbor_group: SubscriptionNode
 
@@ -354171,7 +354306,7 @@ class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbors__neighbor__use_
         direct: list[SubscriptionNode] = [self.neighbor_group]
         return direct
 
-_breaker80: None = None
+_breaker86: None = None
 class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbors__neighbor__timers__holdtime_subs(SubscriptionNode):
     holdtime_number: SubscriptionNode
 
@@ -354183,7 +354318,7 @@ class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbors__neighbor__time
         direct: list[SubscriptionNode] = [self.holdtime_number]
         return direct
 
-_breaker81: None = None
+_breaker87: None = None
 class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbors__neighbor__timers_subs(SubscriptionNode):
     keepalive_interval: SubscriptionNode
     holdtime: Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbors__neighbor__timers__holdtime_subs
@@ -354197,7 +354332,7 @@ class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbors__neighbor__time
         direct: list[SubscriptionNode] = [self.keepalive_interval, self.holdtime]
         return direct
 
-_breaker82: None = None
+_breaker88: None = None
 class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbors__neighbor__local__address_subs(SubscriptionNode):
     ip_address: SubscriptionNode
 
@@ -354209,7 +354344,7 @@ class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbors__neighbor__loca
         direct: list[SubscriptionNode] = [self.ip_address]
         return direct
 
-_breaker83: None = None
+_breaker89: None = None
 class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbors__neighbor__local_subs(SubscriptionNode):
     address: Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbors__neighbor__local__address_subs
 
@@ -354221,7 +354356,7 @@ class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbors__neighbor__loca
         direct: list[SubscriptionNode] = [self.address]
         return direct
 
-_breaker84: None = None
+_breaker90: None = None
 class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbors__neighbor__address_families__address_family_entry_subs(SubscriptionNode):
     af_name: SubscriptionNode
 
@@ -354233,7 +354368,7 @@ class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbors__neighbor__addr
         direct: list[SubscriptionNode] = [self.af_name]
         return direct
 
-_breaker85: None = None
+_breaker91: None = None
 class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbors__neighbor__address_families__address_family_subs(SubscriptionNode):
     af_name: SubscriptionNode
     pure def __init__(self, path: ?SubscriptionPath=None) -> None:
@@ -354251,7 +354386,7 @@ class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbors__neighbor__addr
         direct: list[SubscriptionNode] = [self.af_name]
         return direct
 
-_breaker86: None = None
+_breaker92: None = None
 class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbors__neighbor__address_families_subs(SubscriptionNode):
     address_family: Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbors__neighbor__address_families__address_family_subs
 
@@ -354263,7 +354398,7 @@ class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbors__neighbor__addr
         direct: list[SubscriptionNode] = [self.address_family]
         return direct
 
-_breaker87: None = None
+_breaker93: None = None
 class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbors__neighbor_entry_subs(SubscriptionNode):
     address: SubscriptionNode
     remote_as: SubscriptionNode
@@ -354287,7 +354422,7 @@ class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbors__neighbor_entry
         direct: list[SubscriptionNode] = [self.address, self.remote_as, self.use, self.description, self.timers, self.local, self.address_families]
         return direct
 
-_breaker88: None = None
+_breaker94: None = None
 class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbors__neighbor_subs(SubscriptionNode):
     address: SubscriptionNode
     remote_as: SubscriptionNode
@@ -354317,7 +354452,7 @@ class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbors__neighbor_subs(
         direct: list[SubscriptionNode] = [self.address, self.remote_as, self.use, self.description, self.timers, self.local, self.address_families]
         return direct
 
-_breaker89: None = None
+_breaker95: None = None
 class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbors_subs(SubscriptionNode):
     neighbor: Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbors__neighbor_subs
 
@@ -354329,7 +354464,7 @@ class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbors_subs(Subscripti
         direct: list[SubscriptionNode] = [self.neighbor]
         return direct
 
-_breaker90: None = None
+_breaker96: None = None
 class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbor_groups__neighbor_group__password_subs(SubscriptionNode):
     encrypted: SubscriptionNode
 
@@ -354341,7 +354476,7 @@ class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbor_groups__neighbor
         direct: list[SubscriptionNode] = [self.encrypted]
         return direct
 
-_breaker91: None = None
+_breaker97: None = None
 class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbor_groups__neighbor_group__address_families__address_family_entry_subs(SubscriptionNode):
     af_name: SubscriptionNode
 
@@ -354353,7 +354488,7 @@ class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbor_groups__neighbor
         direct: list[SubscriptionNode] = [self.af_name]
         return direct
 
-_breaker92: None = None
+_breaker98: None = None
 class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbor_groups__neighbor_group__address_families__address_family_subs(SubscriptionNode):
     af_name: SubscriptionNode
     pure def __init__(self, path: ?SubscriptionPath=None) -> None:
@@ -354371,7 +354506,7 @@ class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbor_groups__neighbor
         direct: list[SubscriptionNode] = [self.af_name]
         return direct
 
-_breaker93: None = None
+_breaker99: None = None
 class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbor_groups__neighbor_group__address_families_subs(SubscriptionNode):
     address_family: Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbor_groups__neighbor_group__address_families__address_family_subs
 
@@ -354383,7 +354518,7 @@ class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbor_groups__neighbor
         direct: list[SubscriptionNode] = [self.address_family]
         return direct
 
-_breaker94: None = None
+_breaker100: None = None
 class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbor_groups__neighbor_group_entry_subs(SubscriptionNode):
     neighbor_group_name: SubscriptionNode
     remote_as: SubscriptionNode
@@ -354403,7 +354538,7 @@ class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbor_groups__neighbor
         direct: list[SubscriptionNode] = [self.neighbor_group_name, self.remote_as, self.password, self.update_source, self.address_families]
         return direct
 
-_breaker95: None = None
+_breaker101: None = None
 class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbor_groups__neighbor_group_subs(SubscriptionNode):
     neighbor_group_name: SubscriptionNode
     remote_as: SubscriptionNode
@@ -354429,7 +354564,7 @@ class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbor_groups__neighbor
         direct: list[SubscriptionNode] = [self.neighbor_group_name, self.remote_as, self.password, self.update_source, self.address_families]
         return direct
 
-_breaker96: None = None
+_breaker102: None = None
 class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbor_groups_subs(SubscriptionNode):
     neighbor_group: Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbor_groups__neighbor_group_subs
 
@@ -354441,7 +354576,7 @@ class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbor_groups_subs(Subs
         direct: list[SubscriptionNode] = [self.neighbor_group]
         return direct
 
-_breaker97: None = None
+_breaker103: None = None
 class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__address_families__address_family_entry_subs(SubscriptionNode):
     af_name: SubscriptionNode
 
@@ -354453,7 +354588,7 @@ class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__address_families__address
         direct: list[SubscriptionNode] = [self.af_name]
         return direct
 
-_breaker98: None = None
+_breaker104: None = None
 class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__address_families__address_family_subs(SubscriptionNode):
     af_name: SubscriptionNode
     pure def __init__(self, path: ?SubscriptionPath=None) -> None:
@@ -354471,7 +354606,7 @@ class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__address_families__address
         direct: list[SubscriptionNode] = [self.af_name]
         return direct
 
-_breaker99: None = None
+_breaker105: None = None
 class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__address_families_subs(SubscriptionNode):
     address_family: Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__address_families__address_family_subs
 
@@ -354483,7 +354618,7 @@ class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__address_families_subs(Sub
         direct: list[SubscriptionNode] = [self.address_family]
         return direct
 
-_breaker100: None = None
+_breaker106: None = None
 class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__bgp_subs(SubscriptionNode):
     router_id: SubscriptionNode
 
@@ -354495,7 +354630,7 @@ class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__bgp_subs(SubscriptionNode
         direct: list[SubscriptionNode] = [self.router_id]
         return direct
 
-_breaker101: None = None
+_breaker107: None = None
 class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as_entry_subs(SubscriptionNode):
     as_number: SubscriptionNode
     neighbors: Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbors_subs
@@ -354515,7 +354650,7 @@ class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as_entry_subs(SubscriptionNod
         direct: list[SubscriptionNode] = [self.as_number, self.neighbors, self.neighbor_groups, self.address_families, self.bgp]
         return direct
 
-_breaker102: None = None
+_breaker108: None = None
 class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as_subs(SubscriptionNode):
     as_number: SubscriptionNode
     neighbors: Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbors_subs
@@ -354541,7 +354676,7 @@ class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as_subs(SubscriptionNode):
         direct: list[SubscriptionNode] = [self.as_number, self.neighbors, self.neighbor_groups, self.address_families, self.bgp]
         return direct
 
-_breaker103: None = None
+_breaker109: None = None
 class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp_subs(SubscriptionNode):
     as_: Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as_subs
 
@@ -354553,7 +354688,7 @@ class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp_subs(SubscriptionNode):
         direct: list[SubscriptionNode] = [self.as_]
         return direct
 
-_breaker104: None = None
+_breaker110: None = None
 class Cisco_IOS_XR_um_router_bgp_cfg__router_subs(SubscriptionNode):
     bgp: Cisco_IOS_XR_um_router_bgp_cfg__router__bgp_subs
 
@@ -354565,7 +354700,7 @@ class Cisco_IOS_XR_um_router_bgp_cfg__router_subs(SubscriptionNode):
         direct: list[SubscriptionNode] = [self.bgp]
         return direct
 
-_breaker105: None = None
+_breaker111: None = None
 class Cisco_IOS_XR_um_route_policy_cfg__routing_policy__route_policies__route_policy_entry_subs(SubscriptionNode):
     route_policy_name: SubscriptionNode
     rpl_route_policy: SubscriptionNode
@@ -354579,7 +354714,7 @@ class Cisco_IOS_XR_um_route_policy_cfg__routing_policy__route_policies__route_po
         direct: list[SubscriptionNode] = [self.route_policy_name, self.rpl_route_policy]
         return direct
 
-_breaker106: None = None
+_breaker112: None = None
 class Cisco_IOS_XR_um_route_policy_cfg__routing_policy__route_policies__route_policy_subs(SubscriptionNode):
     route_policy_name: SubscriptionNode
     rpl_route_policy: SubscriptionNode
@@ -354599,7 +354734,7 @@ class Cisco_IOS_XR_um_route_policy_cfg__routing_policy__route_policies__route_po
         direct: list[SubscriptionNode] = [self.route_policy_name, self.rpl_route_policy]
         return direct
 
-_breaker107: None = None
+_breaker113: None = None
 class Cisco_IOS_XR_um_route_policy_cfg__routing_policy__route_policies_subs(SubscriptionNode):
     route_policy: Cisco_IOS_XR_um_route_policy_cfg__routing_policy__route_policies__route_policy_subs
 
@@ -354611,7 +354746,7 @@ class Cisco_IOS_XR_um_route_policy_cfg__routing_policy__route_policies_subs(Subs
         direct: list[SubscriptionNode] = [self.route_policy]
         return direct
 
-_breaker108: None = None
+_breaker114: None = None
 class Cisco_IOS_XR_um_route_policy_cfg__routing_policy_subs(SubscriptionNode):
     route_policies: Cisco_IOS_XR_um_route_policy_cfg__routing_policy__route_policies_subs
 
@@ -354623,7 +354758,7 @@ class Cisco_IOS_XR_um_route_policy_cfg__routing_policy_subs(SubscriptionNode):
         direct: list[SubscriptionNode] = [self.route_policies]
         return direct
 
-_breaker109: None = None
+_breaker115: None = None
 class Cisco_IOS_XR_um_hostname_cfg__hostname_subs(SubscriptionNode):
     system_network_name: SubscriptionNode
 
@@ -354635,7 +354770,7 @@ class Cisco_IOS_XR_um_hostname_cfg__hostname_subs(SubscriptionNode):
         direct: list[SubscriptionNode] = [self.system_network_name]
         return direct
 
-_breaker110: None = None
+_breaker116: None = None
 class root_subs(SubscriptionNode):
     network_instances: openconfig_network_instance__network_instances_subs
     interfaces: Cisco_IOS_XR_um_interface_cfg__interfaces_subs
