@@ -1,0 +1,45 @@
+"""Odds and ends shared by the two players in this project.
+
+yangadeus works the keys and clears sessions on a router; kapellmeister hears
+what the network answers and cues the strings. Both name MIDI notes, read text
+out of XML elements, and order peers IPv4-numerically so that the fabric reads
+the same way in both — left to right across the keyboard, low to high up the
+scale.
+"""
+
+import std.xml as xml
+
+NOTE_NAMES = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"]
+
+
+def note_name(n: int) -> str:
+    """Human name for a MIDI note number, e.g. 48 -> C3 (middle C = C4 = 60)."""
+    return "{NOTE_NAMES[n % 12]}{n // 12 - 1}"
+
+
+def node_text(node: xml.Node) -> str:
+    """Trimmed text content of an XML element, "" if whitespace-only/empty."""
+    t = node.text
+    if t is None:
+        return ""
+    text = str(t)
+    if text.replace(" ", "").replace("\t", "").replace("\n", "").replace("\r", "") == "":
+        return ""
+    return text.strip()
+
+
+def ipv4_key(addr: str) -> ?int:
+    """Sortable integer for a dotted-quad IPv4 address, else None (e.g. IPv6)."""
+    parts = addr.split(".")
+    if len(parts) != 4:
+        return None
+    val = 0
+    for p in parts:
+        try:
+            n = int(p)
+        except ValueError:
+            return None
+        if n < 0 or n > 255:
+            return None
+        val = val * 256 + n
+    return val

@@ -1,0 +1,37 @@
+#!/bin/sh
+# Report the state of the audio path.
+#
+# Read the mute state with amixer, and read ALL of it. The HDA driver adds a
+# virtual "Master" control that gates Headphone and Speaker. Master does not
+# appear in /proc/asound/card0/codec#0, because that file lists only controls
+# bound to a codec node, and Master is not one. A muted Master with unmuted
+# Headphone gives silence and looks correct in `amixer sget Headphone`.
+#
+# The codec dump reports the *effective* amp, which is master combined with
+# slave. So `sget Headphone` and the codec dump disagree exactly when Master is
+# the thing that is muted. Trust `amixer contents`.
+#
+# Do not read "audio is flowing" from appl_ptr either. The default PCM goes
+# through dmix, which mixes into the mmapped hardware buffer without advancing
+# the slave's appl_ptr, so appl_ptr stays 0 even while sound plays.
+S=/proc/asound/card0/pcm0p/sub0/status
+
+# pgrep -c and grep -c print 0 and exit non-zero, so take the output as is.
+procs=$(pgrep -c fluidsynth 2>/dev/null)
+ports=$(grep -ci fluid /proc/asound/seq/clients 2>/dev/null)
+state=$(grep -m1 '^state' "$S" 2>/dev/null)
+echo "fluidsynth:  ${procs:-0} process(es), ${ports:-0} MIDI port(s)"
+echo "sound card:  ${state:-state: closed}"
+echo
+echo "MIDI graph (kapellmeister should connect to the FLUID Synth port):"
+awk '/^Client/{c=$0} /Connect(ing To|ed From)/{print "  " c "  " $0}' \
+    /proc/asound/seq/clients 2>/dev/null | sed 's/  */ /g'
+echo
+if [ "$(id -u)" = "0" ]; then
+    echo "playback controls (all of them):"
+    amixer -c 0 contents 2>/dev/null | grep -A3 -E "name='(Master|Headphone|Speaker) Playback (Switch|Volume)'" \
+        | grep -E "name=|values=" | sed 's/^/  /'
+else
+    echo "Re-run with sudo to see the mixer, or:"
+    echo "  sudo amixer -c 0 contents | grep -A3 -E \"name='(Master|Headphone|Speaker) Playback\""
+fi

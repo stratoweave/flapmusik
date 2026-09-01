@@ -18,6 +18,11 @@ Discovery reads the unified-model BGP config
 (Cisco-IOS-XR-um-router-bgp-cfg: router/bgp/as/.../neighbors/neighbor), and
 also understands the classic Cisco-IOS-XR-ipv4-bgp-cfg neighbor-address leaf, so
 it works whichever model the device renders <get-config> in.
+
+Sound is a separate program. kapellmeister, in this same project, subscribes to
+the eBGP session state that flapmusik publishes and plays it on a synthesizer.
+Neither program needs the other: they meet on the network, where one flaps a
+session and the other hears it.
 """
 
 import argparse
@@ -34,6 +39,8 @@ from stratoweave.device_meta_config import \
 
 import midi.midi as midi
 
+from common import ipv4_key, node_text, note_name
+
 # Cisco-IOS-XR-ipv4-bgp-act: the "clear bgp ..." action RPCs. clear-bgp-ip-addr
 # is a hard reset of the session to <ip-addr>; the -graceful variant asks for a
 # graceful restart. Both take a single mandatory ip-addr leaf.
@@ -44,8 +51,6 @@ BGP_ACT_NS = "http://cisco.com/ns/yang/Cisco-IOS-XR-ipv4-bgp-act"
 # model stratoweave already standardises on for XR, so it is what <get-config>
 # returns here.
 UM_BGP_NS = "http://cisco.com/ns/yang/Cisco-IOS-XR-um-router-bgp-cfg"
-
-NOTE_NAMES = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"]
 
 # Virtual/loopback MIDI sources that are never a real controller. On many Linux
 # hosts the kernel "Midi Through" port (snd-seq-dummy) enumerates *before* real
@@ -74,39 +79,6 @@ COL_AMBER = 9
 COL_GREEN = 21
 
 
-def note_name(n: int) -> str:
-    """Human name for a MIDI note number, e.g. 48 -> C3 (middle C = C4 = 60)."""
-    return "{NOTE_NAMES[n % 12]}{n // 12 - 1}"
-
-
-def _node_text(node: xml.Node) -> str:
-    """Trimmed text content of an XML element, "" if whitespace-only/empty."""
-    t = node.text
-    if t is None:
-        return ""
-    text = str(t)
-    if text.replace(" ", "").replace("\t", "").replace("\n", "").replace("\r", "") == "":
-        return ""
-    return text.strip()
-
-
-def ipv4_key(addr: str) -> ?int:
-    """Sortable integer for a dotted-quad IPv4 address, else None (e.g. IPv6)."""
-    parts = addr.split(".")
-    if len(parts) != 4:
-        return None
-    val = 0
-    for p in parts:
-        try:
-            n = int(p)
-        except ValueError:
-            return None
-        if n < 0 or n > 255:
-            return None
-        val = val * 256 + n
-    return val
-
-
 def _collect_neighbors(node: xml.Node, local_as: ?str,
                        acc: list[(addr: str, remote_as: ?str, local_as: ?str)]) -> None:
     """Recursively harvest BGP neighbors from a <get-config> data subtree.
@@ -119,7 +91,7 @@ def _collect_neighbors(node: xml.Node, local_as: ?str,
     if node.tag == "as":
         for ch in node.children:
             if ch.tag == "as-number":
-                t = _node_text(ch)
+                t = node_text(ch)
                 if t != "":
                     la = t
 
@@ -128,9 +100,9 @@ def _collect_neighbors(node: xml.Node, local_as: ?str,
         remote_as: ?str = None
         for ch in node.children:
             if ch.tag == "address" or ch.tag == "neighbor-address":
-                addr = _node_text(ch)
+                addr = node_text(ch)
             elif ch.tag == "remote-as":
-                rt = _node_text(ch)
+                rt = node_text(ch)
                 if rt != "":
                     remote_as = rt
         if addr != "":
@@ -203,6 +175,7 @@ actor Runner(env, args, logh: logging.Handler):
     var pad_gen: dict[int, int] = {}
 
     mcap = midi.MidiCap(env.cap)
+    cap = net.TCPConnectCap(net.TCPCap(net.NetCap(env.auth)))
 
     def kind_word() -> str:
         return "graceful clear" if graceful else "clear"
@@ -475,7 +448,6 @@ actor Runner(env, args, logh: logging.Handler):
     print("yangadeus — connecting to XRd {host}:{port} as {username}")
     print("Mode: {kind_word()} on keypress, {scope}. Keys {base_note}..{base_note + num_keys - 1} ({note_name(base_note)}..{note_name(base_note + num_keys - 1)}).")
 
-    cap = net.TCPConnectCap(net.TCPCap(net.NetCap(env.auth)))
     schema_registry = swdev.SchemaRegistry()
     # Empty bundled schema + default (no) runtime schema fetch: we drive the
     # device with raw XML RPCs (get-config + clear-bgp), so no YANG compilation

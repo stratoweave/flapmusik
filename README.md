@@ -15,7 +15,9 @@ resulting BGP session state up into an L3VPN service-assurance view (ONSEN /
 The demo is *Eine Kleine Flapmusik* — "Serenade for eBGP Session in BGP-Minor",
 performed by Wolfgang Yangadeus Mozart. Press a key on a MIDI keyboard, flap a
 real eBGP session, and watch the on-change notification race up the stack into
-the dashboard. See [`yangadeus/`](yangadeus/) for the keyboard driver.
+the dashboard — and hear it, because the session state comes back down as a
+chord. See [`yangadeus/`](yangadeus/) for the two players: `yangadeus` at the
+keyboard and `kapellmeister` on the podium.
 
 ![The hackathon rig: MIDI keyboard → BGP flap → UDP-Notif on the wire → dashboard](docs/images/slide-rig.png)
 
@@ -240,7 +242,7 @@ both cases, the virtual lab is a faithful stand-in for the hardware.
 | [`spec/`](spec/) | YANG models and the generator that produces the layer/device bindings. |
 | [`test/ietf-hackathon-xrd/`](test/ietf-hackathon-xrd/) | Fully virtual XRd demo lab (25 eBGP sessions). |
 | [`test/xrd-bridge/`](test/xrd-bridge/) | Lab that bridges XRd onto a physical NCS 55A2. |
-| [`yangadeus/`](yangadeus/) | MIDI keyboard driver that flaps eBGP sessions to drive the demo. |
+| [`yangadeus/`](yangadeus/) | The two players: [`yangadeus`](yangadeus/README.md#yangadeus--the-keyboard) flaps eBGP sessions from a MIDI keyboard, and [`kapellmeister`](yangadeus/README.md#kapellmeister--the-sound) plays the session state on a synthesizer. |
 | [`docs/images/`](docs/images/) | Slides rendered from the hackathon deck. |
 
 ## Build

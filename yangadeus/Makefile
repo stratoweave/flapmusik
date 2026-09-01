@@ -1,8 +1,8 @@
-# yangadeus — build helpers.
+# Build helpers for the two programs in this project: yangadeus, the keyboard
+# that clears eBGP sessions, and kapellmeister, which hears the result.
 #
-# Dependencies resolve from local sibling checkouts (see Build.act): stratoweave
-# and midi (midiact) by path, yang pinned to the revision the local stratoweave
-# uses. Nothing here needs a network fetch once those are present.
+# Dependencies resolve from the pins in Build.act. build-ldep overrides yang
+# and stratoweave with local sibling checkouts, and needs no network fetch.
 
 # Release builds are optimized and run faster. Override with `RELEASE=` for a
 # debug build (faster to compile).
@@ -16,12 +16,11 @@ build:
 
 .PHONY: debug
 debug:
-	$(ACTON) build $(MIDI_DEP) $(TARGET)
+	$(ACTON) build $(TARGET)
 
-# Hack on a local acton-yang checkout instead of the pinned revision.
 .PHONY: build-ldep
 build-ldep:
-	$(ACTON) build $(RELEASE) --dep yang=$(CURDIR)/../../orc/acton-yang --dep midi=../midiact $(TARGET)
+	$(ACTON) build $(RELEASE) --dep yang=$(CURDIR)/../../acton-yang --dep stratoweave=$(CURDIR)/../../stratoweave
 
 .PHONY: build-linux-x86_64
 build-linux-x86_64:
@@ -51,3 +50,15 @@ PASSWORD ?= clab@123
 .PHONY: start
 start:
 	out/bin/yangadeus --host $(HOST) --port $(PORT) --username $(USERNAME) --password $(PASSWORD) $(ARGS)
+
+# kapellmeister listens to flapmusik's northbound server, not to the router: a
+# different host, port and account, so they get their own variables. The
+# defaults are the same lab's flapmusik on 127.0.0.1:2830.
+STATE_HOST ?= 127.0.0.1
+STATE_PORT ?= 2830
+STATE_USERNAME ?= admin
+STATE_PASSWORD ?= admin
+
+.PHONY: listen
+listen:
+	out/bin/kapellmeister --host $(STATE_HOST) --port $(STATE_PORT) --username $(STATE_USERNAME) --password $(STATE_PASSWORD) $(ARGS)

@@ -1,0 +1,585 @@
+#!/usr/bin/env acton
+"""kapellmeister — conduct the eBGP control plane.
+
+A Kapellmeister listens and cues the players. This one subscribes on-change
+(RFC 8641 YANG-push) to flapmusik's northbound NETCONF server and turns
+/netinfra/ebgp-peer/state/session-state into notes on a software synthesizer:
+
+  * one held voice for every session that is NOT established, so a healthy
+    fabric is silent and every break adds a note,
+  * a timpani stroke at the moment a session leaves established,
+  * a pizzicato rung for each step of the FSM on the way back, and
+  * the opening of Eine kleine Nachtmusik whenever the fabric is whole again.
+
+    out/bin/kapellmeister --host 127.0.0.1 --port 2830
+
+Nothing has to start first. The synthesizer and the state feed are each retried
+until they appear. yangadeus — the keyboard that flaps the sessions — is a
+separate program in this project; the two meet only on the network.
+"""
+
+import argparse
+import logging
+import net
+import std.xml as xml
+import uri
+
+import yang.ypatch as ypatch
+import stratoweave.netconf as swnc
+import stratoweave.yp as swyp
+
+import midi.midi as midi
+
+from common import ipv4_key, node_text, note_name
+
+# -- Sonification: the peering fabric as a held chord ------------------------
+# midi/midiact carries MIDI messages and does not make audio, so the notes go
+# to a software synthesizer that appears as an ordinary MIDI destination. On
+# Linux that is FluidSynth on the ALSA sequencer bus:
+#
+#   fluidsynth -a alsa -m alsa_seq -s -i -g 1.5 \
+#              /usr/share/sounds/sf2/TimGM6mb.sf2
+#
+# These substrings identify such a destination when kapellmeister selects one.
+SYNTH_NAMES = ["fluid", "synth"]
+
+# Each peer owns one voice. The voice is held for as long as its session is NOT
+# established, so a healthy fabric is silent and every broken session adds a
+# note. Clear a session and its note starts. The note stops when the session
+# recovers.
+# Eine kleine Nachtmusik is a string serenade in G major, so the voices sit on
+# a G major pentatonic layout and the parts are strings. A pentatonic layout
+# has no semitones, so any set of down peers stays consonant.
+PENTATONIC = [0, 2, 4, 7, 9]
+SYNTH_ROOT = 43          # G2; the 25th voice reaches E7
+
+# Five voices to the octave from G2, so 25 of them reach E7. Past that the
+# layout climbs out of the range where a cello sample still reads as a cello,
+# so any further peer is tracked but stays silent.
+MAX_VOICES = 25
+
+# The shape the serenade opens with: an ascending G major arpeggio, G B D G B.
+# A session climbing back through the BGP FSM walks up it.
+ARPEGGIO = [0, 4, 7, 12, 16]
+
+CH_VOICE = 0             # channel 1: the sustained per-peer voices
+CH_CLIMB = 1             # channel 2: the short blips of a session climbing back
+CH_ACCENT = 2            # channel 3: the timpani stroke when a session drops
+ACCENT_NOTE = 43         # timpani on the tonic, G2
+CH_FANFARE = 3           # channel 4: the fanfare, on its own so it never
+                         # collides with a held voice
+
+# The climb blips use their own channel because they can land on notes that the
+# voices already hold. On one channel, the note-off of a blip would stop the
+# held voice on that note. On its own channel it cannot.
+
+# General MIDI programs. kapellmeister sends them when it opens the
+# synthesizer. The voice channel needs a program that holds a note for as long
+# as the note is on. A struck program such as a piano decays, and the chord
+# becomes silent between changes.
+# A string serenade scores the sustained bed for the lower strings and gives
+# the melody to the violins, which is also what these samples can hold. In
+# TimGM6mb the "String Ensemble" sample flutters: its amplitude moves 31% to
+# 39% through a held note, at every pitch, which is audible as a loop. Cello
+# holds to 1% to 4% and Violin to 3% to 5%.
+PROG_VOICE = 42          # GM "Cello": the held bed, the steadiest sample here
+PROG_CLIMB = 45          # GM "Pizzicato Strings": short, so a flutter cannot show
+PROG_ACCENT = 47         # GM "Timpani": a classical stroke, not a drum kit
+PROG_FANFARE = 40        # GM "Violin": the melody
+
+# Levels. All 25 voices can sound at once, so each one has to stay well under
+# the ceiling, while a transition is a single event that should cut through.
+# Each patch has its own loudness, so these follow the patch and not a rule.
+# Cello is about six times quieter than the string ensemble it replaced, and
+# 25 cellos also sum more, because their samples are more alike. Measured
+# against TimGM6mb at -g 1.5: one voice peaks at 1307, all 25 at 15612, a
+# timpani stroke at 24345 (19x one voice), and all 25 down plus a stroke
+# reaches 80% of full scale.
+VOICE_VELOCITY = 44
+CLIMB_VELOCITY = 100
+ACCENT_VELOCITY = 110
+
+# MIDI channel volume (CC 7), sent once when the synthesizer opens. Velocity
+# alone cannot separate the two: a held voice and an accent need different
+# per-channel levels, not different dynamics.
+CC_VOLUME = 7
+VOICE_LEVEL = 88         # the held session voices
+ACCENT_LEVEL = 110       # the drum accent and the climb blips
+
+# The serenade opens with a rising G major arpeggio: G D G D G B D G, resolving
+# an octave up. kapellmeister plays that one figure when the last down session
+# recovers, so repairing the fabric is what completes the tune. Two quarters
+# and then eighths, at about 150 beats per minute. It runs 2.5 seconds, which
+# is short enough to land as a flourish rather than an interruption. The rhythm
+# is a stylised reading of the opening, not a transcription.
+# Violin is quiet in this soundfont, so the fanfare runs at the top of both
+# scales and still peaks at only 80% of full scale.
+FANFARE_VELOCITY = 127
+FANFARE_LEVEL = 44       # CC 7 on the fanfare channel
+FANFARE: list[(at: float, note: int, hold: float)] = [
+    (at=0.00, note=55, hold=0.35),   # G3
+    (at=0.40, note=62, hold=0.35),   # D4
+    (at=0.80, note=55, hold=0.17),   # G3
+    (at=1.00, note=62, hold=0.17),   # D4
+    (at=1.20, note=55, hold=0.17),   # G3
+    (at=1.40, note=59, hold=0.17),   # B3
+    (at=1.60, note=62, hold=0.17),   # D4
+    (at=1.80, note=67, hold=0.70),   # G4 -- the octave, let it ring
+]
+
+CLIMB_LEN = 0.18         # seconds a climb blip is held
+ACCENT_LEN = 0.25
+
+# The BGP FSM in order. A session that comes back to established moves through
+# these states. Each rung sounds the peer's own pentatonic degree. A recovery is
+# a short rising run in that peer's octave, and it ends on the held voice.
+FSM_ORDER = ["idle", "connect", "active", "open-sent", "open-confirm", "established"]
+
+
+def voice_note(idx: int) -> int:
+    """The held voice for the idx'th peer, on the pentatonic scale."""
+    return SYNTH_ROOT + (idx // len(PENTATONIC)) * 12 + PENTATONIC[idx % len(PENTATONIC)]
+
+
+def climb_note(idx: int, step: int) -> int:
+    """A rung of the peer's own arpeggio, for an intermediate FSM state."""
+    return SYNTH_ROOT + (idx // len(PENTATONIC)) * 12 + ARPEGGIO[step % len(ARPEGGIO)]
+
+
+def fsm_step(state: str) -> ?int:
+    """Position of a session-state in the FSM climb. None if the state is unknown."""
+    i = 0
+    for s in FSM_ORDER:
+        if s == state:
+            return i
+        i += 1
+    return None
+
+
+def peer_id(router: str, peer: str) -> str:
+    """One dict key for a peer. netinfra keys ebgp-peer by [router, peer-address].
+
+    A tab cannot occur in either key, so the two never run together.
+    """
+    return "{router}\t{peer}"
+
+
+def peer_label(id: str) -> str:
+    """The peer id as it is printed: "<router> <peer-address>"."""
+    return id.replace("\t", " ").strip()
+
+
+def layout_key(router: str, peer: str) -> str:
+    """Sortable key laying the peers out by router, then IPv4-numerically.
+
+    IPv4 addresses sort before anything else (an IPv6 peer, say), which is the
+    order yangadeus lays the same fabric out across the keys. The numeric value
+    is zero-padded so that a string sort orders it as a number.
+    """
+    n = ipv4_key(peer)
+    if n is None:
+        return "{router}\t1\t{peer}"
+    s = str(n!)
+    while len(s) < 10:
+        s = "0" + s
+    return "{router}\t0\t{s}"
+
+
+def find_leaf_text(node: xml.Node, tag: str) -> ?str:
+    """Text of the first element named `tag` at or below `node`. None if empty."""
+    if node.tag == tag:
+        t = node_text(node)
+        return t if t != "" else None
+    for ch in node.children:
+        r = find_leaf_text(ch, tag)
+        if r is not None:
+            return r
+    return None
+
+
+def local_name(seg: str) -> str:
+    """A path segment's node name, without module prefix or key selector."""
+    name = seg.split("=")[0]
+    parts = name.split(":")
+    return parts[len(parts) - 1]
+
+
+def target_list_keys(target: str, list_name: str) -> ?list[str]:
+    """Key values of `list_name`'s entry in a yang-patch target, else None.
+
+    push-change-update edit targets are RFC 8040 RESTCONF data-resource paths:
+
+        /netinfra:netinfra/ebgp-peer=xrd-a,10.123.1.2/state/session-state
+
+    The keys of a list follow its name in an "=" selector. They are
+    percent-encoded, separated by commas, and in key order. A node carries a
+    module prefix only where the namespace changes. A key value never contains a
+    literal "=", because that character is encoded. The split is therefore
+    unambiguous.
+    """
+    for seg in target.split("/"):
+        if seg != "":
+            parts = seg.split("=")
+            if len(parts) > 1 and local_name(parts[0]) == list_name:
+                keys: list[str] = []
+                for v in "=".join(parts[1:]).split(","):
+                    keys.append(uri.unquote(v))
+                return keys
+    return None
+
+
+def target_leaf(target: str) -> str:
+    """The node name a target path ends at, without prefix or key selector."""
+    segs = target.split("/")
+    return local_name(segs[len(segs) - 1])
+
+
+def collect_peer_states(node: xml.Node,
+                        acc: list[(router: str, peer: str, state: ?str)]) -> None:
+    """Harvest /netinfra/ebgp-peer entries from a push-update snapshot subtree."""
+    if node.tag == "ebgp-peer":
+        router = ""
+        peer = ""
+        state: ?str = None
+        for ch in node.children:
+            if ch.tag == "router":
+                router = node_text(ch)
+            elif ch.tag == "peer-address":
+                peer = node_text(ch)
+            elif ch.tag == "state":
+                state = find_leaf_text(ch, "session-state")
+        if peer != "":
+            acc.append((router=router, peer=peer, state=state))
+        # ebgp-peer entries don't nest; stop descending this branch.
+        return
+
+    for ch in node.children:
+        collect_peer_states(ch, acc)
+
+
+actor Kapellmeister(env, args, logh: logging.Handler):
+    """Holds the state-change subscription and the synthesizer it plays on."""
+
+    host = args.get_str("host")
+    port = args.get_int("port")
+    username = args.get_str("username")
+    password = args.get_str("password")
+    synth_name = args.get_str("synth")
+    fanfare = not args.get_bool("no-fanfare")
+
+    var synth: ?midi.Output = None
+    var synth_open = False
+    var state_client: ?swnc.Client = None
+    var subscribed = False
+    var state_retry = False
+    var state_warned = False
+    var baseline = False
+    var greeted = False      # the startup fanfare is a one-time decision
+
+    # The peers, laid out in the order they will sound. A peer keeps the voice
+    # it is given for the life of the process: renumbering on every new peer
+    # would move notes that are already sounding.
+    var voice_of: dict[str, int] = {}     # peer id -> voice index
+    var peer_state: dict[str, str] = {}   # peer id -> session-state
+    var sounding: set[int] = set()        # voice indexes currently held on
+    var overflow = False                  # warned once that the layout is full
+
+    mcap = midi.MidiCap(env.cap)
+    cap = net.TCPConnectCap(net.TCPCap(net.NetCap(env.auth)))
+
+    # -- the voices --------------------------------------------------------
+    def snd_on(channel: int, note: int, velocity: int):
+        s = synth
+        if s is not None:
+            s.note_on(channel, note, velocity)
+
+    def snd_off(channel: int, note: int):
+        s = synth
+        if s is not None:
+            s.note_on(channel, note, 0)   # note-on velocity 0 == note-off
+
+    # A blip is a note that stops by itself after `length` seconds.
+    def blip(channel: int, note: int, velocity: int, length: float):
+        snd_on(channel, note, velocity)
+        after length: snd_off(channel, note)
+
+    def _fanfare_note(note: int, hold: float):
+        snd_on(CH_FANFARE, note, FANFARE_VELOCITY)
+        after hold: snd_off(CH_FANFARE, note)
+
+    def play_fanfare(why: str):
+        print("♪ {why} — Eine kleine Nachtmusik")
+        for ev in FANFARE:
+            after ev.at: _fanfare_note(ev.note, ev.hold)
+
+    def voice_on(idx: int):
+        if idx not in sounding:
+            sounding.add(idx)
+            snd_on(CH_VOICE, voice_note(idx), VOICE_VELOCITY)
+
+    def voice_off(idx: int):
+        if idx in sounding:
+            sounding.discard(idx)
+            snd_off(CH_VOICE, voice_note(idx))
+
+    # -- laying the peers out on the scale ---------------------------------
+    def lay_out(router: str, peer: str):
+        """Give a peer the next free voice, once. Silent past MAX_VOICES."""
+        id = peer_id(router, peer)
+        if voice_of.get(id) is not None:
+            return
+        if len(voice_of) >= MAX_VOICES:
+            if not overflow:
+                overflow = True
+                print("(more than {MAX_VOICES} peers — the rest stay silent)", err=True)
+            return
+        voice_of[id] = len(voice_of)
+
+    def apply_peer_state(router: str, peer: str, state: str, quiet: bool):
+        """Apply one session-state to the chord. quiet: set it and make no sound."""
+        id = peer_id(router, peer)
+        prev = peer_state.get(id)
+        if prev is not None and prev! == state:
+            return
+        peer_state[id] = state
+        lay_out(router, peer)
+        idx = voice_of.get(id)
+        if idx is None:
+            return
+        i = idx!
+        was_up = prev is not None and prev! == "established"
+        if state == "established":
+            was_down = len(sounding)
+            voice_off(i)
+            # Fire only on the edge into a fully healthy fabric, and never off a
+            # snapshot, which is a baseline rather than a recovery.
+            if fanfare and not quiet and was_down > 0 and len(sounding) < 1:
+                play_fanfare("every session established")
+        else:
+            voice_on(i)
+            if not quiet:
+                # A session that leaves established is the event to hear. The
+                # rungs of the climb back use the peer's own scale degree.
+                if was_up:
+                    blip(CH_ACCENT, ACCENT_NOTE, ACCENT_VELOCITY, ACCENT_LEN)
+                step = fsm_step(state)
+                if step is not None and step! > 0:
+                    blip(CH_CLIMB, climb_note(i, step!), CLIMB_VELOCITY, CLIMB_LEN)
+        if not quiet:
+            before = "-"
+            pv = prev
+            if pv is not None:
+                before = pv!
+            print("♪ {peer_label(id)}: {before} -> {state}  (voice {note_name(voice_note(i))})")
+
+    def resync_voices():
+        # The baseline and the synthesizer arrive independently, in either
+        # order. Derive the set of held voices again when one of them lands.
+        for id in peer_state.keys():
+            v = voice_of.get(id)
+            if v is not None:
+                if peer_state[id] == "established":
+                    voice_off(v!)
+                else:
+                    voice_on(v!)
+        if baseline:
+            print("♪ Sounding: {len(sounding)} of {len(peer_state)} sessions are down")
+            # A fabric that is already whole at startup earns the same flourish
+            # as one that recovers. The baseline and the synthesizer arrive in
+            # either order, so greet at the first moment both are in, and
+            # decide once.
+            if not greeted and synth is not None:
+                greeted = True
+                if fanfare and len(peer_state) > 0 and len(sounding) < 1:
+                    play_fanfare("all sessions up at start")
+
+    # -- synth output (a soft synth on the MIDI bus; best-effort) -----------
+    def find_synth_out() -> ?midi.Endpoint:
+        dests = midi.destinations(mcap)
+        if synth_name != "":
+            want = synth_name.lower()
+            for d in dests:
+                if d.name.lower().find(want) >= 0:
+                    return d
+            return None
+        for d in dests:
+            n = d.name.lower()
+            match = False
+            for s in SYNTH_NAMES:
+                if n.find(s) >= 0:
+                    match = True
+            if match:
+                return d
+        return None
+
+    def open_synth():
+        if synth_open:
+            return
+        ep = find_synth_out()
+        if ep is not None:
+            synth_open = True
+            print("🔊 Synth: {ep.name}")
+            o = midi.Output(mcap, dest=ep)
+            synth = o
+            o.program_change(CH_VOICE, PROG_VOICE)
+            o.program_change(CH_CLIMB, PROG_CLIMB)
+            o.program_change(CH_ACCENT, PROG_ACCENT)
+            o.program_change(CH_FANFARE, PROG_FANFARE)
+            # Set the mix once, so a held voice sits far below a transition.
+            o.send3(0xb0 | CH_VOICE, CC_VOLUME, VOICE_LEVEL)
+            o.send3(0xb0 | CH_CLIMB, CC_VOLUME, ACCENT_LEVEL)
+            o.send3(0xb0 | CH_ACCENT, CC_VOLUME, ACCENT_LEVEL)
+            o.send3(0xb0 | CH_FANFARE, CC_VOLUME, FANFARE_LEVEL)
+            # The synthesizer was absent, so no note reached it. Derive the
+            # chord again to sound a fabric that is already up.
+            sounding = set()
+            resync_voices()
+        else:
+            after 2.0: open_synth()
+
+    # -- session state feed (YANG-push on-change, RFC 8641) ----------------
+    def on_subscribed(c: swnc.Client, sub_id: ?int, err: ?swnc.NetconfError):
+        if err is not None:
+            print("session-state subscription failed: {err}", err=True)
+            return
+        print("♪ Session state: subscribed on-change to {host}:{port}")
+
+    def on_state_notif(c: swnc.Client, n: xml.Node):
+        pu = swyp.parse_push_update(n)
+        if pu is not None:
+            handle_snapshot(pu!.contents)
+            return
+        pcu = swyp.parse_push_change_update(n)
+        if pcu is not None:
+            patch_node = pcu!.yang_patch
+            if patch_node is not None:
+                handle_patch(patch_node!)
+
+    def handle_snapshot(contents: list[xml.Node]):
+        acc: list[(router: str, peer: str, state: ?str)] = []
+        for c in contents:
+            collect_peer_states(c, acc)
+        # Lay every peer out before sounding any of them, so the layout follows
+        # the fabric and not the order the elements happen to arrive in.
+        ordered: dict[str, (router: str, peer: str)] = {}
+        for rec in acc:
+            ordered[layout_key(rec.router, rec.peer)] = (router=rec.router, peer=rec.peer)
+        for k in sorted(ordered.keys()):
+            e = ordered[k]
+            lay_out(e.router, e.peer)
+        # A snapshot is a baseline, not an event. Set the chord and make no
+        # sound. A snapshot after a reconnect must not replay flaps that
+        # kapellmeister did not see.
+        for rec in acc:
+            st = rec.state
+            if st is not None:
+                apply_peer_state(rec.router, rec.peer, st!, True)
+        if not baseline:
+            baseline = True
+            print("♪ Session state: {len(acc)} peers in the baseline")
+        resync_voices()
+
+    def handle_patch(node: xml.Node):
+        edits: list[ypatch.Edit] = []
+        try:
+            edits = ypatch.Patch.from_xml(node).edits
+        except Exception as exc:
+            print("session-state patch parse failed: {exc}", err=True)
+            return
+        for ed in edits:
+            keys = target_list_keys(ed.target, "ebgp-peer")
+            if keys is not None and len(keys!) > 1:
+                router = keys![0]
+                peer = keys![1]
+                if ed.operation == ypatch.OP_REMOVE or ed.operation == ypatch.OP_DELETE:
+                    apply_peer_state(router, peer, "unknown", False)
+                else:
+                    state: ?str = None
+                    v = ed.value
+                    if v is not None:
+                        if target_leaf(ed.target) == "session-state":
+                            t = node_text(v!)
+                            if t != "":
+                                state = t
+                        else:
+                            state = find_leaf_text(v!, "session-state")
+                    if state is not None:
+                        apply_peer_state(router, peer, state!, False)
+
+    def retry_state_watch():
+        state_retry = False
+        open_state_watch()
+
+    def on_state_connect(c: swnc.Client, err: ?Exception):
+        # A pipe that fails during a session also arrives here, because the
+        # client sends a read error to on_connect. This is therefore both the
+        # connect-failed path and the feed-lost path. Discard the client and
+        # connect again.
+        if err is not None:
+            if not state_warned:
+                state_warned = True
+                print("(no session-state feed at {host}:{port}: {err} — retrying)", err=True)
+            state_client = None
+            subscribed = False
+            # Keep one retry in progress at a time. A dead client can report
+            # the same failure more than once, and each report would otherwise
+            # start another connection.
+            if not state_retry:
+                state_retry = True
+                after 5.0: retry_state_watch()
+            return
+        if subscribed:
+            return
+        subscribed = True
+        state_warned = False
+        # Use no filter. The netinfra tree is small. sync-on-start brings the
+        # peer list, which is also the layout of the voices on the scale.
+        # Every change after that arrives as a yang-patch.
+        c.establish_subscription(on_subscribed, datastore="operational",
+                                 on_change=True, sync_on_start=True)
+
+    def open_state_watch():
+        if state_client is not None:
+            return
+        state_client = swnc.Client(cap,
+                                   address=host,
+                                   port=port,
+                                   username=username,
+                                   password=password,
+                                   key=None,
+                                   on_connect=on_state_connect,
+                                   on_notif=on_state_notif,
+                                   skip_host_key_check=True,
+                                   log_handler=logh)
+
+    # -- take the podium ---------------------------------------------------
+    print("kapellmeister — listening for eBGP session state at {host}:{port} as {username}")
+    print("One held voice per session that is down, on a G major pentatonic from {note_name(SYNTH_ROOT)}. A whole fabric is silent.")
+
+    # The synthesizer and the state feed work the same way. Each one retries
+    # until it appears, so neither has to start before kapellmeister.
+    open_synth()
+    open_state_watch()
+
+
+actor main(env):
+    logh = logging.Handler()
+
+    p = argparse.Parser()
+    p.add_option("host", "str", "?", "127.0.0.1", "NETCONF host publishing eBGP session state (flapmusik northbound)")
+    p.add_option("port", "int", "?", 2830, "NETCONF port for the session-state feed")
+    p.add_option("username", "str", "?", "admin", "NETCONF username")
+    p.add_option("password", "str", "?", "admin", "NETCONF password")
+    p.add_option("synth", "str", "?", "", "substring selecting the MIDI destination to play on (default: fluid/synth)")
+    p.add_bool("no-fanfare", "do not play the Nachtmusik opening when every session recovers")
+    p.add_bool("verbose", "verbose logging from the NETCONF/SSH stack")
+
+    try:
+        args = p.parse(env.argv)
+        if args.get_bool("verbose"):
+            logh.set_output_level(logging.TRACE)
+            logh.add_sink(logging.ConsoleSink())
+        Kapellmeister(env, args, logh)
+    except argparse.ArgumentError as exc:
+        print(str(exc), err=True)
+        env.exit(1)

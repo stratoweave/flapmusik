@@ -1,12 +1,48 @@
-# yangadeus
+# yangadeus and kapellmeister
 
-Play the eBGP control plane like a keyboard.
+Play the eBGP control plane from a MIDI keyboard. Hear the result.
 
-`yangadeus` maps the 25 keys of a MIDI keyboard onto the BGP neighbors of an
-IOS XRd device. It keeps a **persistent NETCONF session** open to the router
-(via the stratoweave `DeviceMgr`), and on each keypress fires a
-`clear bgp <neighbor>` RPC — hard-resetting that neighbor's session live, on
-stage.
+This directory is one Acton project, and it builds two programs:
+
+- **yangadeus** maps the 25 keys of a MIDI keyboard onto the BGP neighbors of
+  an IOS XRd device. Each key press sends a `clear bgp <neighbor>` RPC. The RPC
+  resets the session to that neighbor.
+- **kapellmeister** subscribes to the eBGP session state that flapmusik
+  publishes. It holds one voice on a synthesizer for each session that is down.
+
+```
+  keys  ───►  yangadeus      ───►  clear-bgp RPC        ───►  IOS XRd    :1830
+  synth ◄───  kapellmeister  ◄───  YANG-push on-change  ◄───  flapmusik  :2830
+```
+
+The two programs form a loop. A key clears a session, and the network answers
+with sound. Neither program needs the other. Each one connects to its own
+server.
+
+`acton build` compiles every module with a `main` actor into its own binary.
+One build writes both `out/bin/yangadeus` and `out/bin/kapellmeister`.
+
+## Build
+
+```sh
+make            # optimized build  -> out/bin/yangadeus, out/bin/kapellmeister
+make debug      # faster to compile
+```
+
+`make build` reads every dependency from `Build.act`.
+
+`make build-ldep` replaces `yang` and `stratoweave` with local sibling
+checkouts. Use it for work on those libraries. `Build.act` pins `yang` to the
+revision that the pinned `stratoweave` compiles against. That target therefore
+works only while the local checkouts agree with each other.
+
+Cross-compile for the demo hosts with `make build-linux-x86_64`,
+`make build-linux-aarch64` or `make build-macos-aarch64`.
+
+## yangadeus — the keyboard
+
+`yangadeus` holds a persistent NETCONF session open to the router, through the
+stratoweave `DeviceMgr`. It sends one clear-BGP RPC for each key press.
 
 ```
   MIDI key  ─────►  yangadeus  ─────►  NETCONF RPC
@@ -14,65 +50,60 @@ stage.
                       └── persistent session (DeviceMgr) ──► IOS XRd
 ```
 
-## How it works
+You do not have to connect the keyboard before you start yangadeus. The
+NETCONF session opens, and yangadeus builds the neighbor map. It then searches
+for the MIDI source every 2 seconds, until the source appears.
 
-1. **Connect.** On startup it opens a NETCONF/SSH session to the XRd and holds
-   it open (the `DeviceMgr` reconnects on its own if the link drops).
-2. **Discover.** Once connected it does a `<get-config>` of the running
-   datastore filtered to the BGP subtree
-   (`Cisco-IOS-XR-um-router-bgp-cfg: router/bgp`), walks the reply and collects
-   every configured neighbor address (it also understands the classic
-   `Cisco-IOS-XR-ipv4-bgp-cfg` `neighbor-address` leaf). Each neighbor is
-   labelled eBGP/iBGP by comparing its `remote-as` to the local `as`.
-3. **Map.** eBGP peers (remote-as ≠ the local `as`) are sorted (IPv4
-   numerically) and laid out on consecutive keys starting at `--base-note`; iBGP
-   and unclassified peers are skipped unless `--all-neighbors` is given. The map
-   is printed at startup.
-4. **Play.** A key press (`note_on`) sends
-   `Cisco-IOS-XR-ipv4-bgp-act:clear-bgp-ip-addr` for that neighbor — or the
-   `-graceful` variant with `--graceful`.
-5. **Light.** On a Launchkey Mini MK3, the 16 Session pads mirror activity: the
-   pad for the pressed key goes **amber** while the clear is in flight, flashes
-   **green** on `<ok/>`, or **red** on failure, then fades. See below.
+### How it works
 
-The keyboard does **not** need to be plugged in at startup: the session comes up
-and the map is built regardless, and yangadeus keeps looking for the MIDI source
-until it appears.
+1. **Connect.** yangadeus opens a NETCONF/SSH session to the XRd and holds it
+   open. The `DeviceMgr` connects again if the link drops.
+2. **Discover.** yangadeus sends a `<get-config>` of the running datastore. A
+   subtree filter narrows the request to the BGP tree
+   (`Cisco-IOS-XR-um-router-bgp-cfg: router/bgp`). yangadeus reads the reply
+   and collects every neighbor address. It also accepts the
+   `neighbor-address` leaf of the classic `Cisco-IOS-XR-ipv4-bgp-cfg` model.
+3. **Classify.** yangadeus compares the `remote-as` of each neighbor to the
+   local `as`. A different AS number makes the neighbor an eBGP peer. An equal
+   AS number makes it an iBGP peer.
+4. **Map.** yangadeus sorts the eBGP peers by IPv4 address, in numeric order.
+   It puts them on consecutive keys from `--base-note` up. It skips the iBGP
+   peers, and also each peer with no `remote-as`. `--all-neighbors` keeps them
+   all. yangadeus prints the map at startup.
+5. **Play.** A key press (`note_on`) sends
+   `Cisco-IOS-XR-ipv4-bgp-act:clear-bgp-ip-addr` for the neighbor on that key.
+   `--graceful` selects the `-graceful` variant, which asks for a graceful
+   restart.
+6. **Light.** The 16 Session pads of a Launchkey Mini MK3 show each clear. See
+   "Pad LEDs" below.
+
+yangadeus makes no sound. kapellmeister plays the result, in its own process.
 
 ### Pad LEDs (Launchkey Mini MK3)
 
-Feedback is driven over the controller's **DAW port** (the keys arrive on the
-MIDI port). At startup yangadeus opens that port, puts the pad grid into DAW /
-Session mode, and blanks it. The 25 keys are spread proportionally across the 16
-pads (`pos = key_index * 16 / neighbors`), top row then bottom row, left→right —
-so several neighbors can share a pad: the pad tells you roughly *where* along the
-keyboard a clear landed, not the exact peer. Colours come from Novation's
-128-entry velocity palette (amber 9 / green 21 / red 5).
+yangadeus sends the pad colours to the **DAW port** of the controller. The keys
+arrive on the MIDI port. At startup yangadeus opens the DAW port. It puts the
+pad grid into DAW/Session mode. It then sets all 16 pads to off.
 
-LED feedback is **best-effort**: if the DAW port is missing or held by another
-app, yangadeus logs it and runs dark — the clears still fire. Disable it with
-`--no-leds`. (This needs MIDI *output*, which the sibling `../midiact` checkout
-now provides via its `Output` actor; a stock upstream `midi` has input only.)
+Each pad then shows the state of a clear:
 
-## Build
+- **Amber** while yangadeus waits for the reply.
+- **Green** for an `<ok/>` reply. The pad is off again after 0.5 seconds.
+- **Red** for a failure. The pad is off again after 0.9 seconds.
 
-```sh
-make            # optimized build  -> out/bin/yangadeus
-make debug      # faster to compile
-```
+yangadeus spreads the 25 keys across the 16 pads
+(`pos = key_index * 16 / neighbors`). The order is the top row first, then the
+bottom row, from left to right. Several neighbors can therefore share one pad.
+A pad shows the approximate position of a clear along the keyboard. It does not
+identify the exact peer. The colours are velocity values from the 128-entry
+palette of Novation: amber 9, green 21 and red 5.
 
-The `make` targets build against the sibling **`../midiact`** checkout (via
-`--dep midi=…`, set as `MIDI_DEP` in the Makefile) — it carries the `Output`
-actor the pad LEDs need, which the pinned upstream `midi` lacks. Point it
-elsewhere with `make MIDI_DEP="--dep midi=/abs/path"`, or clear it
-(`make MIDI_DEP=`) to fall back to the `Build.act`-pinned upstream (no LEDs).
-`stratoweave` and `yang` resolve from `Build.act`. To hack on a local
-`acton-yang`: `make build-ldep`.
+The pad LEDs are optional. If the DAW port is absent, or another program holds
+it, yangadeus prints a message and continues without the pads. It still sends
+the clear RPCs. `--no-leds` disables the pads. The pads need MIDI output, from
+the `Output` actor in `midiact`.
 
-Cross-compile for the demo hosts with `make build-linux-x86_64` /
-`build-linux-aarch64` / `build-macos-aarch64`.
-
-## Run
+### Run yangadeus
 
 ```sh
 out/bin/yangadeus --host 10.99.0.13 --port 1830 --username clab --password clab@123
@@ -81,31 +112,207 @@ out/bin/yangadeus --host 10.99.0.13 --port 1830 --username clab --password clab@
 | flag | default | meaning |
 |------|---------|---------|
 | `--host` | `localhost` | XRd NETCONF host |
-| `--port` | `830` | XRd NETCONF port |
-| `--username` / `--password` | `admin` / `admin` | NETCONF credentials |
+| `--port` | `1830` | XRd NETCONF port |
+| `--username` / `--password` | `clab` / `clab@123` | NETCONF credentials |
 | `--source` | `running` | datastore to read for discovery |
-| `--midi-source` | *(first source)* | substring selecting the MIDI input |
+| `--midi-source` | *(first source)* | substring that selects the MIDI input |
 | `--base-note` | `48` | MIDI note of the leftmost key (C3=48, middle C=60) |
 | `--keys` | `25` | number of keys to map |
-| `--peers` | *(discover)* | comma-separated neighbor list; skips NETCONF discovery |
-| `--graceful` | off | graceful restart instead of a hard reset |
-| `--all-neighbors` | off | map all neighbors incl. iBGP (default: eBGP only) |
-| `--no-leds` | off | disable Launchkey pad LED feedback |
+| `--peers` | *(discover)* | comma-separated neighbor list, in place of NETCONF discovery |
+| `--graceful` | off | ask for a graceful restart, and not a hard reset |
+| `--all-neighbors` | off | map all neighbors, including iBGP (default: eBGP only) |
+| `--no-leds` | off | disable the Launchkey pad LEDs |
 | `--verbose` | off | log the NETCONF/SSH stack |
 
-`--peers` is handy for demoing the pads without a live router, e.g.
+`make start` runs the same command with the lab defaults. `HOST`, `PORT`,
+`USERNAME`, `PASSWORD` and `ARGS` replace them.
+
+Use `--peers` to show the pads without a live router. For example,
 `out/bin/yangadeus --peers 10.0.0.6,10.0.0.10,10.0.0.14` maps three keys
-immediately and lights their pads as you play.
+immediately, and the pads light as you play.
 
-### Calibrating the keyboard
+### Calibrate the keyboard
 
-Different 25-key controllers put their leftmost key at different MIDI notes. Any
-key you press is printed with its note number even when unmapped, so:
+Different 25-key controllers put the leftmost key at different MIDI notes.
+yangadeus prints the note number of every key you press, also for a key with no
+neighbor. To align the keyboard:
 
-1. Start yangadeus and look at the printed key map.
-2. Press the lowest key; note the number it reports.
-3. Restart with `--base-note <that number>` so the leftmost key lines up with
-   the first neighbor.
+1. Start yangadeus. Read the key map that it prints.
+2. Press the lowest key. Read the note number in the output.
+3. Start yangadeus again with `--base-note <that number>`. The leftmost key now
+   holds the first neighbor.
 
-Pick a specific controller with `--midi-source` (a case-insensitive substring of
-the port name) if more than one MIDI source is present.
+Use `--midi-source` to select one controller out of several. The value is a
+substring of the port name, and the match ignores case.
+
+## kapellmeister — the sound
+
+`kapellmeister` subscribes on-change (RFC 8641 YANG-push) to the northbound
+NETCONF server of flapmusik. It plays
+`/netinfra/ebgp-peer/state/session-state` as notes on a synthesizer.
+
+```
+  synth  ◄─────  kapellmeister  ◄─────  YANG-push on-change
+  (a voice          │                   /netinfra/ebgp-peer/state/session-state
+   per break)       └── NETCONF subscription ──── flapmusik northbound  :2830
+```
+
+This is the same feed that `./monitor` in the repository root shows as a table.
+
+### What you hear
+
+- **One held voice for each session that is down.** A fabric with no broken
+  session is silent. A clear starts the voice of that peer. The voice stops
+  when the session is established again. Each additional broken session adds
+  one more voice.
+- **A timpani stroke on the tonic** at the moment a session leaves
+  `established`.
+- **One pizzicato note for each step of the FSM** on the way back. `connect`,
+  `active`, `open-sent` and `open-confirm` each sound one note of a rising G
+  major arpeggio. A recovery therefore plays the figure that opens the
+  serenade. The peer is silent after that.
+- **The opening of the serenade** when the fabric is whole. This is the rising
+  G major arpeggio, G D G D G B D G, and it resolves an octave up. It runs 2.5
+  seconds, so it sounds like a flourish and not like an interruption.
+  `--no-fanfare` disables it.
+
+kapellmeister plays the serenade opening in two cases. The first case is
+startup, when every session is already up. The second case is the recovery of
+the last session that was down. The repair of the fabric therefore completes
+the tune.
+
+The startup case needs two things: the state baseline and the synthesizer.
+They arrive in either order. kapellmeister plays the opening at the first
+moment it holds both, and it makes this decision one time only. A snapshot is a
+baseline and not an event, so a snapshot sets the chord and makes no sound.
+kapellmeister therefore stays silent when the state feed connects again.
+
+### The parts
+
+The parts follow *Eine kleine Nachtmusik*, a string serenade in **G major**.
+The cello holds the session voices. Pizzicato strings play the climb. The
+timpani plays the stroke. The violin plays the serenade opening. A serenade
+scores the sustained bed for the lower strings and gives the melody to the
+violins. These samples can hold those parts.
+
+The "String Ensemble" sample of TimGM6mb flutters. Its amplitude moves between
+31% and 39% through a held note, at every pitch, and you hear this as a loop.
+The cello holds to between 1% and 4%.
+
+The voices use a **G major pentatonic** layout from G2 up. A pentatonic layout
+has no semitones. All 25 voices can therefore sound together and still agree.
+The result stays consonant for any number of broken sessions.
+
+kapellmeister mixes the two layers with MIDI channel volume (CC 7), and not
+with velocity. It sets the volume one time, when it opens the synthesizer. A
+held voice must stay far below the ceiling, because 25 voices can sound at
+once. A transition is a single event, and it must sound above the held voices.
+Each patch has its own loudness, so the levels follow the patch and not a rule.
+
+These are the measured peaks with TimGM6mb at `-g 1.5`:
+
+- one voice: 1307
+- all 25 voices: 15612
+- a timpani stroke: 24345
+- all 25 voices with a stroke: 80% of full scale
+
+The programs and the levels are constants at the top of
+`src/kapellmeister.act`.
+
+A larger soundfont would improve all of this, because the flutter comes from
+short samples. `fluidr3mono-gm-soundfont` (23 MB) holds the FluidR3 samples in
+mono, and it is the best trade between size and quality here.
+`fluid-soundfont-gm` is the full version, at 145 MB. You must measure the
+levels again for both, because patch loudness changes with the soundfont.
+
+### Which peer gets which voice
+
+A peer is the netinfra list key: `[router, peer-address]`. The sync-on-start
+snapshot contains the whole peer list. kapellmeister sorts the list by router,
+and then by IPv4 address in numeric order. The lowest address gets the lowest
+voice. yangadeus puts the same fabric on the keys in the same order.
+
+A peer that first appears after the baseline takes the next free voice. A peer
+then keeps that voice for as long as the process runs. A new peer must not move
+the notes that already sound.
+
+The layout puts five voices in each octave, from G2 up, so 25 voices reach E7.
+Above E7 a cello sample no longer sounds like a cello. kapellmeister therefore
+tracks a 26th peer, but it holds no voice for it.
+
+The pitch comes from the layout of kapellmeister. It does not come from the key
+that cleared the session. kapellmeister cannot see that key, and it does not
+need it. The two ends of a session have different addresses. flapmusik keys a
+peer by the address that its own router sees (`10.123.1.2`). yangadeus maps the
+neighbors of the router that it drives (`10.123.1.1`). A join through
+`ebgp-peer/local-address` relates the two views. The sonification did that join
+while it was a part of yangadeus. The two programs are now separate, and
+neither one needs it.
+
+### The synthesizer
+
+`midi`/midiact carries MIDI messages, and it does not make audio.
+kapellmeister therefore plays to a **software synthesizer that appears as a
+MIDI destination**. Any synthesizer on the ALSA sequencer bus works.
+
+Start FluidSynth on the ALSA sequencer bus:
+
+```sh
+sudo apt install --no-install-recommends fluidsynth
+fluidsynth -a alsa -m alsa_seq -s -i -g 1.5 /usr/share/sounds/sf2/TimGM6mb.sf2
+```
+
+Do not install `fluid-soundfont-gm` for this. That package holds 145 MB of
+soundfont. `timgm6mb-soundfont` arrives as a dependency of `fluidsynth`. Its
+6 MB cover every program that kapellmeister uses.
+
+`--no-install-recommends` matters. `libfluidsynth3` depends on SDL2, and SDL2
+needs Mesa, LLVM, Wayland and X11. The install is 43 packages with the flag,
+and 143 packages without it.
+
+`-s` is not optional. It runs FluidSynth as a server. `-i` disables the
+interactive shell. Without `-s`, FluidSynth then has no work left. It prints
+its banner and exits after approximately 130 ms.
+
+`-g` sets the master gain. TimGM6mb is a quiet soundfont. The default of 0.2
+and the common value of 0.8 are both too quiet here. 1.5 reaches 80% of full
+scale at the loudest moment, which is 25 voices with a drum accent and a climb
+note. 2.5 clips that moment.
+
+FluidSynth also prints `warning: Requested a period size of 64, got 940
+instead`. Ignore it. ALSA gave a larger period. This adds approximately 21 ms
+of latency, and it changes nothing else.
+
+kapellmeister selects the instruments. It sends one program change for each
+channel that it uses, when it opens the synthesizer. MIDI has no message for
+the master gain, so `-g` sets it.
+
+kapellmeister finds the synthesizer itself. It takes the first destination with
+`fluid` or `synth` in the name, so FluidSynth needs no flag.
+`--synth <substring>` selects a different destination.
+
+Nothing has to start first. kapellmeister searches for the synthesizer every 2
+seconds, and for the state feed every 5 seconds, until each one appears. Run
+`./check-audio` when you hear nothing. It reports the state of the audio path.
+
+### Run kapellmeister
+
+```sh
+out/bin/kapellmeister --host 127.0.0.1 --port 2830 --username admin --password admin
+```
+
+| flag | default | meaning |
+|------|---------|---------|
+| `--host` | `127.0.0.1` | NETCONF host that publishes the session state (flapmusik northbound) |
+| `--port` | `2830` | NETCONF port of the session-state feed |
+| `--username` / `--password` | `admin` / `admin` | credentials for that feed |
+| `--synth` | *(fluid/synth)* | substring that selects the MIDI destination to play on |
+| `--no-fanfare` | off | do not play the Nachtmusik opening when every session recovers |
+| `--verbose` | off | log the NETCONF/SSH stack |
+
+The defaults are the flapmusik server in `test/ietf-hackathon-xrd`. This server
+is not the router. yangadeus connects to the XRd on port 1830, and
+kapellmeister connects to flapmusik on port 2830.
+
+`make listen` runs the command above with those defaults. `STATE_HOST`,
+`STATE_PORT`, `STATE_USERNAME`, `STATE_PASSWORD` and `ARGS` replace them.
