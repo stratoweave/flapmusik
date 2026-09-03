@@ -3,14 +3,11 @@ fingerprint = 0xd25a947bcea9731e
 dependencies = {
     "stratoweave": (
         repo_url="https://github.com/stratoweave/stratoweave.git",
-        repo_ref="xrd-udp-notif",
-        url="https://github.com/stratoweave/stratoweave/archive/d22fdad1acc96a58ad1ae8229f55c329c98543c2.zip",
-        hash="N-V-__8AAH1XPgANFow8Ta7ugKn7jsUzlQoN4CIacjmsA3tC"
+        url="https://github.com/stratoweave/stratoweave/archive/4eac966437e66f56f3e39b7dd00c9010d17ee447.zip",
+        hash="N-V-__8AAILNbwBchKFF2fZMLN4d-0uzJ4fxYYNjL9cJxJDw"
     ),
     "yang": (
-        repo_url="https://github.com/stratoweave/acton-yang.git",
-        url="https://github.com/stratoweave/acton-yang/archive/c00115cd07db0ee062c85090d4c85f32ef805baa.zip",
-        hash="N-V-__8AACP5JgBjkphmkpC0_Doep_M_Ji8P-z3_5_exsKvl"
+        follows="stratoweave.yang"
     )
 }
 zig_dependencies = {}

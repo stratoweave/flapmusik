@@ -886,7 +886,7 @@ class netinfra__netinfra__router_entry(yadata.MNode):
 _breaker4: None = None
 class netinfra__netinfra__router(yadata.MKeyedList[str, netinfra__netinfra__router_entry]):
     mut def __init__(self, elements: list[netinfra__netinfra__router_entry]=[]) -> None:
-        yadata.MKeyedList.__init__(self, lambda e, k: e.name == k, elements)
+        yadata.MKeyedList.__init__(self, lambda e: e.name, elements)
 
     mut def create(self, key: str, id: u64, type: str, asn: u64, role: ?str=None, mock: ?bool=None, approval_required: ?bool=None) -> netinfra__netinfra__router_entry:
         e = self.get(key)
@@ -903,7 +903,7 @@ class netinfra__netinfra__router(yadata.MKeyedList[str, netinfra__netinfra__rout
             return e
         name = key
         res = netinfra__netinfra__router_entry(name=name, id=id, type=type, asn=asn, role=role, mock=mock, approval_required=approval_required)
-        self.elements.append(res)
+        self._append(res)
         return res
 
     @staticmethod
@@ -948,7 +948,7 @@ class netinfra__netinfra__peering_interface__subinterface_entry(yadata.MNode):
 _breaker6: None = None
 class netinfra__netinfra__peering_interface__subinterface(yadata.MKeyedList[u64, netinfra__netinfra__peering_interface__subinterface_entry]):
     mut def __init__(self, elements: list[netinfra__netinfra__peering_interface__subinterface_entry]=[]) -> None:
-        yadata.MKeyedList.__init__(self, lambda e, k: e.vlan_id == k, elements)
+        yadata.MKeyedList.__init__(self, lambda e: e.vlan_id, elements)
 
     mut def create(self, key: u64, ipv4_address: str, ipv4_prefix_length: ?u64=None) -> netinfra__netinfra__peering_interface__subinterface_entry:
         e = self.get(key)
@@ -959,7 +959,7 @@ class netinfra__netinfra__peering_interface__subinterface(yadata.MKeyedList[u64,
             return e
         vlan_id = key
         res = netinfra__netinfra__peering_interface__subinterface_entry(vlan_id=vlan_id, ipv4_address=ipv4_address, ipv4_prefix_length=ipv4_prefix_length)
-        self.elements.append(res)
+        self._append(res)
         return res
 
     @staticmethod
@@ -1006,7 +1006,7 @@ class netinfra__netinfra__peering_interface_entry(yadata.MNode):
 _breaker8: None = None
 class netinfra__netinfra__peering_interface(yadata.MKeyedList[(router: str, name: str), netinfra__netinfra__peering_interface_entry]):
     mut def __init__(self, elements: list[netinfra__netinfra__peering_interface_entry]=[]) -> None:
-        yadata.MKeyedList.__init__(self, lambda e, k: e.router == k.router and e.name == k.name, elements)
+        yadata.MKeyedList.__init__(self, lambda e: (router=e.router, name=e.name), elements)
 
     mut def create(self, key: (router: str, name: str), description: ?str=None) -> netinfra__netinfra__peering_interface_entry:
         e = self.get(key)
@@ -1016,7 +1016,7 @@ class netinfra__netinfra__peering_interface(yadata.MKeyedList[(router: str, name
             return e
         (router=router, name=name) = key
         res = netinfra__netinfra__peering_interface_entry(router=router, name=name, description=description)
-        self.elements.append(res)
+        self._append(res)
         return res
 
     @staticmethod
@@ -1065,7 +1065,7 @@ class netinfra__netinfra__ebgp_peer_entry(yadata.MNode):
 _breaker10: None = None
 class netinfra__netinfra__ebgp_peer(yadata.MKeyedList[(router: str, peer_address: str), netinfra__netinfra__ebgp_peer_entry]):
     mut def __init__(self, elements: list[netinfra__netinfra__ebgp_peer_entry]=[]) -> None:
-        yadata.MKeyedList.__init__(self, lambda e, k: e.router == k.router and e.peer_address == k.peer_address, elements)
+        yadata.MKeyedList.__init__(self, lambda e: (router=e.router, peer_address=e.peer_address), elements)
 
     mut def create(self, key: (router: str, peer_address: str), peer_asn: u64, local_address: ?str=None, description: ?str=None) -> netinfra__netinfra__ebgp_peer_entry:
         e = self.get(key)
@@ -1078,7 +1078,7 @@ class netinfra__netinfra__ebgp_peer(yadata.MKeyedList[(router: str, peer_address
             return e
         (router=router, peer_address=peer_address) = key
         res = netinfra__netinfra__ebgp_peer_entry(router=router, peer_address=peer_address, peer_asn=peer_asn, local_address=local_address, description=description)
-        self.elements.append(res)
+        self._append(res)
         return res
 
     @staticmethod

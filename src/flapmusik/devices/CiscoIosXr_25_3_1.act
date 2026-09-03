@@ -305,7 +305,7 @@ class Cisco_IOS_XR_um_interface_cfg__interfaces__interface__ipv4__addresses__sec
 _breaker3: None = None
 class Cisco_IOS_XR_um_interface_cfg__interfaces__interface__ipv4__addresses__secondaries__secondary(yadata.MKeyedList[str, Cisco_IOS_XR_um_interface_cfg__interfaces__interface__ipv4__addresses__secondaries__secondary_entry]):
     mut def __init__(self, elements: list[Cisco_IOS_XR_um_interface_cfg__interfaces__interface__ipv4__addresses__secondaries__secondary_entry]=[]) -> None:
-        yadata.MKeyedList.__init__(self, lambda e, k: e.address == k, elements)
+        yadata.MKeyedList.__init__(self, lambda e: e.address, elements)
 
     mut def create(self, key: str, netmask: ?str=None) -> Cisco_IOS_XR_um_interface_cfg__interfaces__interface__ipv4__addresses__secondaries__secondary_entry:
         e = self.get(key)
@@ -315,7 +315,7 @@ class Cisco_IOS_XR_um_interface_cfg__interfaces__interface__ipv4__addresses__sec
             return e
         address = key
         res = Cisco_IOS_XR_um_interface_cfg__interfaces__interface__ipv4__addresses__secondaries__secondary_entry(address=address, netmask=netmask)
-        self.elements.append(res)
+        self._append(res)
         return res
 
     @staticmethod
@@ -516,7 +516,7 @@ class Cisco_IOS_XR_um_interface_cfg__interfaces__interface_entry(yadata.MNode):
 _breaker11: None = None
 class Cisco_IOS_XR_um_interface_cfg__interfaces__interface(yadata.MKeyedList[str, Cisco_IOS_XR_um_interface_cfg__interfaces__interface_entry]):
     mut def __init__(self, elements: list[Cisco_IOS_XR_um_interface_cfg__interfaces__interface_entry]=[]) -> None:
-        yadata.MKeyedList.__init__(self, lambda e, k: e.interface_name == k, elements)
+        yadata.MKeyedList.__init__(self, lambda e: e.interface_name, elements)
 
     mut def create(self, key: str, description: ?str=None, vrf: ?str=None) -> Cisco_IOS_XR_um_interface_cfg__interfaces__interface_entry:
         e = self.get(key)
@@ -528,7 +528,7 @@ class Cisco_IOS_XR_um_interface_cfg__interfaces__interface(yadata.MKeyedList[str
             return e
         interface_name = key
         res = Cisco_IOS_XR_um_interface_cfg__interfaces__interface_entry(interface_name=interface_name, description=description, vrf=vrf)
-        self.elements.append(res)
+        self._append(res)
         return res
 
     @staticmethod
@@ -710,7 +710,7 @@ class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbors__neighbor__addr
 _breaker19: None = None
 class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbors__neighbor__address_families__address_family(yadata.MKeyedList[str, Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbors__neighbor__address_families__address_family_entry]):
     mut def __init__(self, elements: list[Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbors__neighbor__address_families__address_family_entry]=[]) -> None:
-        yadata.MKeyedList.__init__(self, lambda e, k: e.af_name == k, elements)
+        yadata.MKeyedList.__init__(self, lambda e: e.af_name, elements)
 
     mut def create(self, key: str) -> Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbors__neighbor__address_families__address_family_entry:
         e = self.get(key)
@@ -718,7 +718,7 @@ class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbors__neighbor__addr
             return e
         af_name = key
         res = Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbors__neighbor__address_families__address_family_entry(af_name=af_name)
-        self.elements.append(res)
+        self._append(res)
         return res
 
     @staticmethod
@@ -792,7 +792,7 @@ class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbors__neighbor_entry
 _breaker22: None = None
 class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbors__neighbor(yadata.MKeyedList[str, Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbors__neighbor_entry]):
     mut def __init__(self, elements: list[Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbors__neighbor_entry]=[]) -> None:
-        yadata.MKeyedList.__init__(self, lambda e, k: e.address == k, elements)
+        yadata.MKeyedList.__init__(self, lambda e: e.address, elements)
 
     mut def create(self, key: str, remote_as: ?value=None, description: ?str=None) -> Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbors__neighbor_entry:
         e = self.get(key)
@@ -804,7 +804,7 @@ class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbors__neighbor(yadat
             return e
         address = key
         res = Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbors__neighbor_entry(address=address, remote_as=remote_as, description=description)
-        self.elements.append(res)
+        self._append(res)
         return res
 
     @staticmethod
@@ -887,7 +887,7 @@ class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbor_groups__neighbor
 _breaker26: None = None
 class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbor_groups__neighbor_group__address_families__address_family(yadata.MKeyedList[str, Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbor_groups__neighbor_group__address_families__address_family_entry]):
     mut def __init__(self, elements: list[Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbor_groups__neighbor_group__address_families__address_family_entry]=[]) -> None:
-        yadata.MKeyedList.__init__(self, lambda e, k: e.af_name == k, elements)
+        yadata.MKeyedList.__init__(self, lambda e: e.af_name, elements)
 
     mut def create(self, key: str) -> Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbor_groups__neighbor_group__address_families__address_family_entry:
         e = self.get(key)
@@ -895,7 +895,7 @@ class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbor_groups__neighbor
             return e
         af_name = key
         res = Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbor_groups__neighbor_group__address_families__address_family_entry(af_name=af_name)
-        self.elements.append(res)
+        self._append(res)
         return res
 
     @staticmethod
@@ -965,7 +965,7 @@ class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbor_groups__neighbor
 _breaker29: None = None
 class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbor_groups__neighbor_group(yadata.MKeyedList[str, Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbor_groups__neighbor_group_entry]):
     mut def __init__(self, elements: list[Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbor_groups__neighbor_group_entry]=[]) -> None:
-        yadata.MKeyedList.__init__(self, lambda e, k: e.neighbor_group_name == k, elements)
+        yadata.MKeyedList.__init__(self, lambda e: e.neighbor_group_name, elements)
 
     mut def create(self, key: str, remote_as: ?value=None, update_source: ?str=None) -> Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbor_groups__neighbor_group_entry:
         e = self.get(key)
@@ -977,7 +977,7 @@ class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbor_groups__neighbor
             return e
         neighbor_group_name = key
         res = Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__neighbor_groups__neighbor_group_entry(neighbor_group_name=neighbor_group_name, remote_as=remote_as, update_source=update_source)
-        self.elements.append(res)
+        self._append(res)
         return res
 
     @staticmethod
@@ -1039,7 +1039,7 @@ class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__address_families__address
 _breaker32: None = None
 class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__address_families__address_family(yadata.MKeyedList[str, Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__address_families__address_family_entry]):
     mut def __init__(self, elements: list[Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__address_families__address_family_entry]=[]) -> None:
-        yadata.MKeyedList.__init__(self, lambda e, k: e.af_name == k, elements)
+        yadata.MKeyedList.__init__(self, lambda e: e.af_name, elements)
 
     mut def create(self, key: str) -> Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__address_families__address_family_entry:
         e = self.get(key)
@@ -1047,7 +1047,7 @@ class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__address_families__address
             return e
         af_name = key
         res = Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as__address_families__address_family_entry(af_name=af_name)
-        self.elements.append(res)
+        self._append(res)
         return res
 
     @staticmethod
@@ -1138,7 +1138,7 @@ class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as_entry(yadata.MNode):
 _breaker36: None = None
 class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as(yadata.MList[Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as_entry]):
     mut def __init__(self, elements: list[Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as_entry]=[]) -> None:
-        self.elements = elements
+        self._elements = elements
 
     pure def get(self, key: value) -> ?Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as_entry:
         as_number = key
@@ -1161,7 +1161,7 @@ class Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as(yadata.MList[Cisco_IOS_XR_
             return e
         as_number = key
         res = Cisco_IOS_XR_um_router_bgp_cfg__router__bgp__as_entry(as_number=as_number)
-        self.elements.append(res)
+        self._append(res)
         return res
 
     @staticmethod
@@ -1246,7 +1246,7 @@ class Cisco_IOS_XR_um_route_policy_cfg__routing_policy__route_policies__route_po
 _breaker40: None = None
 class Cisco_IOS_XR_um_route_policy_cfg__routing_policy__route_policies__route_policy(yadata.MKeyedList[str, Cisco_IOS_XR_um_route_policy_cfg__routing_policy__route_policies__route_policy_entry]):
     mut def __init__(self, elements: list[Cisco_IOS_XR_um_route_policy_cfg__routing_policy__route_policies__route_policy_entry]=[]) -> None:
-        yadata.MKeyedList.__init__(self, lambda e, k: e.route_policy_name == k, elements)
+        yadata.MKeyedList.__init__(self, lambda e: e.route_policy_name, elements)
 
     mut def create(self, key: str, rpl_route_policy: ?str=None) -> Cisco_IOS_XR_um_route_policy_cfg__routing_policy__route_policies__route_policy_entry:
         e = self.get(key)
@@ -1256,7 +1256,7 @@ class Cisco_IOS_XR_um_route_policy_cfg__routing_policy__route_policies__route_po
             return e
         route_policy_name = key
         res = Cisco_IOS_XR_um_route_policy_cfg__routing_policy__route_policies__route_policy_entry(route_policy_name=route_policy_name, rpl_route_policy=rpl_route_policy)
-        self.elements.append(res)
+        self._append(res)
         return res
 
     @staticmethod

@@ -24,8 +24,9 @@ def _build_target_links_netinfra__netinfra__ebgp_peer_entry(conf: ygdata.Node) -
     if _v0 is not None:
         res.append(ttt.TaggedPath('router', ygdata.FNode(ygdata.Id("http://example.com/netinfra", "netinfra"), children=[ygdata.FNode(ygdata.Id("http://example.com/netinfra", "router"), children=[ygdata.FNode(ygdata.Id("http://example.com/netinfra", "name"), value_match=_v0)])])))
     return res
-def EbgpPeerTransformCtor(params: ttt.TransformActorParams) -> ?proc(ygdata.Node, ?ygdata.Node) -> None:
+def EbgpPeerTransformCtor(params: ttt.TransformActorParams) -> ttt.TransformActor:
     def update_oper_type_wrapper(oper: ?y_0_oper.netinfra__netinfra__ebgp_peer_entry):
         params.update_oper(oper.to_gdata() if oper is not None else None)
     act = cfs.EbgpPeerTransform(params.path, update_oper_type_wrapper, params.lower_tree_provider)
-    return proc lambda c, m: act.on_conf(netinfra__netinfra__ebgp_peer_entry.from_gdata(c))
+    return ttt.TransformActor(lambda c, m: act.on_conf(netinfra__netinfra__ebgp_peer_entry.from_gdata(c)),
+                              lambda m: act.shutdown())

@@ -1,11 +1,11 @@
 name = "yangadeus"
 fingerprint = 0xad7e530868bd0079
 
-# stratoweave (DeviceMgr / NETCONF adapter / device_meta_config) and midi
-# (midiact bindings) are local sibling checkouts. yang is pinned to the exact
-# revision the local stratoweave builds against, so the same compiled package is
-# shared (a relative path override for yang mis-resolves against transitive
-# consumers). For local yang hacking, override with:
+# stratoweave (DeviceMgr / NETCONF adapter / device_meta_config) follows the
+# spec's pin, so every project in the repo builds against one platform
+# revision; yang in turn follows the one stratoweave selects. midi (midiact
+# bindings) is pinned here because nothing else uses it. For local hacking,
+# override with:
 #   acton build --dep yang=/abs/path/to/acton-yang
 dependencies = {
     "midi": (
@@ -13,15 +13,14 @@ dependencies = {
         url="https://github.com/plajjan/midiact/archive/d89334a909d83f302d8cbe201ca7d530fb31083d.zip",
         hash="N-V-__8AAFLgAAC7Vo-gRhUqO8CuNbqnab5wpcnRCVURLyJt"
     ),
+    "spec": (
+        path="../spec"
+    ),
     "stratoweave": (
-        repo_url="https://github.com/stratoweave/stratoweave.git",
-        url="https://github.com/stratoweave/stratoweave/archive/53ed11c4d2b06c7d7a681228845a6ebd05b68823.zip",
-        hash="N-V-__8AABuUYgAbayyi5LFDG_U39-t7bU_PHqmUWWBJUOxw"
+        follows="spec.stratoweave"
     ),
     "yang": (
-        repo_url="https://github.com/stratoweave/acton-yang.git",
-        url="https://github.com/stratoweave/acton-yang/archive/850a7cb2365a523f7939b845a6643094c81ffd87.zip",
-        hash="N-V-__8AAPFGJwDOB9P78dfkHsDuG_iEEROhrB4jnnmsJA6p"
+        follows="stratoweave.yang"
     )
 }
 zig_dependencies = {}

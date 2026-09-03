@@ -205,6 +205,9 @@ actor EbgpPeerTransform(path: ttt.Path,
             reset_state()
         _subs.declare(want)
 
+    def shutdown():
+        pass
+
 
 class EbgpPeer(base.EbgpPeer):
     def transform(self, i, di):

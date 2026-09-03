@@ -118,3 +118,6 @@ actor EbgpPeerTransform(path: ttt.Path,
         # delivered as it commits instead of on the next poll tick.
         _subs.declare({dst.deliver({
             entry.state.session_state.subscribe()})})
+
+    def shutdown():
+        pass

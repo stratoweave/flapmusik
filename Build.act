@@ -1,26 +1,19 @@
 name = "flapmusik"
 fingerprint = 0x6d7c4e813ac64019
 dependencies = {
-    "lmdb": (
-        repo_url="https://github.com/stratoweave/acton-lmdb",
-        url="https://github.com/stratoweave/acton-lmdb/archive/05c9a1ae51360443150e002a9f7effac5a0be884.zip",
-        hash="N-V-__8AAJ8BAQBaDaW6N50DeQxT7GngYhvgGmTTKZX93ttB"
-    ),
     "rtrsecrets": (
         repo_url="https://github.com/stratoweave/rtrsecrets.git",
         url="https://github.com/stratoweave/rtrsecrets/archive/a8bdd0c0c95f8cd4fca127b4542d4bceb66b01e7.zip",
         hash="N-V-__8AAJVvAACW9_ppVgv42fp7QhCFMXXrnldaTT56lav2"
     ),
+    "spec": (
+        path="spec"
+    ),
     "stratoweave": (
-        repo_url="https://github.com/stratoweave/stratoweave.git",
-        repo_ref="xrd-udp-notif",
-        url="https://github.com/stratoweave/stratoweave/archive/d22fdad1acc96a58ad1ae8229f55c329c98543c2.zip",
-        hash="N-V-__8AAH1XPgANFow8Ta7ugKn7jsUzlQoN4CIacjmsA3tC"
+        follows="spec.stratoweave"
     ),
     "yang": (
-        repo_url="https://github.com/stratoweave/acton-yang.git",
-        url="https://github.com/stratoweave/acton-yang/archive/c00115cd07db0ee062c85090d4c85f32ef805baa.zip",
-        hash="N-V-__8AACP5JgBjkphmkpC0_Doep_M_Ji8P-z3_5_exsKvl"
+        follows="stratoweave.yang"
     )
 }
 zig_dependencies = {}

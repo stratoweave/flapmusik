@@ -17,8 +17,9 @@ def get_ttt(lower: ?ttt.Layer, dev_registry: swdev.DeviceRegistry, log_handler: 
     r = ttt.Container({ygdata.Id("http://stratoweave.org/yang/stratoweave-rfs", "device"): ttt.List(ttt.Device(dev_registry, log_handler), [ygdata.Id("http://stratoweave.org/yang/stratoweave-rfs", "name")], ns='http://stratoweave.org/yang/stratoweave-rfs', module='stratoweave-rfs'), ygdata.Id("http://stratoweave.org/yang/stratoweave-rfs", "rfs"): ttt.List(ttt.Container({ygdata.Id("http://example.com/flapmusik-rfs", "base-config"): ttt.RFSTransform(rfs.BaseConfig, dev_registry, None, lower, log_handler), ygdata.Id("http://example.com/flapmusik-rfs", "peering-interface"): ttt.List(ttt.RFSTransform(rfs.PeeringInterface, dev_registry, None, lower, log_handler), [ygdata.Id("http://example.com/flapmusik-rfs", "name")], ns='http://example.com/flapmusik-rfs', module='flapmusik-rfs'), ygdata.Id("http://example.com/flapmusik-rfs", "ebgp-peer"): ttt.List(ttt.RFSTransform(rfs.EbgpPeer, dev_registry, EbgpPeerTransformCtor, lower, log_handler), [ygdata.Id("http://example.com/flapmusik-rfs", "address")], ns='http://example.com/flapmusik-rfs', module='flapmusik-rfs')}), [ygdata.Id("http://stratoweave.org/yang/stratoweave-rfs", "name")], ns='http://stratoweave.org/yang/stratoweave-rfs', module='stratoweave-rfs')})
     return r
 
-def EbgpPeerTransformCtor(params: ttt.TransformActorParams) -> ?proc(ygdata.Node, ?ygdata.Node) -> None:
+def EbgpPeerTransformCtor(params: ttt.TransformActorParams) -> ttt.TransformActor:
     def update_oper_type_wrapper(oper: ?y_1_oper.stratoweave_rfs__rfs__ebgp_peer_entry):
         params.update_oper(oper.to_gdata() if oper is not None else None)
     act = rfs.EbgpPeerTransform(params.path, update_oper_type_wrapper, params.dev!)
-    return proc lambda c, m: act.on_conf(stratoweave_rfs__rfs__ebgp_peer_entry.from_gdata(c))
+    return ttt.TransformActor(lambda c, m: act.on_conf(stratoweave_rfs__rfs__ebgp_peer_entry.from_gdata(c)),
+                              lambda m: act.shutdown())
