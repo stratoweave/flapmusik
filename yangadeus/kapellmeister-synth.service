@@ -1,0 +1,71 @@
+[Unit]
+# The synthesizer kapellmeister plays. See README.md, "The synthesizer".
+# ./setup-audio installs this into ~/.config/systemd/user/ and enables it.
+#
+# This replaces the packaged fluidsynth.service, which cannot run on Ubuntu
+# 26.04: that unit hardens itself with ProtectSystem/ProtectHome/Protect*,
+# which in a user unit work only inside a user namespace, so it sets
+# PrivateUsers=yes. Ubuntu ships kernel.apparmor_restrict_unprivileged_userns=1,
+# the unprivileged user manager cannot create that namespace, and every process
+# it spawns dies with 218/CAPABILITIES before fluidsynth is reached. It also
+# guards itself with a lock file under /run/lock, which a hard kill leaves
+# behind and which then silently skips the next start. Neither belongs on a
+# demo rig.
+Description=FluidSynth for kapellmeister
+Documentation=man:fluidsynth(1)
+After=pipewire.service
+Wants=pipewire.service
+
+[Service]
+# fluidsynth signals readiness over sd_notify, so the synth is on the sequencer
+# bus before anything ordered after this unit runs.
+Type=notify
+NotifyAccess=main
+
+# fluidsynth does not exit when the ALSA sequencer is unavailable: it logs
+# "Error opening ALSA sequencer", says no MIDI input will be available, and
+# keeps running as a healthy-looking audio-only server that kapellmeister can
+# never find. Fail the unit up front instead, so Restart= retries until the
+# device is there and `systemctl status` tells the truth.
+#
+# Run the test through a shell on purpose. /usr/bin/test on Ubuntu 26.04 is
+# uutils (coreutils-from-uutils), whose -r and -w ignore supplementary groups.
+# /dev/snd/seq is crw-rw---- root:audio and the user reaches it through the
+# audio group, so uutils reports it unwritable while access(2) allows it. The
+# dash builtin uses access(2), and gets both the yes and the no right.
+ExecStartPre=/bin/sh -c 'test -w /dev/snd/seq'
+
+# -i            no interactive shell
+# -s            run as a server; without it fluidsynth has no work left after
+#               loading the soundfont and exits after ~130 ms
+# -a pipewire   PipeWire is the audio server on Ubuntu 26.04; the alsa driver
+#               would only reach it through the pipewire-alsa plugin, one hop
+#               and one "Requested a period size of 64, got 940 instead" later
+# -m alsa_seq   kapellmeister finds the synth on the ALSA sequencer bus, by the
+#               first destination whose name contains "fluid" or "synth"
+# -g 1.5        master gain. TimGM6mb is quiet; 1.5 puts the loudest moment --
+#               25 held voices, a timpani stroke and a climb note -- at 80% of
+#               full scale, and 2.5 clips it
+# -r 48000      PipeWire's own rate, so nothing resamples
+# -z 512        halves PipeWire's default 1024-frame quantum, ~11 ms
+#
+# The soundfont is pinned by path on purpose. /usr/share/sounds/sf{2,3}/
+# default-GM.sf* are update-alternatives symlinks, and fluid-soundfont-gm
+# (priority 50) outranks timgm6mb-soundfont (priority 20), so the default
+# resolves to FluidR3 as soon as the former is installed. kapellmeister's
+# levels are measured against TimGM6mb, and patch loudness changes with the
+# soundfont, so -g 1.5 would then be wrong.
+ExecStart=/usr/bin/fluidsynth -is -a pipewire -m alsa_seq -g 1.5 -r 48000 -z 512 /usr/share/sounds/sf2/TimGM6mb.sf2
+
+# Keep the synth up for the length of a demo. 5 s between attempts stays under
+# systemd's default start rate limit, so a long outage never latches failed.
+Restart=always
+RestartSec=5
+
+# The one hardening that needs no namespace, so it survives the userns
+# restriction above. Realtime scheduling comes from RLIMIT_RTPRIO, granted to
+# @audio in /etc/security/limits.d/30-audio-rtprio.conf, and is unaffected.
+NoNewPrivileges=yes
+
+[Install]
+WantedBy=default.target

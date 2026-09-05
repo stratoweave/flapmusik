@@ -1,0 +1,96 @@
+#!/bin/sh
+# Provision a host to play kapellmeister. Idempotent; re-run it freely.
+#
+# Installs FluidSynth, grants the invoking user the audio device and the
+# realtime priority it needs, and installs kapellmeister-synth.service as a
+# systemd *user* unit so the synthesizer comes up on boot with nobody logged
+# in. Run ./check-audio afterwards to see the result.
+#
+# Written for Ubuntu 26.04, where four things are not what the FluidSynth
+# documentation assumes:
+#
+#   1. fluidsynth no longer depends on timgm6mb-soundfont, so the soundfont
+#      kapellmeister's levels are measured against must be asked for by name.
+#   2. The packaged fluidsynth.service cannot start. See the header of
+#      kapellmeister-synth.service.
+#   3. logind grants the /dev/snd ACL to whichever session is active on the
+#      seat. A demo rig whose greeter holds the seat, or that nobody logs into
+#      at all, therefore has no audio: PipeWire enumerates no devices and
+#      offers a single "Dummy Output" sink. Membership of the audio group is
+#      what makes device access independent of who is sitting at the console.
+#   4. PipeWire is the audio server, so fluidsynth talks to it directly rather
+#      than through the pipewire-alsa plugin.
+set -eu
+
+UNIT=kapellmeister-synth.service
+SRC=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)/$UNIT
+DEST=${XDG_CONFIG_HOME:-$HOME/.config}/systemd/user
+
+# The unit lands in $HOME and is enabled for a specific user, so the user has
+# to be the one running this. Root would provision root.
+[ "$(id -u)" != "0" ] || { echo "run as the demo user, not root" >&2; exit 1; }
+USER_NAME=$(id -un)
+
+echo "==> packages"
+# --no-install-recommends keeps out qsynth, a Qt front end that would only
+# start a second, competing fluidsynth.
+#
+# TimGM6mb is the soundfont kapellmeister is voiced for. The larger
+# fluidr3mono-gm-soundfont (23 MB) and fluid-soundfont-gm (145 MB) sound
+# better and are worth trying, but patch loudness changes with the soundfont,
+# so -g 1.5 in the unit has to be measured again before either is used.
+# Installing them also re-points the default-GM alternatives away from
+# TimGM6mb, which is why the unit names its soundfont by full path.
+sudo apt-get install -y --no-install-recommends fluidsynth timgm6mb-soundfont
+
+echo "==> audio group"
+if id -nG "$USER_NAME" | tr ' ' '\n' | grep -qx audio; then
+    echo "    $USER_NAME is already in audio"
+else
+    sudo usermod -aG audio "$USER_NAME"
+    echo "    added $USER_NAME to audio"
+fi
+
+echo "==> realtime priority"
+# fluidsynth asks for a high-priority render thread with pthread_setschedparam
+# and does not speak rtkit, so without an rtprio limit it logs "Failed to set
+# thread to high priority" and renders at normal priority. kapellmeister holds
+# up to 25 sustained voices, so an xrun there is audible. This mirrors
+# /etc/security/limits.d/25-pw-rlimits.conf, which grants the same to
+# @pipewire. pam_limits is wired into /usr/lib/pam.d/systemd-user, so the
+# limits reach user@.service and therefore the unit, including under linger.
+sudo tee /etc/security/limits.d/30-audio-rtprio.conf >/dev/null <<'EOF'
+# Installed by flapmusik yangadeus/setup-audio.
+@audio   - rtprio  95
+@audio   - nice    -19
+@audio   - memlock 4194304
+EOF
+
+echo "==> start at boot without a login"
+sudo loginctl enable-linger "$USER_NAME"
+
+echo "==> synthesizer unit"
+# The packaged unit is enabled in *global* scope by its own preset, so
+# disabling it per-user is not enough; it would still start, and fail, at every
+# boot. Masking it in user scope is what actually keeps it out of the way.
+# `systemctl --user unmask fluidsynth` reverses this.
+systemctl --user mask fluidsynth.service >/dev/null
+mkdir -p "$DEST"
+install -m 0644 "$SRC" "$DEST/$UNIT"
+systemctl --user daemon-reload
+systemctl --user enable "$UNIT" >/dev/null
+echo "    installed $DEST/$UNIT"
+
+# A user that was just added to the audio group does not gain it until its
+# systemd user manager restarts, and the manager outlives a logout when linger
+# is on. Ask the manager itself whether it can reach the sequencer, using the
+# same test the unit runs, rather than guessing from group membership.
+echo "==> checking whether the running session can reach the sequencer"
+if systemd-run --user --wait --pipe --quiet /bin/sh -c 'test -w /dev/snd/seq' 2>/dev/null; then
+    systemctl --user restart "$UNIT"
+    echo "    started; run ./check-audio"
+else
+    echo "    not yet -- the user manager predates the audio group."
+    echo "    Reboot (a logout is not enough while linger is on), then:"
+    echo "      ./check-audio"
+fi

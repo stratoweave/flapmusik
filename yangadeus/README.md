@@ -255,20 +255,34 @@ neither one needs it.
 kapellmeister therefore plays to a **software synthesizer that appears as a
 MIDI destination**. Any synthesizer on the ALSA sequencer bus works.
 
-Start FluidSynth on the ALSA sequencer bus:
+Provision a host with [`setup-audio`](setup-audio):
 
 ```sh
-sudo apt install --no-install-recommends fluidsynth
-fluidsynth -a alsa -m alsa_seq -s -i -g 1.5 /usr/share/sounds/sf2/TimGM6mb.sf2
+./setup-audio
 ```
 
-Do not install `fluid-soundfont-gm` for this. That package holds 145 MB of
-soundfont. `timgm6mb-soundfont` arrives as a dependency of `fluidsynth`. Its
-6 MB cover every program that kapellmeister uses.
+It installs FluidSynth and the 6 MB TimGM6mb soundfont, puts you in the `audio`
+group, grants that group realtime priority, and installs
+[`kapellmeister-synth.service`](kapellmeister-synth.service) as a systemd
+*user* unit. `loginctl enable-linger` then starts that unit on boot, with
+nobody logged in. Re-run the script freely. It changes only what is not already
+set.
 
-`--no-install-recommends` matters. `libfluidsynth3` depends on SDL2, and SDL2
-needs Mesa, LLVM, Wayland and X11. The install is 43 packages with the flag,
-and 143 packages without it.
+Reboot after the first run. A user that was just added to a group does not hold
+it until its systemd user manager restarts, and with linger on that manager
+outlives a logout.
+
+```sh
+systemctl --user status kapellmeister-synth   # active (running)
+./check-audio                                 # 1 process, 1 MIDI port(s)
+```
+
+The unit runs one command:
+
+```sh
+fluidsynth -is -a pipewire -m alsa_seq -g 1.5 -r 48000 -z 512 \
+    /usr/share/sounds/sf2/TimGM6mb.sf2
+```
 
 `-s` is not optional. It runs FluidSynth as a server. `-i` disables the
 interactive shell. Without `-s`, FluidSynth then has no work left. It prints
@@ -279,9 +293,11 @@ and the common value of 0.8 are both too quiet here. 1.5 reaches 80% of full
 scale at the loudest moment, which is 25 voices with a drum accent and a climb
 note. 2.5 clips that moment.
 
-FluidSynth also prints `warning: Requested a period size of 64, got 940
-instead`. Ignore it. ALSA gave a larger period. This adds approximately 21 ms
-of latency, and it changes nothing else.
+`-a pipewire` plays to PipeWire directly, because PipeWire is the audio server.
+The `alsa` driver reaches the same server through the pipewire-alsa plugin, one
+hop later, and prints `warning: Requested a period size of 64, got 940 instead`
+on the way. `-r 48000` is PipeWire's own rate, so nothing resamples, and
+`-z 512` halves its default 1024-frame quantum.
 
 kapellmeister selects the instruments. It sends one program change for each
 channel that it uses, when it opens the synthesizer. MIDI has no message for
@@ -294,6 +310,39 @@ kapellmeister finds the synthesizer itself. It takes the first destination with
 Nothing has to start first. kapellmeister searches for the synthesizer every 2
 seconds, and for the state feed every 5 seconds, until each one appears. Run
 `./check-audio` when you hear nothing. It reports the state of the audio path.
+
+### What bites on Ubuntu 26.04
+
+Five assumptions in the FluidSynth documentation no longer hold. `setup-audio`
+and the unit handle all of them, and each one is silent when it is wrong.
+
+- **The `audio` group is what makes sound work unattended.** logind grants the
+  `/dev/snd` ACL to the session that is active on the seat. A rig whose greeter
+  holds the seat, or that nobody logs into, therefore has no audio at all:
+  PipeWire enumerates no devices and offers a single `Dummy Output` sink, and
+  `aplay -l` reports no soundcards while the card sits there in
+  `/proc/asound/cards`. Group membership does not depend on who is at the
+  console.
+- **The packaged `fluidsynth.service` cannot start.** It hardens itself with
+  options a user unit can apply only inside a user namespace, and Ubuntu ships
+  `kernel.apparmor_restrict_unprivileged_userns=1`, so every process it spawns
+  dies with `218/CAPABILITIES`. It is enabled in *global* scope, so
+  `setup-audio` masks it. Disabling it per-user is not enough.
+- **`fluidsynth` no longer depends on `timgm6mb-soundfont`.** Ask for the
+  soundfont by name. `fluidr3mono-gm-soundfont` (23 MB) and
+  `fluid-soundfont-gm` (145 MB) sound better, but they outrank TimGM6mb in the
+  `default-GM` alternatives the moment they are installed, and patch loudness
+  changes with the soundfont. The unit names its soundfont by full path for
+  that reason, and `-g 1.5` has to be measured again before either is used.
+- **FluidSynth stays up when the sequencer is missing.** It logs `Error opening
+  ALSA sequencer`, says no MIDI input will be available, and keeps running as a
+  healthy-looking audio-only server that kapellmeister never finds. The unit
+  tests `/dev/snd/seq` first, so the failure is visible and `Restart=` retries
+  until the device is there.
+- **`/usr/bin/test` is uutils, not GNU.** Its `-r` and `-w` ignore
+  supplementary groups, so it calls `/dev/snd/seq` unwritable for a user who
+  reaches it through `audio`. The unit runs that test through `/bin/sh`, whose
+  builtin uses `access(2)` and gets both the yes and the no right.
 
 ### Run kapellmeister
 
