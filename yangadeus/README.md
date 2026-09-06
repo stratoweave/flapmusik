@@ -52,7 +52,14 @@ stratoweave `DeviceMgr`. It sends one clear-BGP RPC for each key press.
 
 You do not have to connect the keyboard before you start yangadeus. The
 NETCONF session opens, and yangadeus builds the neighbor map. It then searches
-for the MIDI source every 2 seconds, until the source appears.
+for the MIDI source every 2 seconds.
+
+That search never stops. Unplugging the controller destroys its ALSA sequencer
+client, and replugging it creates a new one, so the endpoint yangadeus opened
+goes stale and silent, and the connection to the DAW port goes with it. Nothing
+reports that. yangadeus therefore keeps polling, notices the endpoint it opened
+has left the list, and attaches to the new one — which also re-enters DAW mode
+and blanks the pads. Pull the USB cable mid-demo and it comes back on its own.
 
 ### How it works
 

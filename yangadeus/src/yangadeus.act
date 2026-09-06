@@ -170,6 +170,12 @@ actor Runner(env, args, logh: logging.Handler):
     var midi_open = False
     var out_open = False
     var mapped = False
+    # Names of the endpoints currently open, "" when closed. RtMidi port names
+    # carry the ALSA client:port numbers, so a name that has vanished from the
+    # endpoint list is how a replug is detected — see open_midi.
+    var kbd_name = ""
+    var daw_name = ""
+    var warned_no_daw = False
     # pad position -> generation counter, so a newer pad state cancels an
     # older pending revert (amber-hold beats a stale green/red expiry).
     var pad_gen: dict[int, int] = {}
@@ -290,17 +296,60 @@ actor Runner(env, args, logh: logging.Handler):
                 return s
         return None
 
+    def has_source(name: str) -> bool:
+        for s in midi.sources(mcap):
+            if s.name == name:
+                return True
+        return False
+
+    def has_dest(name: str) -> bool:
+        for d in midi.destinations(mcap):
+            if d.name == name:
+                return True
+        return False
+
+    def detach_out():
+        o = midi_out
+        if o is not None:
+            o.close()
+        midi_out = None
+        out_open = False
+        daw_name = ""
+        pad_gen = {}  # pending reverts refer to a controller that is gone
+
+    def detach_kbd():
+        i = midi_input
+        if i is not None:
+            i.close()
+        midi_input = None
+        midi_open = False
+        kbd_name = ""
+        detach_out()  # the pads live on the same controller
+
     def open_midi():
+        # This ticks every 2 s for the life of the process, not only until the
+        # keyboard first appears. Unplugging the controller destroys its ALSA
+        # sequencer client; replugging creates a *new* one, which leaves the
+        # endpoint we opened stale and silent, and drops the connection to the
+        # DAW port with it. Nothing reports that, so poll for it: RtMidi port
+        # names embed the client:port numbers, so the name we opened vanishing
+        # from the endpoint list means the controller went away.
+        if midi_open and not has_source(kbd_name):
+            print("🎹 MIDI keyboard disconnected — waiting for it to return")
+            detach_kbd()
+        if not midi_open:
+            ep = find_kbd()
+            if ep is not None:
+                midi_open = True
+                kbd_name = ep.name
+                warned_no_daw = False
+                print("🎹 MIDI keyboard: {ep.name}")
+                midi_input = midi.Input(mcap, on_midi, source=ep)
         if midi_open:
-            return
-        ep = find_kbd()
-        if ep is not None:
-            midi_open = True
-            print("🎹 MIDI keyboard: {ep.name}")
-            midi_input = midi.Input(mcap, on_midi, source=ep)
-            open_out()  # try to light the pads on the same controller
-        else:
-            after 2.0: open_midi()
+            # Re-entering DAW mode and blanking the pads is part of reattaching,
+            # so this runs on every reconnect, not just the first open.
+            open_out()
+        after 2.0: open_midi()
 
     # -- pad LED output (Launchkey DAW port; best-effort) -----------------
     def find_daw_out() -> ?midi.Endpoint:
@@ -311,17 +360,25 @@ actor Runner(env, args, logh: logging.Handler):
         return None
 
     def open_out():
-        if not leds or out_open:
+        if not leds:
+            return
+        if out_open and not has_dest(daw_name):
+            detach_out()
+        if out_open:
             return
         dep = find_daw_out()
         if dep is not None:
             out_open = True
+            daw_name = dep.name
+            warned_no_daw = False
             print("🎛  Pad LEDs: {dep.name}")
             o = midi.Output(mcap, dest=dep)
             midi_out = o
             o.send3(0x90 | CH_CTRL, DAW_MODE_NOTE, 127)  # enter DAW mode
             after 0.2: clear_pads()  # blank the pads once DAW mode settles
-        else:
+        elif not warned_no_daw:
+            # open_out is polled, so say this once per attach, not every 2 s.
+            warned_no_daw = True
             print("(no Launchkey DAW port — running without pad LEDs)", err=True)
 
     # -- neighbor discovery ------------------------------------------------
