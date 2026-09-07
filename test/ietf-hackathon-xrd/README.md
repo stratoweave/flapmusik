@@ -106,12 +106,26 @@ external `xrd-b` NETCONF endpoint. `CLEAR_PEER` is the managed-side address
 (`10.123.N.1`) used as the neighbor key on `xrd-b`. The RPC does not pass
 through flapmusik or StratoWeave's managed-device path.
 
+A cleared session takes 30–45 s to come back here, and nothing on either XRd
+shortens that: BGP's ConnectRetry timer is what decides it, IOS XR 25.3.1
+exposes no knob for it, and every other kind of reset — graceful clear,
+neighbor shut/no-shut, subinterface flap, killing the TCP connection with
+`clear tcp pcb` — lands in the same band.
+[`../ietf-hackathon-frr/`](../ietf-hackathon-frr/) is the same lab with an FRR
+external peer, where the measurements are and where a clear recovers in under
+a second.
+
 The `yangadeus` MIDI application plays these sessions from a 25-key keyboard.
 It holds a persistent NETCONF session to `xrd-b` (`--host 127.0.0.1 --port
 1830`), discovers its eBGP neighbors, sorts them numerically, and lays them
 across the keys — lowest key to `10.123.1.1`, highest to `10.123.25.1`. Each
 keypress fires a `clear-bgp-ip-addr` RPC for that neighbor while flapmusik
-observes the session drop and recover.
+observes the session drop and recover. `make play` starts it against this
+lab's `xrd-b`, and `make listen` starts kapellmeister against this lab's
+flapmusik northbound, so neither needs a port on the command line. Both run
+the binaries from [`../../yangadeus`](../../yangadeus) — build them once with
+`make -C ../../yangadeus` — and extra flags pass through in `ARGS`, e.g.
+`make play ARGS="--base-note 36"`.
 
 The event-driven sensor path is:
 

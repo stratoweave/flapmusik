@@ -1,0 +1,46 @@
+name: flapmusik-ietf-hackathon-frr
+prefix: __lab-name
+
+# Same topology as ietf-hackathon-xrd, with an FRR external peer in place of
+# xrd-b. A different management subnet and different published ports so this
+# lab and the all-XRd one can run side by side for comparison.
+mgmt:
+  network: flapmusik-ietf-hackathon-frr
+  ipv4-subnet: 172.100.61.0/24
+
+topology:
+  kinds:
+    xrd:
+      image: ${IMAGE_PATH}ios-xr/xrd-control-plane:25.3.1
+  nodes:
+    xrd-a:
+      kind: xrd
+      mgmt-ipv4: 172.100.61.11
+      startup-config: xrd-a-startup.conf
+      ports:
+        # yangadeus sends its clear-BGP RPC here: FRR has no NETCONF server,
+        # so the managed router is the NETCONF-reachable end of the session.
+        - 127.0.0.1:1831:830/tcp
+    frr-b:
+      kind: linux
+      image: quay.io/frrouting/frr:10.3.1
+      image-pull-policy: if-not-present
+      mgmt-ipv4: 172.100.61.12
+      binds:
+        - frr-b.conf:/etc/frr/frr.conf
+        - frr-daemons:/etc/frr/daemons
+        - frr-b-vlans.sh:/frr-b-vlans.sh
+      exec:
+        - touch /etc/frr/vtysh.conf
+        - /bin/sh /frr-b-vlans.sh
+    sweave:
+      kind: linux
+      image: debian:12
+      mgmt-ipv4: 172.100.61.10
+      cmd: sleep infinity
+      ports:
+        - 127.0.0.1:18081:80/tcp
+        - 127.0.0.1:2831:830/tcp
+
+  links:
+    - endpoints: ["xrd-a:Gi0-0-0-0", "frr-b:eth1"]

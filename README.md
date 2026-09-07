@@ -230,6 +230,10 @@ router and a container, both running IOS XR 25.3.1:
   (`xrd-a`), one external XRd peer (`xrd-b`), and a controller container, with
   25 eBGP sessions multiplexed over 802.1Q VLANs on a single link.
   `make start wait copy run`.
+- **Virtual IOS XRd with an FRR peer — [`test/ietf-hackathon-frr/`](test/ietf-hackathon-frr/).**
+  The same lab with FRR 10.3.1 in place of `xrd-b`. A cleared session recovers
+  in under a second rather than the 30–45 s two XRd routers take, because BGP's
+  ConnectRetry timer is configurable on FRR and is exposed nowhere on IOS XR.
 
 Because the on-device configuration and the UDP-Notif transport are identical in
 both cases, the virtual lab is a faithful stand-in for the hardware.
@@ -241,6 +245,7 @@ both cases, the virtual lab is a faithful stand-in for the hardware.
 | [`src/flapmusik/`](src/flapmusik/) | The flapmusik app: layer transforms (`layers/`), RFS logic (`rfs.act`), IOS XR device model bindings (`devices/`). |
 | [`spec/`](spec/) | YANG models and the generator that produces the layer/device bindings. |
 | [`test/ietf-hackathon-xrd/`](test/ietf-hackathon-xrd/) | Fully virtual XRd demo lab (25 eBGP sessions). |
+| [`test/ietf-hackathon-frr/`](test/ietf-hackathon-frr/) | The same lab with an FRR external peer, for fast session recovery. |
 | [`test/xrd-bridge/`](test/xrd-bridge/) | Lab that bridges XRd onto a physical NCS 55A2. |
 | [`yangadeus/`](yangadeus/) | The two players: [`yangadeus`](yangadeus/README.md#yangadeus--the-keyboard) flaps eBGP sessions from a MIDI keyboard, and [`kapellmeister`](yangadeus/README.md#kapellmeister--the-sound) plays the session state on a synthesizer. |
 | [`docs/images/`](docs/images/) | Slides rendered from the hackathon deck. |

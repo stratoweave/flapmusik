@@ -132,7 +132,9 @@ out/bin/yangadeus --host 10.99.0.13 --port 1830 --username clab --password clab@
 | `--verbose` | off | log the NETCONF/SSH stack |
 
 `make start` runs the same command with the lab defaults. `HOST`, `PORT`,
-`USERNAME`, `PASSWORD` and `ARGS` replace them.
+`USERNAME`, `PASSWORD` and `ARGS` replace them. Easier still, each lab under
+[`../test/`](../test/) has a `make play` recipe that already knows its own
+router and port.
 
 Use `--peers` to show the pads without a live router. For example,
 `out/bin/yangadeus --peers 10.0.0.6,10.0.0.10,10.0.0.14` maps three keys
@@ -380,6 +382,10 @@ and the unit handle all of them, and each one is silent when it is wrong.
 ```sh
 out/bin/kapellmeister --host 127.0.0.1 --port 2830 --username admin --password admin
 ```
+
+`make listen` runs that with the defaults; the labs under
+[`../test/`](../test/) have their own `make listen` pinned to their northbound
+port.
 
 | flag | default | meaning |
 |------|---------|---------|
