@@ -2,9 +2,10 @@
 # Provision a host to play kapellmeister. Idempotent; re-run it freely.
 #
 # Installs FluidSynth, grants the invoking user the audio device and the
-# realtime priority it needs, and installs kapellmeister-synth.service as a
-# systemd *user* unit so the synthesizer comes up on boot with nobody logged
-# in. Run ./check-audio afterwards to see the result.
+# realtime priority it needs, opens the output to unity, and installs
+# kapellmeister-synth.service as a systemd *user* unit so the synthesizer comes
+# up on boot with nobody logged in. Run ./check-audio afterwards to see the
+# result.
 #
 # Written for Ubuntu 26.04, where four things are not what the FluidSynth
 # documentation assumes:
@@ -65,6 +66,45 @@ sudo tee /etc/security/limits.d/30-audio-rtprio.conf >/dev/null <<'EOF'
 @audio   - nice    -19
 @audio   - memlock 4194304
 EOF
+
+echo "==> output level"
+# The synthesizer has no headroom left to give. kapellmeister's levels are
+# measured so that its loudest moment reaches 80% of full scale at -g 1.5, and
+# -g 2.5 clips that moment, so the room volume has to come from the amplifier
+# and everything before it has to sit at unity. wpctl's percentage is a cubic
+# taper, so a sink sitting at 40% is 0.064 in linear terms -- a 24 dB cut that
+# no gain in the unit can win back.
+#
+# Set this with wpctl and not with amixer. PipeWire owns the codec's Master
+# control and drives it from the route volume, so a level written with amixer
+# is overwritten at the next route change and alsactl cannot hold it either.
+# wpctl writes the route volume, and WirePlumber saves that to
+# ~/.local/state/wireplumber/default-routes, which is what makes it outlive a
+# reboot.
+#
+# The volume is saved per route, so headphones and speakers each keep their
+# own. This sets whichever route is active now: run it with the demo's cable
+# already in the jack.
+#
+# A user manager that predates the audio group enumerates no devices and offers
+# only the auto_null dummy sink, so setting a level here would silently set it
+# on nothing. Say so instead; the reboot below is the fix.
+if ! command -v wpctl >/dev/null 2>&1; then
+    echo "    no wpctl -- set the output level by hand"
+else
+    SINK=$(wpctl inspect @DEFAULT_AUDIO_SINK@ 2>/dev/null |
+           sed -n 's/.*node\.name = "\(.*\)".*/\1/p')
+    case ${SINK:-} in
+    ''|auto_null)
+        echo "    no real sink yet -- re-run after the reboot below"
+        ;;
+    *)
+        wpctl set-volume @DEFAULT_AUDIO_SINK@ 100%
+        wpctl set-mute @DEFAULT_AUDIO_SINK@ 0
+        echo "    $SINK at $(wpctl get-volume @DEFAULT_AUDIO_SINK@ | cut -d' ' -f2)"
+        ;;
+    esac
+fi
 
 echo "==> start at boot without a login"
 sudo loginctl enable-linger "$USER_NAME"

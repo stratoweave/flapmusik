@@ -269,11 +269,11 @@ Provision a host with [`setup-audio`](setup-audio):
 ```
 
 It installs FluidSynth and the 6 MB TimGM6mb soundfont, puts you in the `audio`
-group, grants that group realtime priority, and installs
-[`kapellmeister-synth.service`](kapellmeister-synth.service) as a systemd
-*user* unit. `loginctl enable-linger` then starts that unit on boot, with
-nobody logged in. Re-run the script freely. It changes only what is not already
-set.
+group, grants that group realtime priority, opens the output to unity, and
+installs [`kapellmeister-synth.service`](kapellmeister-synth.service) as a
+systemd *user* unit. `loginctl enable-linger` then starts that unit on boot,
+with nobody logged in. Re-run the script freely. It changes only what is not
+already set.
 
 Reboot after the first run. A user that was just added to a group does not hold
 it until its systemd user manager restarts, and with linger on that manager
@@ -299,6 +299,30 @@ its banner and exits after approximately 130 ms.
 and the common value of 0.8 are both too quiet here. 1.5 reaches 80% of full
 scale at the loudest moment, which is 25 voices with a drum accent and a climb
 note. 2.5 clips that moment.
+
+That 80% is all the headroom there is, so **loudness that is missing is missing
+on the output and not in the unit.** `setup-audio` opens the default sink to
+unity for that reason:
+
+```sh
+wpctl set-volume @DEFAULT_AUDIO_SINK@ 100%
+```
+
+Set the level with `wpctl` and not with `amixer`. PipeWire owns the codec's
+`Master` control and drives it from the active route's volume, so a level
+written with `amixer` is overwritten at the next route change, and `alsactl
+store` cannot hold it either. `wpctl` writes the route volume, and WirePlumber
+saves that to `~/.local/state/wireplumber/default-routes`, which is what makes
+it outlive a reboot.
+
+`wpctl`'s percentage is a cubic taper, so a sink sitting at 40% is 0.064 in
+linear terms. That is a 24 dB cut, and no `-g` wins it back. Trim from unity
+with the same command when the amplifier has no knob of its own.
+
+The volume is saved **per route**, and the headphone jack and the speakers each
+keep their own. Run `setup-audio` with the demo's cable already in the jack, or
+the level lands on the route nobody is listening to. `./check-audio` prints the
+sink that is default and the level it is at.
 
 `-a pipewire` plays to PipeWire directly, because PipeWire is the audio server.
 The `alsa` driver reaches the same server through the pipewire-alsa plugin, one

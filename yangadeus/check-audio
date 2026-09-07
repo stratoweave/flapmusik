@@ -14,6 +14,13 @@
 # Do not read "audio is flowing" from appl_ptr either. The default PCM goes
 # through dmix, which mixes into the mmapped hardware buffer without advancing
 # the slave's appl_ptr, so appl_ptr stays 0 even while sound plays.
+#
+# Read the *level* from wpctl, not from the mixer. PipeWire owns the codec's
+# Master control and drives it from the active route's volume, so the number
+# amixer shows is only what PipeWire last wrote there, and writing a new one
+# back does not stick. setup-audio provisions the sink at 1.00, which is unity;
+# anything below that is attenuation the synthesizer cannot make up, because
+# kapellmeister already peaks at 80% of full scale.
 S=/proc/asound/card0/pcm0p/sub0/status
 
 # pgrep -c and grep -c print 0 and exit non-zero, so take the output as is.
@@ -22,6 +29,12 @@ ports=$(grep -ci fluid /proc/asound/seq/clients 2>/dev/null)
 state=$(grep -m1 '^state' "$S" 2>/dev/null)
 echo "fluidsynth:  ${procs:-0} process(es), ${ports:-0} MIDI port(s)"
 echo "sound card:  ${state:-state: closed}"
+
+# wpctl prints "Volume: 1.00", and appends "[MUTED]" when the sink is muted.
+vol=$(wpctl get-volume @DEFAULT_AUDIO_SINK@ 2>/dev/null | cut -d' ' -f2-)
+sink=$(wpctl inspect @DEFAULT_AUDIO_SINK@ 2>/dev/null |
+       sed -n 's/.*node\.name = "\(.*\)".*/\1/p')
+echo "output:      ${sink:-no default sink} at ${vol:-unknown} (1.00 is unity)"
 echo
 echo "MIDI graph (kapellmeister should connect to the FLUID Synth port):"
 awk '/^Client/{c=$0} /Connect(ing To|ed From)/{print "  " c "  " $0}' \
